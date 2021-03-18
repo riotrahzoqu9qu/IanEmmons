@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+	<title>VASO File Upload</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<style>
+		div.radio-btn-group {
+			padding-left: 1.2rem;
+		}
+	</style>
+</head>
+<body>
+	<form th:object="${userSub}" th:action="${'/fileUpload/' + event.templateName}"
+			method="post" enctype="multipart/form-data">
+		<h1 th:text="${'Submit Your ' + event.label + ' Entry:'}"/>
+		Division:
+		<div class="radio-btn-group">
+			<input type="radio" name="division" value="B" id="divB" th:checked="*{division eq 'B'}">
+			<label for="divB">B</label><br/>
+			<input type="radio" name="division" value="C" id="divC" th:checked="*{division eq 'C'}">
+			<label for="divC">C</label>
+		</div>
+		<p>
+			<label for="team">Team Number:</label>
+			<input id="team" type="number" th:field="*{teamNumber}" min="1"/>
+		</p>
+		<p>
+			<label for="school">School Name:</label>
+			<input id="school" type="text" th:field="*{schoolName}"/>
+		</p>
+		<p>
+			<label for="team">Team Name (if applicable):</label>
+			<input id="team" type="text" th:field="*{teamName}"/>
+		</p>
+		<p>
+			<label for="students">Student Name(s):</label>
+			<input id="students" type="text" th:field="*{studentNames}"/>
+		</p>
+		Kind of Submission:
+		<div class="radio-btn-group">
+			<label th:each="hMode: ${T(org.virginiaso.file_upload.HelicopterMode).values()}">
+				<input type="radio" name="helicopterMode" th:value="${hMode.name}" th:checked="${helicopterMode eq hMode.name}">
+				<span th:text="${hMode.label}"/><br/>
+			</label>
+			<br/>
+			Note 1: This form submits a single video of one flight &mdash; if you have a second video, use this form a second time to submit it.<br/>
+			Note 2: Each helicopter needs its own flight log.<br/>
+			Note 3: If you submit two videos of one helicopter, upload the flight log both times.
+		</div>
+		<p>
+			<label for="fileA">Flight Log (PDF):</label>
+			<input id="fileA" type="file" name="fileA"/>
+		</p>
+		<p>
+			<label for="fileB">Flight Video:</label>
+			<input id="fileB" type="file" name="fileB"/>
+		</p>
+		<p>
+			<label for="notes">Notes (optional):</label><br/>
+			<textarea id="notes" rows="8" cols="70" th:field="*{notes}"/>
+		</p>
+
+		<p>
+			<label>
+				<input type="submit" value="Submit"/>
+				<input type="reset" value="Reset"/>
+			</label>
+		</p>
+	</form>
+</body>
+</html>

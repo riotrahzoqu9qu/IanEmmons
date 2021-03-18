@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+	<title>VASO File Upload</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<style>
+		pre.notes {
+			padding-left: 2rem;
+		}
+	</style>
+</head>
+<body>
+	<h1>Your <span th:text="${event.label}"/> Submission has been Recorded:</h1>
+	<p>Upload ID: <span th:text="${submission.id}"/></p>
+	<p>Submission Time: <span th:text="${submission.submissionTime}"/></p>
+	<p>Team Number: <span th:text="${submission.division}"/><span th:text="${submission.teamNumber}"/></p>
+	<p>School: <span th:text="${submission.schoolName}"/></p>
+	<p>Team Name: <span th:text="${submission.teamName}"/></p>
+	<p>Student Name(s): <span th:text="${submission.studentNames}"/></p>
+	<p th:if="${submission.helicopterMode ne null}"
+		>Kind of Submission: <span th:text="${submission.helicopterMode.label}"/></p>
+	Notes:
+	<pre class="notes" th:text="${submission.notes}"/>
+	<p>File(s):</p>
+	<ul>
+		<li th:each="file: ${submission.fileNames}">
+			<span th:text="${file}"/>
+		</li>
+	</ul>
+	<p><a th:href="${'/fileUpload/' + submission.event.templateName}">Submit another message</a></p>
+</body>
+</html>

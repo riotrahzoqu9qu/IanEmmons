@@ -1,0 +1,13 @@
+fileUpload:
+   submissionTablePath: /Users/iemmons/file-upload/submissions.csv
+
+logging:
+   level:
+      root: INFO
+      #com.baeldung: TRACE
+
+spring:
+   servlet:
+      multipart:
+         max-file-size: 1GB
+         max-request-size: 1GB

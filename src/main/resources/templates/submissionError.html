@@ -1,0 +1,13 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+	<title>VASO File Upload</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+	<h1>Unable to Record Your Submission:</h1>
+	<p th:text="${message}"/>
+	<p th:text="'Exception type: ' + ${exception}"/>
+	<p><a th:href="${'/fileUpload/' + event.templateName}">Try again</a></p>
+</body>
+</html>
