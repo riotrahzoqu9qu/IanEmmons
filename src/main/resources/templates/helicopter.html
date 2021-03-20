@@ -3,13 +3,18 @@
 <head>
 	<title>VASO File Upload</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-	<style>
-		div.radio-btn-group {
-			padding-left: 1.2rem;
-		}
-	</style>
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
+	<link rel="stylesheet" href="/VasoFileUploadStylesheet.css"/>
 </head>
 <body>
+	<div class="logo_box">
+		<a href="/">
+			<img src="https://virginiaso.org/images/VASO_logo_header.png"
+				alt="Virginia Science Olympiad Logo" width="321px" height="125px"
+				style="position:relative; top:12px; left:25px"/>
+		</a>
+	</div>
+
 	<form th:object="${userSub}" th:action="${'/fileUpload/' + event.templateName}"
 			method="post" enctype="multipart/form-data">
 		<h1 th:text="${'Submit Your ' + event.label + ' Entry:'}"/>
