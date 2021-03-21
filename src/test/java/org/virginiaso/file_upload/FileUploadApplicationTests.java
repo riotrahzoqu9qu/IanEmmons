@@ -22,4 +22,9 @@ class FileUploadApplicationTests {
 		System.out.format("Eastern date = '%1$s'%n", DateTimeFormatter.ISO_LOCAL_DATE.format(easternNow));
 		System.out.format("Eastern time = '%1$s'%n", DateTimeFormatter.ISO_LOCAL_TIME.format(easternNow));
 	}
+
+	@Test
+	void awsDetectorTest() {
+		System.out.format("AWS public host name: '%1$s'%n", AwsDetector.getAwsPublicHostname());
+	}
 }

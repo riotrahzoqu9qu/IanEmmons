@@ -15,21 +15,19 @@ class AwsDetector {
 		long start = System.currentTimeMillis();
 		String result = null;
 		try {
-			result = new RestTemplate().getForObject(AWS_METADATA_URL, String.class).trim();
-			LOG.info("Running on AWS EC2 instance '{}'", result);
+			String os = System.getProperty("os.name");
+			if (os != null && os.toLowerCase().contains("linux")) {
+				result = new RestTemplate().getForObject(AWS_METADATA_URL, String.class).trim();
+				LOG.info("Running on AWS EC2 instance '{}'", result);
+			}
 		} catch (RestClientException ex) {
+			// Do nothing
+		}
+		if (result == null) {
 			LOG.info("Running outside AWS");
 		}
 		long duration = System.currentTimeMillis() - start;
 		LOG.info("AWS detection finished in {} milliseconds", duration);
 		return result;
-	}
-
-	public static void main(String[] args) {
-		try {
-			System.out.format("AWS public host name: '%1$s'%n", getAwsPublicHostname());
-		} catch (Throwable ex) {
-			ex.printStackTrace();
-		}
 	}
 }
