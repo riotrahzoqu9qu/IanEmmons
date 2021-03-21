@@ -1,3 +1,8 @@
+/*
+See this for ideas for styling text boxes:
+https://tutorialathome.in/css/different-css3-text-box-styling
+*/
+
 * {
 	font-family: Georgia, Cambria, "Times New Roman", Times, serif;
 }
@@ -10,7 +15,7 @@
 	box-shadow: 0 -1px 8px #222;
 }
 
-pre {
+pre, textarea {
 	font-family: Menlo, Consolas, "Andale Mono", monospace;
 }
 
@@ -22,6 +27,6 @@ div.radio-btn-group {
 	padding-left: 1.2rem;
 }
 
-input {
+input, textarea {
 	font-size: large;
 }

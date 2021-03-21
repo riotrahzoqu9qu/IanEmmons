@@ -1,5 +1,9 @@
 fileUpload:
-   submissionTablePath: /Users/iemmons/file-upload/submissions.csv
+   aws:
+      bucket: "virginia-science-olympiad"
+      rootKey: "vaso-file-upload"
+   submissionRootDir: /Users/iemmons/file-upload
+   submissionTableFileName: submissions.csv
 
 logging:
    level:

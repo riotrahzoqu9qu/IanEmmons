@@ -1,7 +1,6 @@
 package org.virginiaso.file_upload;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -9,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -38,31 +40,27 @@ public class StorageServiceImpl implements StorageService {
 		.withAllowDuplicateHeaderNames(false);
 	private static final Logger LOG = LoggerFactory.getLogger(StorageServiceImpl.class);
 
-	@Value("${fileUpload.submissionTablePath}")
-	private String submissionTablePath;
+	@Value("${fileUpload.submissionRootDir}")
+	private String submissionRootDir;
 
+	@Value("${fileUpload.submissionTableFileName}")
+	private String submissionTableFileName;
+
+	private File submissionDir;
 	private File submissionTable;
 	private List<Submission> submissions;
-	private AtomicInteger lastSequenceNumber = new AtomicInteger(0);
+	private final AtomicInteger previousSequenceNumber = new AtomicInteger(-1);
 
+	/*
+	 * This method does not need to be synchronized because it executes
+	 * at process start-up, before any client requests are received.
+	 */
 	@PostConstruct
 	public void initialize() {
-		submissionTable = new File(submissionTablePath);
+		submissionDir = new File(submissionRootDir,
+			DateTimeFormatter.ISO_LOCAL_DATE.format(ZonedDateTime.now()));
+		submissionTable = new File(submissionDir, submissionTableFileName);
 
-		try {
-			load();
-		} catch (IOException ex) {
-			if (submissionTable.exists()) {
-				LOG.warn("Unable to load submissions:", ex);
-			} else {
-				LOG.info("Submissions file does not exist -- starting a new one");
-			}
-			submissions = new ArrayList<>();
-			lastSequenceNumber.set(0);
-		}
-	}
-
-	private void load() throws FileNotFoundException, IOException {
 		try (
 			Reader rdr = new FileReader(submissionTable, StandardCharsets.UTF_8);
 			CSVParser parser = CSV_FORMAT_IN.parse(rdr);
@@ -71,20 +69,41 @@ public class StorageServiceImpl implements StorageService {
 				.map(Submission::new)
 				.sorted(Comparator.comparingInt(Submission::getId))
 				.collect(Collectors.toCollection(ArrayList::new));
-			lastSequenceNumber.set(submissions.get(submissions.size() - 1).getId());
+			previousSequenceNumber.set(submissions.get(submissions.size() - 1).getId());
+		} catch (IOException ex) {
+			if (submissionTable.exists()) {
+				LOG.warn("Unable to load submissions file:", ex);
+			} else {
+				LOG.info("Submissions file does not exist -- starting a new one");
+			}
+			submissions = new ArrayList<>();
+			previousSequenceNumber.set(-1);
 		}
 	}
 
-	private void save() throws IOException {
-		File tempSaveFile = FileUtil.appendToFileStem(submissionTable, "-temp");
-		File oldSaveFile = FileUtil.appendToFileStem(submissionTable, "-old");
+	@PreDestroy
+	public void cleanup() {
+		// call s3client.shutdown(); here
+	}
 
+	private synchronized int getNextSequenceNumber() {
+		return previousSequenceNumber.incrementAndGet();
+	}
+
+	private synchronized void addSubmission(Submission newSubmission) throws IOException {
+		// Add the submission to the list:
+		submissions.add(newSubmission);
+
+		// Save the list to a temporary file:
+		File tempSaveFile = FileUtil.appendToFileStem(submissionTable, "-temp");
 		try (CSVPrinter printer = CSV_FORMAT_OUT.print(tempSaveFile, StandardCharsets.UTF_8)) {
 			for (Submission submission : submissions) {
 				submission.print(printer);
 			}
 		}
 
+		// Replace the existing file by swapping file names and then deleting the old file:
+		File oldSaveFile = FileUtil.appendToFileStem(submissionTable, "-old");
 		if (submissionTable.exists()) {
 			Files.move(submissionTable.toPath(), oldSaveFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
 		}
@@ -106,22 +125,19 @@ public class StorageServiceImpl implements StorageService {
 		List<String> fileNames = new ArrayList<>();
 		char label = 'a';
 		for (MultipartFile file : files) {
-			fileNames.add(saveFile(file, id, Character.toString(label), event, division, teamNumber));
+			fileNames.add(saveUploadedFile(file, id, Character.toString(label), event,
+				division, teamNumber));
 			++label;
 		}
-		Submission submission = new Submission(userSub, Event.forTemplate(eventTemplate), id, timeStamp, fileNames);
+		Submission submission = new Submission(userSub, Event.forTemplate(eventTemplate),
+			id, timeStamp, fileNames);
 
-		submissions.add(submission);
-		save();
+		addSubmission(submission);
 
 		return submission;
 	}
 
-	private int getNextSequenceNumber() {
-		return lastSequenceNumber.incrementAndGet();
-	}
-
-	private String saveFile(MultipartFile file, int id, String label, Event event,
+	private String saveUploadedFile(MultipartFile file, int id, String label, Event event,
 		Division division, int teamNumber) throws IOException {
 
 		if (file.isEmpty()) {
@@ -134,14 +150,13 @@ public class StorageServiceImpl implements StorageService {
 		}
 		String originalFileName = new File(originalFilePath).getName();
 
-		File submissionDir = submissionTable.getParentFile();
-		submissionDir = new File(submissionDir, "%1$s-%2$s".formatted(
+		File eventDir = new File(submissionDir, "%1$s-%2$s".formatted(
 			event.getTemplateName(), division));
-		File newPath = new File(submissionDir,
-			"%1$03d%2$s-%3$s%4$d-%5$s".formatted(id, label, division, teamNumber, originalFileName));
+		File newPath = new File(eventDir, "%1$03d%2$s-%3$s%4$d-%5$s".formatted(
+			id, label, division, teamNumber, originalFileName));
 
-		if (!submissionDir.isDirectory()) {
-			submissionDir.mkdirs();
+		if (!eventDir.isDirectory()) {
+			eventDir.mkdirs();
 		}
 		file.transferTo(newPath);
 
