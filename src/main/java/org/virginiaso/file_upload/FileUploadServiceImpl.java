@@ -1,15 +1,12 @@
 package org.virginiaso.file_upload;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -17,19 +14,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public class StorageServiceImpl implements StorageService {
+public class FileUploadServiceImpl implements FileUploadService {
 	private static final CSVFormat CSV_FORMAT_IN = CSVFormat.DEFAULT
 		.withFirstRecordAsHeader()
 		.withTrim()
@@ -38,18 +35,15 @@ public class StorageServiceImpl implements StorageService {
 		.withHeader(Column.class)
 		.withTrim()
 		.withAllowDuplicateHeaderNames(false);
-	private static final Logger LOG = LoggerFactory.getLogger(StorageServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(FileUploadServiceImpl.class);
 
-	@Value("${fileUpload.submissionRootDir}")
-	private String submissionRootDir;
-
-	@Value("${fileUpload.submissionTableFileName}")
-	private String submissionTableFileName;
-
-	private File submissionDir;
-	private File submissionTable;
-	private List<Submission> submissions;
+	private List<Submission> submissions = new ArrayList<>();
 	private final AtomicInteger previousSequenceNumber = new AtomicInteger(-1);
+
+	@Autowired
+	//@Qualifier("fileSystemStorageService")
+	@Qualifier("s3StorageService")
+	private StorageService storageService;
 
 	/*
 	 * This method does not need to be synchronized because it executes
@@ -57,12 +51,9 @@ public class StorageServiceImpl implements StorageService {
 	 */
 	@PostConstruct
 	public void initialize() {
-		submissionDir = new File(submissionRootDir,
-			DateTimeFormatter.ISO_LOCAL_DATE.format(ZonedDateTime.now()));
-		submissionTable = new File(submissionDir, submissionTableFileName);
-
 		try (
-			Reader rdr = new FileReader(submissionTable, StandardCharsets.UTF_8);
+			InputStream is = storageService.getSubmissionTableAsInputStream();
+			Reader rdr = new InputStreamReader(is, StandardCharsets.UTF_8);
 			CSVParser parser = CSV_FORMAT_IN.parse(rdr);
 		) {
 			submissions = StreamUtil.from(parser)
@@ -70,8 +61,9 @@ public class StorageServiceImpl implements StorageService {
 				.sorted(Comparator.comparingInt(Submission::getId))
 				.collect(Collectors.toCollection(ArrayList::new));
 			previousSequenceNumber.set(submissions.get(submissions.size() - 1).getId());
+			LOG.info("Loaded submissions file");
 		} catch (IOException ex) {
-			if (submissionTable.exists()) {
+			if (storageService.doesSubmissionTableExist()) {
 				LOG.warn("Unable to load submissions file:", ex);
 			} else {
 				LOG.info("Submissions file does not exist -- starting a new one");
@@ -79,11 +71,6 @@ public class StorageServiceImpl implements StorageService {
 			submissions = new ArrayList<>();
 			previousSequenceNumber.set(-1);
 		}
-	}
-
-	@PreDestroy
-	public void cleanup() {
-		// call s3client.shutdown(); here
 	}
 
 	private synchronized int getNextSequenceNumber() {
@@ -95,22 +82,15 @@ public class StorageServiceImpl implements StorageService {
 		submissions.add(newSubmission);
 
 		// Save the list to a temporary file:
-		File tempSaveFile = FileUtil.appendToFileStem(submissionTable, "-temp");
-		try (CSVPrinter printer = CSV_FORMAT_OUT.print(tempSaveFile, StandardCharsets.UTF_8)) {
+		File tempSubmissionTableFile = storageService.getTempSubmissionTableFile();
+		try (CSVPrinter printer = CSV_FORMAT_OUT.print(tempSubmissionTableFile, StandardCharsets.UTF_8)) {
 			for (Submission submission : submissions) {
 				submission.print(printer);
 			}
 		}
 
-		// Replace the existing file by swapping file names and then deleting the old file:
-		File oldSaveFile = FileUtil.appendToFileStem(submissionTable, "-old");
-		if (submissionTable.exists()) {
-			Files.move(submissionTable.toPath(), oldSaveFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
-		}
-		Files.move(tempSaveFile.toPath(), submissionTable.toPath(), StandardCopyOption.ATOMIC_MOVE);
-		if (oldSaveFile.exists()) {
-			oldSaveFile.delete();
-		}
+		// Replace the existing file with the new one:
+		storageService.transferTempSubmissionTableFile(tempSubmissionTableFile);
 	}
 
 	@Override
@@ -150,16 +130,12 @@ public class StorageServiceImpl implements StorageService {
 		}
 		String originalFileName = new File(originalFilePath).getName();
 
-		File eventDir = new File(submissionDir, "%1$s-%2$s".formatted(
-			event.getTemplateName(), division));
-		File newPath = new File(eventDir, "%1$03d%2$s-%3$s%4$d-%5$s".formatted(
-			id, label, division, teamNumber, originalFileName));
+		String eventDirName = "%1$s-%2$s".formatted(event.getTemplateName(), division);
+		String newFileName = "%1$03d%2$s-%3$s%4$d-%5$s".formatted(
+			id, label, division, teamNumber, originalFileName);
 
-		if (!eventDir.isDirectory()) {
-			eventDir.mkdirs();
-		}
-		file.transferTo(newPath);
+		storageService.transferUploadedFile(file, eventDirName, newFileName);
 
-		return newPath.getName();
+		return newFileName;
 	}
 }

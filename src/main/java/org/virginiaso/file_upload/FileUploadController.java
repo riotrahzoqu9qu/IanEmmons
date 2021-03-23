@@ -16,11 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class FileUploadController {
-	private final StorageService storageService;
+	private final FileUploadService fileUploadService;
 
 	@Autowired
-	public FileUploadController(StorageService storageService) {
-		this.storageService = storageService;
+	public FileUploadController(FileUploadService fileUploadService) {
+		this.fileUploadService = fileUploadService;
 	}
 
 	@GetMapping({"/", "/fileUpload"})
@@ -48,7 +48,7 @@ public class FileUploadController {
 
 		model.addAttribute("event", Event.forTemplate(eventTemplate));
 		try {
-			Submission submission = storageService.receiveFileUpload(
+			Submission submission = fileUploadService.receiveFileUpload(
 				eventTemplate, userSub, fileA, fileB);
 			model.addAttribute("submission", submission);
 			return "submissionResult";
