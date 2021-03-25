@@ -17,12 +17,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.amazonaws.SdkClientException;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 @Service("s3StorageService")
 public class S3StorageServiceImpl implements StorageService {
@@ -43,41 +50,62 @@ public class S3StorageServiceImpl implements StorageService {
 	@Value("${fileUpload.submissionTableFileName}")
 	private String submissionTableFileName;
 
-	private AmazonS3 s3Client;
+	private S3Client s3Client;
 
 	@PostConstruct
 	public void initialize() {
-		s3Client = AmazonS3ClientBuilder.standard()
-			.withRegion(awsRegion)
-			.withCredentials(new ProfileCredentialsProvider(awsProfile))
+		s3Client = S3Client.builder()
+			.credentialsProvider(ProfileCredentialsProvider.create(awsProfile))
+			.region(Region.of(awsRegion))
 			.build();
 
-		if(s3Client.doesBucketExistV2(s3Bucket)) {
+		HeadBucketRequest hbRequest = HeadBucketRequest.builder()
+			.bucket(s3Bucket)
+			.build();
+		if(s3Client.headBucket(hbRequest).sdkHttpResponse().isSuccessful()) {
 			LOG.info("Bucket '{}' exists", s3Bucket);
 		} else {
-			s3Client.createBucket(s3Bucket);
+			CreateBucketRequest cbRequest = CreateBucketRequest.builder()
+				.bucket(s3Bucket)
+				.build();
+			CreateBucketResponse cbResponse = s3Client.createBucket(cbRequest);
+			if (!cbResponse.sdkHttpResponse().isSuccessful()) {
+				throw new IllegalStateException("Unable to create S3 bucket, status code %1$d"
+					.formatted(cbResponse.sdkHttpResponse().statusCode()));
+			}
 			LOG.info("Created bucket '{}'", s3Bucket);
 		}
 	}
 
 	@PreDestroy
 	public void cleanup() {
-		s3Client.shutdown();
+		s3Client.close();
 	}
 
 	@Override
 	public InputStream getSubmissionTableAsInputStream() throws FileNotFoundException {
 		try {
-			S3Object submissionTable = s3Client.getObject(s3Bucket, getSubmissionTableKey());
-			return submissionTable.getObjectContent();
-		} catch (SdkClientException ex) {
+			GetObjectRequest request = GetObjectRequest.builder()
+				.bucket(s3Bucket)
+				.key(getSubmissionTableKey())
+				.build();
+			return s3Client.getObject(request);
+		} catch (SdkClientException | NoSuchKeyException ex) {
 			throw new FileNotFoundException(ex.getMessage());
 		}
 	}
 
 	@Override
 	public boolean doesSubmissionTableExist() {
-		return s3Client.doesObjectExist(s3Bucket, getSubmissionTableKey());
+		HeadObjectRequest hoRequest = HeadObjectRequest.builder()
+			.bucket(s3Bucket)
+			.key(getSubmissionTableKey())
+			.build();
+		try {
+			return s3Client.headObject(hoRequest).sdkHttpResponse().isSuccessful();
+		} catch (NoSuchKeyException ex) {
+			return false;
+		}
 	}
 
 	@Override
@@ -89,7 +117,15 @@ public class S3StorageServiceImpl implements StorageService {
 	@Override
 	public void transferTempSubmissionTableFile(File tempSubmissionTableFile) throws IOException {
 		try {
-			s3Client.putObject(s3Bucket, getSubmissionTableKey(), tempSubmissionTableFile);
+			PutObjectRequest poRequest = PutObjectRequest.builder()
+				.bucket(s3Bucket)
+				.key(getSubmissionTableKey())
+				.build();
+			PutObjectResponse response = s3Client.putObject(poRequest, tempSubmissionTableFile.toPath());
+			if (!response.sdkHttpResponse().isSuccessful()) {
+				throw new IOException("Unable to transfer submission table to S3, status code %1$d"
+					.formatted(response.sdkHttpResponse().statusCode()));
+			}
 		} catch (SdkClientException ex) {
 			throw new IOException("Unable to transfer submission table to S3:", ex);
 		}
@@ -98,11 +134,19 @@ public class S3StorageServiceImpl implements StorageService {
 	@Override
 	public void transferUploadedFile(MultipartFile file, String eventDirName, String newFileName) throws IOException {
 		String newFileKey = "%1$s/%2$s/%3$s".formatted(getSubmissionKey(), eventDirName, newFileName);
+		PutObjectRequest poRequest = PutObjectRequest.builder()
+			.bucket(s3Bucket)
+			.key(newFileKey)
+			.build();
 		try (InputStream is = file.getInputStream()) {
-			ObjectMetadata metadata = new ObjectMetadata();
-			metadata.setContentDisposition("attachment; filename=\"%1$s\"".formatted(newFileName));
-			metadata.setContentLength(file.getSize());
-			s3Client.putObject(s3Bucket, newFileKey, is, metadata);
+			RequestBody requestBody = RequestBody.fromInputStream(is, file.getSize());
+			PutObjectResponse response = s3Client.putObject(poRequest, requestBody);
+			if (!response.sdkHttpResponse().isSuccessful()) {
+				throw new IOException("Unable to transfer uploaded file to S3, status code %1$d"
+					.formatted(response.sdkHttpResponse().statusCode()));
+			}
+		} catch (SdkClientException ex) {
+			throw new IOException("Unable to transfer uploaded file to S3:", ex);
 		}
 	}
 

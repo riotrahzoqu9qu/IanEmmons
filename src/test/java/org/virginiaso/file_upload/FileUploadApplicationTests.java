@@ -4,16 +4,14 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.Bucket;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 
 @SpringBootTest
 class FileUploadApplicationTests {
@@ -37,14 +35,15 @@ class FileUploadApplicationTests {
 
 	@Test
 	void awsS3Test() {
-		AmazonS3 s3client = AmazonS3ClientBuilder.standard()
-			.withRegion(Regions.US_EAST_1)
-			.withCredentials(new ProfileCredentialsProvider("iemmons-api"))
-			.build();
-		List<Bucket> buckets = s3client.listBuckets();
-		System.out.format("S3 Buckets (%1$d)%n", buckets.size());
-		buckets.stream()
-			.forEach(bucket -> System.out.format("   '%1$s'%n", bucket.getName()));
-		s3client.shutdown();
+		try (S3Client s3Client = S3Client.builder()
+			.credentialsProvider(ProfileCredentialsProvider.create("iemmons-api"))
+			.region(Region.US_EAST_1)
+			.build()) {
+
+			ListBucketsResponse lbResponse = s3Client.listBuckets();
+			System.out.format("S3 Buckets (%1$d)%n", lbResponse.buckets().size());
+			lbResponse.buckets().stream()
+				.forEach(bucket -> System.out.format("   '%1$s'%n", bucket.name()));
+		}
 	}
 }
