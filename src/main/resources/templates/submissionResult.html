@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="/VasoFileUploadStylesheet.css"/>
 </head>
 <body>
-	<div class="logo_box">
+	<div class="logo-box">
 		<a href="/">
 			<img src="https://virginiaso.org/images/VASO_logo_header.png"
 				alt="Virginia Science Olympiad Logo" width="321px" height="125px"
@@ -16,22 +16,26 @@
 	</div>
 	<h1>Your <span th:text="${event.label}"/> Submission has been Recorded:</h1>
 
-	<p>Upload ID: <span th:text="${submission.id}"/></p>
-	<p>Submission Time: <span th:text="${submission.submissionTime}"/></p>
-	<p>Team Number: <span th:text="${submission.division}"/><span th:text="${submission.teamNumber}"/></p>
-	<p>School: <span th:text="${submission.schoolName}"/></p>
-	<p>Team Name: <span th:text="${submission.teamName}"/></p>
-	<p>Student Name(s): <span th:text="${submission.studentNames}"/></p>
+	<p>Upload ID: <span th:text="${submission.id}" class="content-emphasis"/></p>
+	<p>Submission Time: <span th:text="${submission.submissionTime}" class="content-emphasis"/></p>
 	<p th:if="${submission.helicopterMode ne null}"
-		>Kind of Submission: <span th:text="${submission.helicopterMode.label}"/></p>
-	Notes:
-	<pre class="notes" th:text="${submission.notes}"/>
-	<p>File(s):</p>
+		>Kind of Submission: <span th:text="${submission.helicopterMode.label}" class="content-emphasis"/></p>
+	<p>Team Number: <span th:text="${submission.division}" class="content-emphasis"/><span
+		th:text="${submission.teamNumber}" class="content-emphasis"/></p>
+	<p>School: <span th:text="${submission.schoolName}" class="content-emphasis"/></p>
+	<p>Team Name: <span th:text="${submission.teamName}" class="content-emphasis"/></p>
+	<p>Student Name(s): <span th:text="${submission.studentNames}" class="content-emphasis"/></p>
+	File(s):
 	<ul>
 		<li th:each="file: ${submission.fileNames}">
-			<span th:text="${file}"/>
+			<span th:text="${file}" class="content-emphasis"/>
 		</li>
 	</ul>
+	Anything else you need to tell us:
+	<pre class="notes" th:text="${submission.notes}"/>
 	<p><a th:href="${'/fileUpload/' + submission.event.templateName}">Submit another message</a></p>
+
+	<div class="footer-box"><a style="color: #eeeeee" href="https://virginiaso.org/"
+		>&copy; 2020 Virginia Science Olympiad, all rights reserved</a></div>
 </body>
 </html>

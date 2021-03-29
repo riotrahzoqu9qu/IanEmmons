@@ -2,9 +2,10 @@ fileUpload:
    aws:
       region: "us-east-1"
       profile: "iemmons-api"
-      bucket: "virginia-science-olympiad"
-      rootKey: "vaso-file-upload"
-   submissionRootDir: /Users/iemmons/file-upload
+      submissionBucket: "virginia-science-olympiad"
+      submissionRootKey: "vaso-file-upload"
+   localFileSystem:
+      submissionRootDir: /Users/iemmons/file-upload
    submissionTableFileName: submissions.csv
 
 logging:

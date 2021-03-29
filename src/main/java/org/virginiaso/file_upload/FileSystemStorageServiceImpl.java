@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service("fileSystemStorageService")
 public class FileSystemStorageServiceImpl implements StorageService {
-	@Value("${fileUpload.submissionRootDir}")
+	@Value("${fileUpload.localFileSystem.submissionRootDir}")
 	private String submissionRootDir;
 
 	@Value("${fileUpload.submissionTableFileName}")
@@ -62,8 +60,7 @@ public class FileSystemStorageServiceImpl implements StorageService {
 	}
 
 	private File getSubmissionDir() {
-		return new File(submissionRootDir,
-			DateTimeFormatter.ISO_LOCAL_DATE.format(ZonedDateTime.now()));
+		return new File(submissionRootDir);
 	}
 
 	private File getSubmissionTableFile() {

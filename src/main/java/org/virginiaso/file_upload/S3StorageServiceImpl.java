@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -41,11 +39,11 @@ public class S3StorageServiceImpl implements StorageService {
 	@Value("${fileUpload.aws.profile}")
 	private String awsProfile;
 
-	@Value("${fileUpload.aws.bucket}")
-	private String s3Bucket;
+	@Value("${fileUpload.aws.submissionBucket}")
+	private String s3SubmissionBucket;
 
-	@Value("${fileUpload.aws.rootKey}")
-	private String s3RootKey;
+	@Value("${fileUpload.aws.submissionRootKey}")
+	private String s3SubmissionRootKey;
 
 	@Value("${fileUpload.submissionTableFileName}")
 	private String submissionTableFileName;
@@ -60,20 +58,20 @@ public class S3StorageServiceImpl implements StorageService {
 			.build();
 
 		HeadBucketRequest hbRequest = HeadBucketRequest.builder()
-			.bucket(s3Bucket)
+			.bucket(s3SubmissionBucket)
 			.build();
 		if(s3Client.headBucket(hbRequest).sdkHttpResponse().isSuccessful()) {
-			LOG.info("Bucket '{}' exists", s3Bucket);
+			LOG.info("Bucket '{}' exists", s3SubmissionBucket);
 		} else {
 			CreateBucketRequest cbRequest = CreateBucketRequest.builder()
-				.bucket(s3Bucket)
+				.bucket(s3SubmissionBucket)
 				.build();
 			CreateBucketResponse cbResponse = s3Client.createBucket(cbRequest);
 			if (!cbResponse.sdkHttpResponse().isSuccessful()) {
 				throw new IllegalStateException("Unable to create S3 bucket, status code %1$d"
 					.formatted(cbResponse.sdkHttpResponse().statusCode()));
 			}
-			LOG.info("Created bucket '{}'", s3Bucket);
+			LOG.info("Created bucket '{}'", s3SubmissionBucket);
 		}
 	}
 
@@ -86,7 +84,7 @@ public class S3StorageServiceImpl implements StorageService {
 	public InputStream getSubmissionTableAsInputStream() throws FileNotFoundException {
 		try {
 			GetObjectRequest request = GetObjectRequest.builder()
-				.bucket(s3Bucket)
+				.bucket(s3SubmissionBucket)
 				.key(getSubmissionTableKey())
 				.build();
 			return s3Client.getObject(request);
@@ -98,7 +96,7 @@ public class S3StorageServiceImpl implements StorageService {
 	@Override
 	public boolean doesSubmissionTableExist() {
 		HeadObjectRequest hoRequest = HeadObjectRequest.builder()
-			.bucket(s3Bucket)
+			.bucket(s3SubmissionBucket)
 			.key(getSubmissionTableKey())
 			.build();
 		try {
@@ -118,7 +116,7 @@ public class S3StorageServiceImpl implements StorageService {
 	public void transferTempSubmissionTableFile(File tempSubmissionTableFile) throws IOException {
 		try {
 			PutObjectRequest poRequest = PutObjectRequest.builder()
-				.bucket(s3Bucket)
+				.bucket(s3SubmissionBucket)
 				.key(getSubmissionTableKey())
 				.build();
 			PutObjectResponse response = s3Client.putObject(poRequest, tempSubmissionTableFile.toPath());
@@ -133,9 +131,9 @@ public class S3StorageServiceImpl implements StorageService {
 
 	@Override
 	public void transferUploadedFile(MultipartFile file, String eventDirName, String newFileName) throws IOException {
-		String newFileKey = "%1$s/%2$s/%3$s".formatted(getSubmissionKey(), eventDirName, newFileName);
+		String newFileKey = "%1$s/%2$s/%3$s".formatted(getSubmissionRootKey(), eventDirName, newFileName);
 		PutObjectRequest poRequest = PutObjectRequest.builder()
-			.bucket(s3Bucket)
+			.bucket(s3SubmissionBucket)
 			.key(newFileKey)
 			.build();
 		try (InputStream is = file.getInputStream()) {
@@ -150,12 +148,11 @@ public class S3StorageServiceImpl implements StorageService {
 		}
 	}
 
-	private String getSubmissionKey() {
-		return "%1$s/%2$s".formatted(s3RootKey,
-			DateTimeFormatter.ISO_LOCAL_DATE.format(ZonedDateTime.now()));
+	private String getSubmissionRootKey() {
+		return s3SubmissionRootKey;
 	}
 
 	private String getSubmissionTableKey() {
-		return "%1$s/%2$s".formatted(getSubmissionKey(), submissionTableFileName);
+		return "%1$s/%2$s".formatted(getSubmissionRootKey(), submissionTableFileName);
 	}
 }

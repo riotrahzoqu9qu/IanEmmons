@@ -105,8 +105,10 @@ public class FileUploadServiceImpl implements FileUploadService {
 		List<String> fileNames = new ArrayList<>();
 		char label = 'a';
 		for (MultipartFile file : files) {
-			fileNames.add(saveUploadedFile(file, id, Character.toString(label), event,
-				division, teamNumber));
+			if (file != null) {
+				fileNames.add(saveUploadedFile(file, id, Character.toString(label), event,
+					division, teamNumber));
+			}
 			++label;
 		}
 		Submission submission = new Submission(userSub, Event.forTemplate(eventTemplate),

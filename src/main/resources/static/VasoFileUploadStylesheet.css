@@ -7,7 +7,7 @@ https://tutorialathome.in/css/different-css3-text-box-styling
 	font-family: Georgia, Cambria, "Times New Roman", Times, serif;
 }
 
-.logo_box {
+.logo-box {
 	width: 100%;
 	height: 150px;
 	background-color: #193b58;
@@ -15,18 +15,74 @@ https://tutorialathome.in/css/different-css3-text-box-styling
 	box-shadow: 0 -1px 8px #222;
 }
 
+.footer-box {
+	margin-top: 10ex;
+	width: 100%;
+	/*height: 40px;*/
+	background-color: #193b58;
+	border-top: 1px solid black;
+	box-shadow: 0 -1px 8px #222;
+	text-align: center;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+body {
+	background-color: #eeeeee;
+}
+
 pre, textarea {
 	font-family: Menlo, Consolas, "Andale Mono", monospace;
 }
 
 pre.notes {
-	padding-left: 2rem;
+	margin-left: 2rem;
+}
+
+ul {
+	margin-block-start: 0px;
 }
 
 div.radio-btn-group {
 	padding-left: 1.2rem;
+	margin-block-end: 16px;
 }
 
-input, textarea {
-	font-size: large;
+.text-field {
+	border-width: 3px;
+	border-style: inset;
+	border-color: #dddddd;
+	background-color: #eeeeee;
+	font-size: medium;
+	margin-left: 1.2rem;
+}
+
+.file-input {
+	border-width: 3px;
+	border-style: inset;
+	border-color: #dddddd;
+	background-color: #eeeeee;
+	font-size: medium;
+	font-style: italic;
+	margin-left: 1.2rem;
+	padding: 1px;
+	width: 70ex;
+}
+
+.button {
+	border-width: 3px;
+	/*border-radius: 10px;*/
+	margin-left: 5ex;
+	margin-right: 5ex;
+	margin-top: 2ex;
+	margin-bottom: 2ex;
+	padding-left: 5ex;
+	padding-right: 5ex;
+	padding-top: 1ex;
+	padding-bottom: 1ex;
+	font-size: medium;
+}
+
+.content-emphasis {
+	font-weight: bold;
 }

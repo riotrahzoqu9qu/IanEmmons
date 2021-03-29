@@ -18,28 +18,6 @@
 	<form th:object="${userSub}" th:action="${'/fileUpload/' + event.templateName}"
 			method="post" enctype="multipart/form-data">
 		<h1 th:text="${'Submit Your ' + event.label + ' Entry:'}"/>
-		Instructions:
-		<ul>
-			<li>
-				This form accepts one flight log and one video.  If you have two flights,
-				you will need to submit them separately by using this form twice.
-			</li>
-			<li>
-				If you submit two videos of different helicopters, each one should have
-				its own flight log.
-			</li>
-			<li>
-				If you submit two videos of one helicopter, upload its flight log both
-				times.
-			</li>
-		</ul>
-		Kind of Submission:
-		<div class="radio-btn-group">
-			<label th:each="hMode: ${T(org.virginiaso.file_upload.HelicopterMode).values()}">
-				<input type="radio" name="helicopterMode" th:value="${hMode.name}" th:checked="${helicopterMode eq hMode.name}">
-				<span th:text="${hMode.label}"/><br/>
-			</label>
-		</div>
 		Division:
 		<div class="radio-btn-group">
 			<label th:each="d: ${T(org.virginiaso.file_upload.Division).values()}">
@@ -73,14 +51,8 @@
 		</p>
 		<p>
 			<label>
-				Flight Log (PDF):<br/>
+				CAD File:<br/>
 				<input type="file" name="fileA" class="file-input" size="70"/>
-			</label>
-		</p>
-		<p>
-			<label>
-				Flight Video:<br/>
-				<input type="file" name="fileB" class="file-input" size="70"/>
 			</label>
 		</p>
 		<p>
