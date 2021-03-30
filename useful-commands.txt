@@ -2,3 +2,32 @@ aws s3 ls s3://virginia-science-olympiad/ --recursive
 aws s3 cp s3://virginia-science-olympiad/vaso-file-upload/submissions.csv submissions.csv
 aws s3 cp s3://virginia-science-olympiad/vaso-file-upload/ vaso-file-upload --recursive
 aws s3 rm s3://virginia-science-olympiad/ --recursive
+
+aws ec2 describe-instances
+
+InstanceId: i-0242d20381c7a6f53
+PrivateDnsName: ip-172-31-17-230.ec2.internal
+PrivateIpAddress: 172.31.17.230
+PublicDnsName: ec2-54-210-207-111.compute-1.amazonaws.com
+PublicIpAddress: 54.210.207.111
+
+default user name: ec2-user
+
+aws ec2 get-console-output --instance-id i-0242d20381c7a6f53 --output text | grep SHA256
+
+<14>Nov 27 22:06:31 ec2: #############################################################
+<14>Nov 27 22:06:31 ec2: -----BEGIN SSH HOST KEY FINGERPRINTS-----
+<14>Nov 27 22:06:31 ec2: 256 SHA256:iXbJ2YF3lX2KeNWE1+1dgdIAO1/XvB5QlSid2UHBdm0 no comment (ECDSA)
+<14>Nov 27 22:06:31 ec2: 256 SHA256:wc4Fa/Q6DxWpKa2yraIqvFYY0DnezzCtqd3SZ3NCxb0 no comment (ED25519)
+<14>Nov 27 22:06:31 ec2: 2048 SHA256:fWP/tQU4su6hm120G0cFtVsC7oQsHqprVleoJkoWya4 no comment (RSA)
+<14>Nov 27 22:06:31 ec2: -----END SSH HOST KEY FINGERPRINTS-----
+<14>Nov 27 22:06:31 ec2: #############################################################
+
+ssh -i /Users/iemmons/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-210-207-111.compute-1.amazonaws.com
+sftp -i /Users/iemmons/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-210-207-111.compute-1.amazonaws.com
+
+sudo yum install java-11-amazon-corretto.x86_64
+
+
+https://simpleprogrammingguides.com/deploy-a-spring-boot-application-to-aws-cloud/
+https://medium.com/javarevisited/spring-boot-aws-8cf2f1df84a6

@@ -132,8 +132,8 @@ public class FileUploadServiceImpl implements FileUploadService {
 		}
 		String originalFileName = new File(originalFilePath).getName();
 
-		String eventDirName = "%1$s-%2$s".formatted(event.getTemplateName(), division);
-		String newFileName = "%1$03d%2$s-%3$s%4$d-%5$s".formatted(
+		String eventDirName = String.format("%1$s-%2$s", event.getTemplateName(), division);
+		String newFileName = String.format("%1$03d%2$s-%3$s%4$d-%5$s",
 			id, label, division, teamNumber, originalFileName);
 
 		storageService.transferUploadedFile(file, eventDirName, newFileName);

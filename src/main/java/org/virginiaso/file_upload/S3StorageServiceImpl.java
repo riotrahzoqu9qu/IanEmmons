@@ -68,8 +68,9 @@ public class S3StorageServiceImpl implements StorageService {
 				.build();
 			CreateBucketResponse cbResponse = s3Client.createBucket(cbRequest);
 			if (!cbResponse.sdkHttpResponse().isSuccessful()) {
-				throw new IllegalStateException("Unable to create S3 bucket, status code %1$d"
-					.formatted(cbResponse.sdkHttpResponse().statusCode()));
+				throw new IllegalStateException(String.format(
+					"Unable to create S3 bucket, status code %1$d",
+					cbResponse.sdkHttpResponse().statusCode()));
 			}
 			LOG.info("Created bucket '{}'", s3SubmissionBucket);
 		}
@@ -121,8 +122,9 @@ public class S3StorageServiceImpl implements StorageService {
 				.build();
 			PutObjectResponse response = s3Client.putObject(poRequest, tempSubmissionTableFile.toPath());
 			if (!response.sdkHttpResponse().isSuccessful()) {
-				throw new IOException("Unable to transfer submission table to S3, status code %1$d"
-					.formatted(response.sdkHttpResponse().statusCode()));
+				throw new IOException(String.format(
+					"Unable to transfer submission table to S3, status code %1$d",
+					response.sdkHttpResponse().statusCode()));
 			}
 		} catch (SdkClientException ex) {
 			throw new IOException("Unable to transfer submission table to S3:", ex);
@@ -130,8 +132,11 @@ public class S3StorageServiceImpl implements StorageService {
 	}
 
 	@Override
-	public void transferUploadedFile(MultipartFile file, String eventDirName, String newFileName) throws IOException {
-		String newFileKey = "%1$s/%2$s/%3$s".formatted(getSubmissionRootKey(), eventDirName, newFileName);
+	public void transferUploadedFile(MultipartFile file, String eventDirName,
+		String newFileName) throws IOException {
+
+		String newFileKey = String.format("%1$s/%2$s/%3$s",
+			getSubmissionRootKey(), eventDirName, newFileName);
 		PutObjectRequest poRequest = PutObjectRequest.builder()
 			.bucket(s3SubmissionBucket)
 			.key(newFileKey)
@@ -140,8 +145,9 @@ public class S3StorageServiceImpl implements StorageService {
 			RequestBody requestBody = RequestBody.fromInputStream(is, file.getSize());
 			PutObjectResponse response = s3Client.putObject(poRequest, requestBody);
 			if (!response.sdkHttpResponse().isSuccessful()) {
-				throw new IOException("Unable to transfer uploaded file to S3, status code %1$d"
-					.formatted(response.sdkHttpResponse().statusCode()));
+				throw new IOException(String.format(
+					"Unable to transfer uploaded file to S3, status code %1$d",
+					response.sdkHttpResponse().statusCode()));
 			}
 		} catch (SdkClientException ex) {
 			throw new IOException("Unable to transfer uploaded file to S3:", ex);
@@ -153,6 +159,6 @@ public class S3StorageServiceImpl implements StorageService {
 	}
 
 	private String getSubmissionTableKey() {
-		return "%1$s/%2$s".formatted(getSubmissionRootKey(), submissionTableFileName);
+		return String.format("%1$s/%2$s", getSubmissionRootKey(), submissionTableFileName);
 	}
 }

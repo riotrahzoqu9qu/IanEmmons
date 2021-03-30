@@ -48,7 +48,7 @@ public class Submission {
 	}
 
 	public Submission(CSVRecord record) {
-		event = Event.valueOf(record.get(Column.EVENT));
+		event = Event.valueOf(Event.class, record.get(Column.EVENT));
 		id = Integer.parseUnsignedInt(record.get(Column.ID));
 		division = Division.valueOf(record.get(Column.DIVISION));
 		teamNumber = Integer.parseUnsignedInt(record.get(Column.TEAM_NUMBER));
@@ -106,7 +106,7 @@ public class Submission {
 
 	public String getSubmissionTime() {
 		ZonedDateTime zonedTimeStamp = getZonedTimeStamp();
-		return "%1$s, %2$s".formatted(
+		return String.format("%1$s, %2$s",
 			ZONED_DATE.format(zonedTimeStamp),
 			ZONED_TIME.format(zonedTimeStamp));
 	}

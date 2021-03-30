@@ -15,7 +15,7 @@ class FileUtil {
 		Pair<String, String> stemExt = getStemExtPair(file.getName());
 		String newFileName = stemExt.getRight().isEmpty()
 			? stemExt.getLeft() + stemSuffix
-			: "%1$s%2$s.%3$s".formatted(stemExt.getLeft(), stemSuffix, stemExt.getRight());
+			: String.format("%1$s%2$s.%3$s", stemExt.getLeft(), stemSuffix, stemExt.getRight());
 		return new File(dir, newFileName);
 	}
 

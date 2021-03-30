@@ -35,8 +35,8 @@ public enum Event {
 					.map(Event::getTemplateName)
 					.collect(Collectors.joining(", "));
 				return new IllegalArgumentException(
-					"'%1$s' is an unknown event.  Must be one of %2$s"
-						.formatted(template, knownEvents));
+					String.format("'%1$s' is an unknown event.  Must be one of %2$s",
+						template, knownEvents));
 			});
 	}
 }
