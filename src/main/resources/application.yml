@@ -8,11 +8,6 @@ fileUpload:
       submissionRootDir: /Users/iemmons/file-upload
    submissionTableFileName: submissions.csv
 
-logging:
-   level:
-      root: INFO
-      #com.baeldung: TRACE
-
 spring:
    servlet:
       multipart:
