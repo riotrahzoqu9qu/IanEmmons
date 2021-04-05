@@ -1,6 +1,8 @@
 package org.virginiaso.file_upload;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -13,6 +15,8 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
 public class Submission {
+	public static final MathContext DURATION_ROUNDING = MathContext.UNLIMITED;
+
 	private static final ZoneId EASTERN_TZ = ZoneId.of("America/New_York");
 	private static final DateTimeFormatter UTC = DateTimeFormatter.ISO_INSTANT;
 	private static final DateTimeFormatter ZONED_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
@@ -27,6 +31,7 @@ public class Submission {
 	private final String studentNames;
 	private final String notes;
 	private final HelicopterMode helicopterMode;
+	private BigDecimal flightDuration;
 	private final List<String> fileNames;
 	private final Instant timeStamp;
 
@@ -40,6 +45,7 @@ public class Submission {
 		studentNames = userSub.getStudentNames();
 		notes = userSub.getNotes();
 		helicopterMode = convertHelicopterMode(userSub.getHelicopterMode());
+		flightDuration = userSub.getFlightDurationBigDecimal();
 		this.timeStamp = timeStamp;
 		this.fileNames = fileNames.stream()
 			.filter(Objects::nonNull)
@@ -57,6 +63,7 @@ public class Submission {
 		studentNames = record.get(Column.STUDENT_NAMES);
 		notes = record.get(Column.NOTES);
 		helicopterMode = convertHelicopterMode(record.get(Column.HELICOPTER_MODE));
+		flightDuration = convertFlightDuration(record.get(Column.FLIGHT_DURATION));
 		timeStamp = Instant.from(UTC.parse(record.get(Column.UTC_TIME_STAMP)));
 		fileNames = Column.fileColumns().stream()
 			.map(record::get)
@@ -69,6 +76,12 @@ public class Submission {
 		return (helicopterModeStr == null || helicopterModeStr.isBlank())
 			? null
 			: HelicopterMode.valueOf(helicopterModeStr);
+	}
+
+	private static BigDecimal convertFlightDuration(String flightDurationStr) {
+		return (flightDurationStr == null || flightDurationStr.isBlank())
+			? null
+			: new BigDecimal(flightDurationStr, DURATION_ROUNDING);
 	}
 
 	public void print(CSVPrinter printer) throws IOException {
@@ -84,7 +97,10 @@ public class Submission {
 		printer.print(teamName);
 		printer.print(studentNames);
 		printer.print(notes);
-		printer.print((helicopterMode == null) ? null : helicopterMode.name());
+		printer.print((event != Event.HELICOPTER || helicopterMode == null)
+			? null : helicopterMode.name());
+		printer.print((event != Event.HELICOPTER || flightDuration == null)
+			? null : flightDuration.toPlainString());
 		printer.print(UTC.format(timeStamp));
 		for (String fileName : fileNames) {
 			printer.print(fileName);
@@ -137,6 +153,14 @@ public class Submission {
 
 	public HelicopterMode getHelicopterMode() {
 		return helicopterMode;
+	}
+
+	public String getFlightDuration() {
+		return flightDuration.toPlainString();
+	}
+
+	public void setflightDuration(String flightDuration) {
+		this.flightDuration = new BigDecimal(flightDuration, DURATION_ROUNDING);
 	}
 
 	public List<String> getFileNames() {

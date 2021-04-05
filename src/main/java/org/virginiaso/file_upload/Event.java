@@ -26,6 +26,10 @@ public enum Event {
 		return label;
 	}
 
+	public String getName() {
+		return name();
+	}
+
 	public static Event forTemplate(String template) {
 		return Stream.of(Event.values())
 			.filter(event -> event.templateName.equals(template))

@@ -73,6 +73,12 @@
 		</p>
 		<p>
 			<label>
+				Flight duration (in seconds, with up to 2 decimal places):<br/>
+				<input type="number" th:field="*{flightDuration}" class="text-field" min="0" step="0.01"/>
+			</label>
+		</p>
+		<p>
+			<label>
 				Flight Log (PDF):<br/>
 				<input type="file" name="fileA" class="file-input" size="70"/>
 			</label>

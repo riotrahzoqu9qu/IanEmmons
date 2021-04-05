@@ -41,8 +41,8 @@ public class FileUploadServiceImpl implements FileUploadService {
 	private final AtomicInteger previousSequenceNumber = new AtomicInteger(-1);
 
 	@Autowired
-	//@Qualifier("fileSystemStorageService")
-	@Qualifier("s3StorageService")
+	@Qualifier("fileSystemStorageService")
+	//@Qualifier("s3StorageService")
 	private StorageService storageService;
 
 	/*
@@ -73,26 +73,6 @@ public class FileUploadServiceImpl implements FileUploadService {
 		}
 	}
 
-	private synchronized int getNextSequenceNumber() {
-		return previousSequenceNumber.incrementAndGet();
-	}
-
-	private synchronized void addSubmission(Submission newSubmission) throws IOException {
-		// Add the submission to the list:
-		submissions.add(newSubmission);
-
-		// Save the list to a temporary file:
-		File tempSubmissionTableFile = storageService.getTempSubmissionTableFile();
-		try (CSVPrinter printer = CSV_FORMAT_OUT.print(tempSubmissionTableFile, StandardCharsets.UTF_8)) {
-			for (Submission submission : submissions) {
-				submission.print(printer);
-			}
-		}
-
-		// Replace the existing file with the new one:
-		storageService.transferTempSubmissionTableFile(tempSubmissionTableFile);
-	}
-
 	@Override
 	public Submission receiveFileUpload(String eventTemplate, UserSubmission userSub,
 		MultipartFile... files) throws IOException {
@@ -119,6 +99,10 @@ public class FileUploadServiceImpl implements FileUploadService {
 		return submission;
 	}
 
+	private synchronized int getNextSequenceNumber() {
+		return previousSequenceNumber.incrementAndGet();
+	}
+
 	private String saveUploadedFile(MultipartFile file, int id, String label, Event event,
 		Division division, int teamNumber) throws IOException {
 
@@ -139,5 +123,21 @@ public class FileUploadServiceImpl implements FileUploadService {
 		storageService.transferUploadedFile(file, eventDirName, newFileName);
 
 		return newFileName;
+	}
+
+	private synchronized void addSubmission(Submission newSubmission) throws IOException {
+		// Add the submission to the list:
+		submissions.add(newSubmission);
+
+		// Save the list to a temporary file:
+		File tempSubmissionTableFile = storageService.getTempSubmissionTableFile();
+		try (CSVPrinter printer = CSV_FORMAT_OUT.print(tempSubmissionTableFile, StandardCharsets.UTF_8)) {
+			for (Submission submission : submissions) {
+				submission.print(printer);
+			}
+		}
+
+		// Replace the existing file with the new one:
+		storageService.transferTempSubmissionTableFile(tempSubmissionTableFile);
 	}
 }
