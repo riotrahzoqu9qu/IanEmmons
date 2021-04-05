@@ -1,27 +1,14 @@
 package org.virginiaso.file_upload;
 
-import java.math.BigDecimal;
-
 public class UserSubmission {
 	private String division;
-	private int teamNumber;
+	private String teamNumber;
 	private String schoolName;
 	private String teamName;
 	private String studentNames;
 	private String notes;
 	private String helicopterMode;
-	private BigDecimal flightDuration;
-
-	public UserSubmission() {
-		division = null;
-		teamNumber = 0;
-		schoolName = null;
-		teamName = null;
-		studentNames = null;
-		notes = null;
-		helicopterMode = null;
-		flightDuration = new BigDecimal("0", Submission.DURATION_ROUNDING);
-	}
+	private String flightDuration;
 
 	public String getDivision() {
 		return division;
@@ -31,11 +18,11 @@ public class UserSubmission {
 		this.division = division;
 	}
 
-	public int getTeamNumber() {
+	public String getTeamNumber() {
 		return teamNumber;
 	}
 
-	public void setTeamNumber(int teamNumber) {
+	public void setTeamNumber(String teamNumber) {
 		this.teamNumber = teamNumber;
 	}
 
@@ -80,14 +67,10 @@ public class UserSubmission {
 	}
 
 	public String getFlightDuration() {
-		return flightDuration.toPlainString();
-	}
-
-	public BigDecimal getFlightDurationBigDecimal() {
 		return flightDuration;
 	}
 
 	public void setflightDuration(String flightDuration) {
-		this.flightDuration = new BigDecimal(flightDuration, Submission.DURATION_ROUNDING);
+		this.flightDuration = flightDuration;
 	}
 }

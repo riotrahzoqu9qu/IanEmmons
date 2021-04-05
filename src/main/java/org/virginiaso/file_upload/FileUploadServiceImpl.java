@@ -18,12 +18,16 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.virginiaso.file_upload.util.FileUtil;
+import org.virginiaso.file_upload.util.NoSuchEventException;
+import org.virginiaso.file_upload.util.StreamUtil;
 
 @Service
 public class FileUploadServiceImpl implements FileUploadService {
@@ -41,8 +45,8 @@ public class FileUploadServiceImpl implements FileUploadService {
 	private final AtomicInteger previousSequenceNumber = new AtomicInteger(-1);
 
 	@Autowired
-	@Qualifier("fileSystemStorageService")
-	//@Qualifier("s3StorageService")
+	//@Qualifier("fileSystemStorageService")
+	@Qualifier("s3StorageService")
 	private StorageService storageService;
 
 	/*
@@ -68,38 +72,35 @@ public class FileUploadServiceImpl implements FileUploadService {
 			} else {
 				LOG.info("Submissions file does not exist -- starting a new one");
 			}
-			submissions = new ArrayList<>();
-			previousSequenceNumber.set(-1);
 		}
 	}
 
 	@Override
 	public Submission receiveFileUpload(String eventTemplate, UserSubmission userSub,
-		MultipartFile... files) throws IOException {
+		MultipartFile... files) throws IOException, NoSuchEventException {
 
-		int id = getNextSequenceNumber();
-		Instant timeStamp = Instant.now();
-		Event event = Event.forTemplate(eventTemplate);
-		Division division = Division.valueOf(userSub.getDivision());
-		int teamNumber = userSub.getTeamNumber();
-		List<String> fileNames = new ArrayList<>();
+		Submission submission = new Submission(userSub, eventTemplate,
+			getNextSequenceNumber(), Instant.now());
+
 		char label = 'a';
 		for (MultipartFile file : files) {
 			if (file != null) {
-				fileNames.add(saveUploadedFile(file, id, Character.toString(label), event,
-					division, teamNumber));
+				String fileName = saveUploadedFile(file, submission.getId(),
+					Character.toString(label), submission.getEvent(),
+					submission.getDivision(), submission.getTeamNumber());
+				if (fileName != null) {
+					submission.addFileName(fileName);
+				}
 			}
 			++label;
 		}
-		Submission submission = new Submission(userSub, Event.forTemplate(eventTemplate),
-			id, timeStamp, fileNames);
 
 		addSubmission(submission);
 
 		return submission;
 	}
 
-	private synchronized int getNextSequenceNumber() {
+	private int getNextSequenceNumber() {
 		return previousSequenceNumber.incrementAndGet();
 	}
 
@@ -115,10 +116,11 @@ public class FileUploadServiceImpl implements FileUploadService {
 			originalFilePath = file.getName();
 		}
 		String originalFileName = new File(originalFilePath).getName();
+		Pair<String, String> originalStemExt = FileUtil.getStemExtPair(originalFileName);
 
 		String eventDirName = String.format("%1$s-%2$s", event.getTemplateName(), division);
-		String newFileName = String.format("%1$03d%2$s-%3$s%4$d-%5$s",
-			id, label, division, teamNumber, originalFileName);
+		String newFileName = String.format("%1$s%2$d-%3$s-%4$03d%5$s.%6$s",
+			division, teamNumber, originalStemExt.getLeft(), id, label, originalStemExt.getRight());
 
 		storageService.transferUploadedFile(file, eventDirName, newFileName);
 

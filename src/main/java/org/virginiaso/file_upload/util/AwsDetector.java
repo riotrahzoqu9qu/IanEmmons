@@ -1,11 +1,11 @@
-package org.virginiaso.file_upload;
+package org.virginiaso.file_upload.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-class AwsDetector {
+public final class AwsDetector {
 	private static final String AWS_METADATA_URL = "http://169.254.169.254/latest/meta-data/public-hostname";
 	private static final Logger LOG = LoggerFactory.getLogger(AwsDetector.class);
 

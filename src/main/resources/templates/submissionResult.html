@@ -7,15 +7,10 @@
 	<link rel="stylesheet" href="/VasoFileUploadStylesheet.css"/>
 </head>
 <body>
-	<div class="logo-box">
-		<a href="/">
-			<img src="https://virginiaso.org/images/VASO_logo_header.png"
-				alt="Virginia Science Olympiad Logo" width="321px" height="125px"
-				style="position:relative; top:12px; left:25px"/>
-		</a>
-	</div>
+	<div th:replace="~{fragments :: page-header}"/>
 	<h1>Your <span th:text="${event.label}"/> Submission has been Recorded:</h1>
 
+	<p><i>Recommended:</i> Print this page (or save as a PDF) for future reference.</p>
 	<p>Upload ID: <span th:text="${submission.id}" class="content-emphasis"/></p>
 	<p>Submission Time: <span th:text="${submission.submissionTime}" class="content-emphasis"/></p>
 	<p th:if="${event.name eq 'HELICOPTER' and submission.helicopterMode ne null}"
@@ -35,9 +30,8 @@
 	</ul>
 	Anything else you need to tell us:
 	<pre class="notes" th:text="${submission.notes}"/>
-	<p><a th:href="${'/fileUpload/' + submission.event.templateName}">Submit another message</a></p>
+	<p><a th:href="${'/fileUpload/' + submission.event.templateName}">Submit another</a></p>
 
-	<div class="footer-box"><a style="color: #eeeeee" href="https://virginiaso.org/"
-		>&copy; 2020 Virginia Science Olympiad, all rights reserved</a></div>
+	<div th:replace="~{fragments :: page-footer}"/>
 </body>
 </html>

@@ -7,20 +7,13 @@
 	<link rel="stylesheet" href="/VasoFileUploadStylesheet.css"/>
 </head>
 <body>
-	<div class="logo-box">
-		<a href="/">
-			<img src="https://virginiaso.org/images/VASO_logo_header.png"
-				alt="Virginia Science Olympiad Logo" width="321px" height="125px"
-				style="position:relative; top:12px; left:25px"/>
-		</a>
-	</div>
+	<div th:replace="~{fragments :: page-header}"/>
 	<h1>Unable to Record Your Submission:</h1>
 
-	<p th:text="${message}"/>
+	<p th:utext="${message}"/>
 	<p th:text="'Exception type: ' + ${exception}"/>
-	<p><a th:href="${'/fileUpload/' + event.templateName}">Try again</a></p>
+	<p><a href="/fileUpload">Try again</a></p>
 
-	<div class="footer-box"><a style="color: #eeeeee" href="https://virginiaso.org/"
-		>&copy; 2020 Virginia Science Olympiad, all rights reserved</a></div>
+	<div th:replace="~{fragments :: page-footer}"/>
 </body>
 </html>

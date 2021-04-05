@@ -1,4 +1,4 @@
-package org.virginiaso.file_upload;
+package org.virginiaso.file_upload.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

@@ -3,7 +3,7 @@ package org.virginiaso.file_upload;
 import java.util.Arrays;
 import java.util.List;
 
-public enum Column {
+enum Column {
 	EVENT,
 	ID,
 	VA_DATE,

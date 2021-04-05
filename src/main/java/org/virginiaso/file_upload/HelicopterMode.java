@@ -1,6 +1,6 @@
 package org.virginiaso.file_upload;
 
-public enum HelicopterMode {
+enum HelicopterMode {
 	TWO_HELICOPTERS_TWO_STUDENTS("Two helicopters, two students, two videos"),
 	TWO_HELICOPTERS_ONE_STUDENT("Two helicopters, one student, two videos"),
 	ONE_HELICOPTER_ONE_STUDENT_TWO_VIDEOS("One helicopter, one student, two videos"),
@@ -16,6 +16,7 @@ public enum HelicopterMode {
 		return label;
 	}
 
+	// For Thymeleaf:
 	public String getName() {
 		return name();
 	}

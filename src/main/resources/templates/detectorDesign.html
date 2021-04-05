@@ -10,8 +10,14 @@
 		<div th:replace="~{fragments :: id-fields}"/>
 		<div class="entry-field-panel">
 			<label>
-				CAD File:<span class="required-star"><sup>&starf;</sup></span><br/>
-				<input type="file" name="fileA" class="file-input" size="70" required/>
+				Design Log (PDF format recommended):<br/>
+				<input type="file" name="fileA" size="70"/>
+			</label>
+		</div>
+		<div class="entry-field-panel">
+			<label>
+				Program Code (<code>.ino</code> file):<span class="required-star"><sup>&starf;</sup></span><br/>
+				<input type="file" name="fileB" size="70" required/>
 			</label>
 		</div>
 		<div th:replace="~{fragments :: notes-and-buttons}"/>

@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<body>
+	<head th:fragment="head">
+		<title>VASO File Upload</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
+		<link rel="stylesheet" href="/VasoFileUploadStylesheet.css"/>
+	</head>
+
+	<header th:fragment="page-header">
+		<a href="/">
+			<img src="https://virginiaso.org/images/VASO_logo_header.png"
+				alt="Virginia Science Olympiad Logo" width="321px" height="125px"
+				style="position:relative; top:12px; left:25px"/>
+		</a>
+	</header>
+
+	<h1 th:fragment="heading" th:text="${'Submit Your ' + event.label + ' Entry:'}"/>
+
+	<div th:fragment="id-fields">
+		<div class="entry-field-panel">
+			Division:<span class="required-star"><sup>&starf;</sup></span><br/>
+			<label th:each="d: ${T(org.virginiaso.file_upload.Division).values()}">
+				<input type="radio" name="division" th:value="${d.name}" th:checked="${division eq d.name}" required>
+				<span th:text="${d.name}"/><br/>
+			</label>
+		</div>
+		<div class="entry-field-panel">
+			<label>
+				Team Number:<span class="required-star"><sup>&starf;</sup></span><br/>
+				<input type="number" th:field="*{teamNumber}" min="1" required/>
+			</label>
+		</div>
+		<div class="entry-field-panel">
+			<label>
+				School Name:<span class="required-star"><sup>&starf;</sup></span><br/>
+				<input type="text" th:field="*{schoolName}" size="70"
+					placeholder="School name with no abbreviations except HS, JHS, MS, SS, or ES" required/>
+			</label>
+		</div>
+		<div class="entry-field-panel">
+			<label>
+				Team Name (if applicable):<br/>
+				<input type="text" th:field="*{teamName}" size="70"
+					placeholder="Required if your school has more than one team"/>
+			</label>
+		</div>
+		<div class="entry-field-panel">
+			<label>
+				Student Name(s):<span class="required-star"><sup>&starf;</sup></span><br/>
+				<input type="text" th:field="*{studentNames}" size="70"
+					placeholder="Your name, and if you have a partner, theirs too" required/>
+			</label>
+		</div>
+	</div>
+
+	<div th:fragment="notes-and-buttons">
+		<div class="entry-field-panel">
+			<label>
+				Anything else you need to tell us (optional):<br/>
+				<textarea rows="8" cols="70" th:field="*{notes}"
+					placeholder="Use this space to tell us about any unusual circumstances surrounding your file upload."/>
+			</label>
+		</div>
+		<div class="button-panel">
+			<button type="submit" class="btn">Submit</button>
+			<button type="reset" class="btn">Reset</button>
+		</div>
+	</div>
+
+	<footer th:fragment="page-footer">
+		<a href="https://virginiaso.org/" class="footer"
+		>&copy; 2020 Virginia Science Olympiad, all rights reserved</a>
+	</footer>
+</body>
+</html>

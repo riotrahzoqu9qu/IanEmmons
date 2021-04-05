@@ -2,8 +2,9 @@ package org.virginiaso.file_upload;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,9 +14,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.virginiaso.file_upload.util.FieldValidationException;
+import org.virginiaso.file_upload.util.NoSuchEventException;
 
 @Controller
 public class FileUploadController {
+	private static final Logger LOG = LoggerFactory.getLogger(FileUploadController.class);
+
 	private final FileUploadService fileUploadService;
 
 	@Autowired
@@ -31,7 +36,7 @@ public class FileUploadController {
 	@GetMapping("/fileUpload/{eventTemplate}")
 	public String fileUploadForm(
 		@PathVariable("eventTemplate") String eventTemplate,
-		Model model) {
+		Model model) throws NoSuchEventException {
 
 		model.addAttribute("event", Event.forTemplate(eventTemplate));
 		model.addAttribute("userSub", new UserSubmission());
@@ -42,7 +47,7 @@ public class FileUploadController {
 	public String fileUploadSubmit(
 		@PathVariable("eventTemplate") String eventTemplate,
 		@ModelAttribute UserSubmission userSub,
-		@RequestParam(name = "fileA") MultipartFile fileA,
+		@RequestParam(name = "fileA", required = false) MultipartFile fileA,
 		@RequestParam(name = "fileB", required = false) MultipartFile fileB,
 		@RequestParam(name = "fileC", required = false) MultipartFile fileC,
 		@RequestParam(name = "fileD", required = false) MultipartFile fileD,
@@ -52,23 +57,40 @@ public class FileUploadController {
 		@RequestParam(name = "fileH", required = false) MultipartFile fileH,
 		@RequestParam(name = "fileI", required = false) MultipartFile fileI,
 		@RequestParam(name = "fileJ", required = false) MultipartFile fileJ,
-		Model model) {
+		Model model) throws IOException, NoSuchEventException {
 
-		model.addAttribute("event", Event.forTemplate(eventTemplate));
-		try {
-			Submission submission = fileUploadService.receiveFileUpload(eventTemplate,
-				userSub, fileA, fileB, fileC, fileD, fileE, fileF, fileG, fileH, fileI, fileJ);
-			model.addAttribute("submission", submission);
-			return "submissionResult";
-		} catch (IOException ex) {
-			model.addAttribute("exception", ex.getClass().getSimpleName());
-			model.addAttribute("message", ex.getMessage());
-			return "submissionError";
-		}
+		Submission submission = fileUploadService.receiveFileUpload(eventTemplate,
+			userSub, fileA, fileB, fileC, fileD, fileE, fileF, fileG, fileH, fileI, fileJ);
+
+		model.addAttribute("event", submission.getEvent());
+		model.addAttribute("submission", submission);
+		return "submissionResult";
 	}
 
-	@ExceptionHandler(RuntimeException.class)
-	public ResponseEntity<Object> handleStorageFileNotFound(RuntimeException exc) {
-		return ResponseEntity.badRequest().build();
+	@ExceptionHandler
+	public String handleIOException(Model model, IOException ex) {
+		return handleException(model, ex);
+	}
+
+	@ExceptionHandler
+	public String handleNoSuchEventException(Model model, NoSuchEventException ex) {
+		return handleException(model, ex);
+	}
+
+	@ExceptionHandler
+	public String handleFieldValidationException(Model model, FieldValidationException ex) {
+		return handleException(model, ex);
+	}
+
+	@ExceptionHandler
+	public String handleRuntimeException(Model model, RuntimeException ex) {
+		return handleException(model, ex);
+	}
+
+	private static String handleException(Model model, Throwable ex) {
+		LOG.error("Encountered Exception:", ex);
+		model.addAttribute("exception", ex.getClass().getSimpleName());
+		model.addAttribute("message", ex.getMessage());
+		return "submissionError";
 	}
 }

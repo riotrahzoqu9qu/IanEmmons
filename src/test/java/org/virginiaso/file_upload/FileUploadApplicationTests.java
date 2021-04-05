@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.virginiaso.file_upload.util.AwsDetector;
 
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;

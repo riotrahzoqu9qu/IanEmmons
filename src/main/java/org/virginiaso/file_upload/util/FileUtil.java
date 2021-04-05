@@ -1,4 +1,4 @@
-package org.virginiaso.file_upload;
+package org.virginiaso.file_upload.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.nio.file.StandardCopyOption;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-class FileUtil {
+public final class FileUtil {
 	private FileUtil() {}	// prevent instantiation
 
 	public static File appendToFileStem(File file, String stemSuffix) {

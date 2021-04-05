@@ -4,8 +4,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public enum Event {
-	DETECTOR_BUILDING("detectorBuilding", "Detector Building"),
+import org.virginiaso.file_upload.util.NoSuchEventException;
+
+enum Event {
+	DETECTOR_DESIGN("detectorDesign", "Detector Design"),
 	HELICOPTER("helicopter", "Helicopter"),
 	VEHICLE_DESIGN("vehicleDesign", "Vehicle Design"),
 	WICI("wici", "Write It/CAD It (WICI)");
@@ -26,11 +28,12 @@ public enum Event {
 		return label;
 	}
 
+	// For Thymeleaf:
 	public String getName() {
 		return name();
 	}
 
-	public static Event forTemplate(String template) {
+	public static Event forTemplate(String template) throws NoSuchEventException {
 		return Stream.of(Event.values())
 			.filter(event -> event.templateName.equals(template))
 			.findAny()
@@ -38,9 +41,9 @@ public enum Event {
 				String knownEvents = Stream.of(Event.values())
 					.map(Event::getTemplateName)
 					.collect(Collectors.joining(", "));
-				return new IllegalArgumentException(
-					String.format("'%1$s' is an unknown event.  Must be one of %2$s",
-						template, knownEvents));
+				return new NoSuchEventException(
+					"'%1$s' is not a recognized Science Olympiad event.  Must be one of %2$s",
+					template, knownEvents);
 			});
 	}
 }

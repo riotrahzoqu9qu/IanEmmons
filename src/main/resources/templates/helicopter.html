@@ -1,23 +1,12 @@
 <!DOCTYPE HTML>
 <html xmlns:th="https://www.thymeleaf.org">
-<head>
-	<title>VASO File Upload</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
-	<link rel="stylesheet" href="/VasoFileUploadStylesheet.css"/>
-</head>
+<div th:replace="~{fragments :: head}"/>
 <body>
-	<div class="logo-box">
-		<a href="/">
-			<img src="https://virginiaso.org/images/VASO_logo_header.png"
-				alt="Virginia Science Olympiad Logo" width="321px" height="125px"
-				style="position:relative; top:12px; left:25px"/>
-		</a>
-	</div>
+	<div th:replace="~{fragments :: page-header}"/>
 
 	<form th:object="${userSub}" th:action="${'/fileUpload/' + event.templateName}"
 			method="post" enctype="multipart/form-data">
-		<h1 th:text="${'Submit Your ' + event.label + ' Entry:'}"/>
+		<div th:replace="~{fragments :: heading}"/>
 		Instructions:
 		<ul>
 			<li>
@@ -33,76 +22,35 @@
 				times.
 			</li>
 		</ul>
-		Kind of Submission:
-		<div class="radio-btn-group">
+		<div class="entry-field-panel">
+			Kind of Submission:<span class="required-star"><sup>&starf;</sup></span><br/>
 			<label th:each="hMode: ${T(org.virginiaso.file_upload.HelicopterMode).values()}">
-				<input type="radio" name="helicopterMode" th:value="${hMode.name}" th:checked="${helicopterMode eq hMode.name}">
+				<input type="radio" name="helicopterMode" th:value="${hMode.name}" th:checked="${helicopterMode eq hMode.name}" required>
 				<span th:text="${hMode.label}"/><br/>
 			</label>
 		</div>
-		Division:
-		<div class="radio-btn-group">
-			<label th:each="d: ${T(org.virginiaso.file_upload.Division).values()}">
-				<input type="radio" name="division" th:value="${d.name}" th:checked="${division eq d.name}">
-				<span th:text="${d.name}"/><br/>
-			</label>
-		</div>
-		<p>
-			<label>
-				Team Number:<br/>
-				<input type="number" th:field="*{teamNumber}" class="text-field" min="1"/>
-			</label>
-		</p>
-		<p>
-			<label>
-				School Name:<br/>
-				<input type="text" th:field="*{schoolName}" class="text-field" size="70"/>
-			</label>
-		</p>
-		<p>
-			<label>
-				Team Name (if applicable):<br/>
-				<input type="text" th:field="*{teamName}" class="text-field" size="70"/>
-			</label>
-		</p>
-		<p>
-			<label>
-				Student Name(s):<br/>
-				<input type="text" th:field="*{studentNames}" class="text-field" size="70"/>
-			</label>
-		</p>
-		<p>
+		<div th:replace="~{fragments :: id-fields}"/>
+		<div class="entry-field-panel">
 			<label>
 				Flight duration (in seconds, with up to 2 decimal places):<br/>
 				<input type="number" th:field="*{flightDuration}" class="text-field" min="0" step="0.01"/>
 			</label>
-		</p>
-		<p>
+		</div>
+		<div class="entry-field-panel">
 			<label>
 				Flight Log (PDF):<br/>
 				<input type="file" name="fileA" class="file-input" size="70"/>
 			</label>
-		</p>
-		<p>
+		</div>
+		<div class="entry-field-panel">
 			<label>
-				Flight Video:<br/>
-				<input type="file" name="fileB" class="file-input" size="70"/>
+				Flight Video:<span class="required-star"><sup>&starf;</sup></span><br/>
+				<input type="file" name="fileB" class="file-input" size="70" required/>
 			</label>
-		</p>
-		<p>
-			<label>
-				Anything else you need to tell us (optional):<br/>
-				<textarea rows="8" cols="70" th:field="*{notes}" class="text-field"/>
-			</label>
-		</p>
-
-		<p style="padding-left: 7rem">
-			<button type="submit" class="button">Submit</button>
-			<button type="reset" class="button">Reset</button>
-		</p>
+		</div>
+		<div th:replace="~{fragments :: notes-and-buttons}"/>
 	</form>
 
-	<div class="footer-box"><a style="color: #eeeeee" href="https://virginiaso.org/"
-		>&copy; 2020 Virginia Science Olympiad, all rights reserved</a></div>
+	<div th:replace="~{fragments :: page-footer}"/>
 </body>
 </html>

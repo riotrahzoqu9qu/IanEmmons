@@ -10,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.virginiaso.file_upload.util.FileUtil;
 
 @Service("fileSystemStorageService")
 public class FileSystemStorageServiceImpl implements StorageService {
