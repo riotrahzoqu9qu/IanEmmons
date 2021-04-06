@@ -11,6 +11,8 @@ PrivateIpAddress: 172.31.17.230
 PublicDnsName: ec2-54-210-207-111.compute-1.amazonaws.com
 PublicIpAddress: 54.210.207.111
 
+http://file-upload.virginiaso.org/
+
 default user name: ec2-user
 
 aws ec2 get-console-output --instance-id i-0242d20381c7a6f53 --output text | grep SHA256
@@ -28,6 +30,8 @@ sftp -i /Users/iemmons/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-210-207-111.co
 
 sudo yum install java-11-amazon-corretto.x86_64
 
-
 https://simpleprogrammingguides.com/deploy-a-spring-boot-application-to-aws-cloud/
 https://medium.com/javarevisited/spring-boot-aws-8cf2f1df84a6
+
+Installing certificates:
+https://aws.amazon.com/premiumsupport/knowledge-center/acm-ssl-certificate-ec2-elb/
