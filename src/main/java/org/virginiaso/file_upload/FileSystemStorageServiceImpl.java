@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,44 +16,49 @@ import org.virginiaso.file_upload.util.FileUtil;
 
 @Service("fileSystemStorageService")
 public class FileSystemStorageServiceImpl implements StorageService {
+	private static final Logger LOG = LoggerFactory.getLogger(FileSystemStorageServiceImpl.class);
+
 	@Value("${fileUpload.localFileSystem.submissionRootDir}")
 	private String submissionRootDir;
 
-	@Value("${fileUpload.submissionTableFileName}")
-	private String submissionTableFileName;
-
 	@Override
-	public InputStream getSubmissionTableAsInputStream() throws FileNotFoundException {
-		return new FileInputStream(getSubmissionTableFile());
+	public InputStream getSubmissionTableAsInputStream(String submissionTableFileName)
+		throws FileNotFoundException {
+		return new FileInputStream(getSubmissionTableFile(submissionTableFileName));
 	}
 
 	@Override
-	public boolean doesSubmissionTableExist() {
-		return getSubmissionTableFile().exists();
-	}
-
-	@Override
-	public File getTempSubmissionTableFile() throws IOException {
-		Pair<String, String> stemExt = FileUtil.getStemExtPair(submissionTableFileName);
-		return File.createTempFile(stemExt.getLeft(), stemExt.getRight(), getSubmissionDir());
+	public File getTempSubmissionTableFile(String submissionTableFileName) throws IOException {
+		File submissionTableFile = getSubmissionTableFile(submissionTableFileName);
+		File submissionTableDir = submissionTableFile.getParentFile();
+		Pair<String, String> stemExt = FileUtil.getStemExtPair(submissionTableFile.getName());
+		File tempFile = File.createTempFile(stemExt.getLeft(), stemExt.getRight(), submissionTableDir);
+		LOG.info("Temporary submission table file: '{}'", tempFile.getPath());
+		return tempFile;
 	}
 
 	// Replace the existing file by swapping file names and then deleting the old file:
 	@Override
-	public void transferTempSubmissionTableFile(File tempSubmissionTableFile) throws IOException {
-		File submissionTable = getSubmissionTableFile();
-		File savedSubmissionTableFile = FileUtil.appendToFileStem(submissionTable, "-old");
-		if (submissionTable.exists()) {
-			FileUtil.move(submissionTable, savedSubmissionTableFile);
+	public void transferTempSubmissionTableFile(File tempSubmissionTableFile,
+		String submissionTableFileName) throws IOException {
+
+		File submissionTableFile = getSubmissionTableFile(submissionTableFileName);
+		File oldSubmissionTableFile = FileUtil.appendToFileStem(submissionTableFile, "-old");
+		if (submissionTableFile.exists()) {
+			FileUtil.move(submissionTableFile, oldSubmissionTableFile);
+		} else if (!submissionTableFile.getParentFile().isDirectory()) {
+			submissionTableFile.getParentFile().mkdirs();
 		}
-		FileUtil.move(tempSubmissionTableFile, submissionTable);
-		if (savedSubmissionTableFile.exists()) {
-			savedSubmissionTableFile.delete();
+		FileUtil.move(tempSubmissionTableFile, submissionTableFile);
+		if (oldSubmissionTableFile.exists()) {
+			oldSubmissionTableFile.delete();
 		}
 	}
 
 	@Override
-	public void transferUploadedFile(MultipartFile file, String eventDirName, String newFileName) throws IOException {
+	public void transferUploadedFile(MultipartFile file, String eventDirName,
+		String newFileName) throws IOException {
+
 		File eventDir = new File(getSubmissionDir(), eventDirName);
 		if (!eventDir.isDirectory()) {
 			eventDir.mkdirs();
@@ -64,7 +71,7 @@ public class FileSystemStorageServiceImpl implements StorageService {
 		return new File(submissionRootDir);
 	}
 
-	private File getSubmissionTableFile() {
+	private File getSubmissionTableFile(String submissionTableFileName) {
 		return new File(getSubmissionDir(), submissionTableFileName);
 	}
 }

@@ -25,7 +25,6 @@ import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
-import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
@@ -45,9 +44,6 @@ public class S3StorageServiceImpl implements StorageService {
 
 	@Value("${fileUpload.aws.submissionRootKey}")
 	private String s3SubmissionRootKey;
-
-	@Value("${fileUpload.submissionTableFileName}")
-	private String submissionTableFileName;
 
 	private S3Client s3Client;
 
@@ -83,43 +79,34 @@ public class S3StorageServiceImpl implements StorageService {
 	}
 
 	@Override
-	public InputStream getSubmissionTableAsInputStream() throws FileNotFoundException {
+	public InputStream getSubmissionTableAsInputStream(String submissionTableFileName) throws FileNotFoundException {
 		try {
 			GetObjectRequest request = GetObjectRequest.builder()
 				.bucket(s3SubmissionBucket)
-				.key(getSubmissionTableKey())
+				.key(getSubmissionTableKey(submissionTableFileName))
 				.build();
 			return s3Client.getObject(request);
-		} catch (SdkClientException | NoSuchKeyException ex) {
+		} catch (NoSuchKeyException ex) {
 			throw new FileNotFoundException(ex.getMessage());
 		}
 	}
 
 	@Override
-	public boolean doesSubmissionTableExist() {
-		HeadObjectRequest hoRequest = HeadObjectRequest.builder()
-			.bucket(s3SubmissionBucket)
-			.key(getSubmissionTableKey())
-			.build();
-		try {
-			return s3Client.headObject(hoRequest).sdkHttpResponse().isSuccessful();
-		} catch (NoSuchKeyException ex) {
-			return false;
-		}
+	public File getTempSubmissionTableFile(String submissionTableFileName) throws IOException {
+		File submissionTableFile = new File(submissionTableFileName);
+		Pair<String, String> stemExt = FileUtil.getStemExtPair(submissionTableFile.getName());
+		File tempFile = File.createTempFile(stemExt.getLeft(), stemExt.getRight());
+		LOG.info("Temporary submission table file: '{}'", tempFile.getPath());
+		return tempFile;
 	}
 
 	@Override
-	public File getTempSubmissionTableFile() throws IOException {
-		Pair<String, String> stemExt = FileUtil.getStemExtPair(submissionTableFileName);
-		return File.createTempFile(stemExt.getLeft(), stemExt.getRight());
-	}
-
-	@Override
-	public void transferTempSubmissionTableFile(File tempSubmissionTableFile) throws IOException {
+	public void transferTempSubmissionTableFile(File tempSubmissionTableFile,
+		String submissionTableFileName) throws IOException {
 		try {
 			PutObjectRequest poRequest = PutObjectRequest.builder()
 				.bucket(s3SubmissionBucket)
-				.key(getSubmissionTableKey())
+				.key(getSubmissionTableKey(submissionTableFileName))
 				.build();
 			PutObjectResponse response = s3Client.putObject(poRequest, tempSubmissionTableFile.toPath());
 			if (!response.sdkHttpResponse().isSuccessful()) {
@@ -127,6 +114,7 @@ public class S3StorageServiceImpl implements StorageService {
 					"Unable to transfer submission table to S3, status code %1$d",
 					response.sdkHttpResponse().statusCode()));
 			}
+			tempSubmissionTableFile.delete();
 		} catch (SdkClientException ex) {
 			throw new IOException("Unable to transfer submission table to S3:", ex);
 		}
@@ -159,7 +147,7 @@ public class S3StorageServiceImpl implements StorageService {
 		return s3SubmissionRootKey;
 	}
 
-	private String getSubmissionTableKey() {
+	private String getSubmissionTableKey(String submissionTableFileName) {
 		return String.format("%1$s/%2$s", getSubmissionRootKey(), submissionTableFileName);
 	}
 }
