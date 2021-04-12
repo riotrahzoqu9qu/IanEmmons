@@ -46,11 +46,10 @@ final class EventUploader {
 		this.event = Objects.requireNonNull(event, "event");
 		this.division = Objects.requireNonNull(division, "division");
 		eventDirName = String.format("%1$s-%2$s", this.event.getTemplateName(), this.division);
-		submissionTableFileName = String.format("$1%s/$2%s-$3%s-submissions.csv",
+		submissionTableFileName = String.format("%1$s/%2$s-%3$s-submissions.csv",
 			eventDirName, this.event.getTemplateName(), this.division);
 		this.storageService = Objects.requireNonNull(storageService, "storageService");
 		submissions = loadSubmissionsTable(this.submissionTableFileName, this.storageService);
-		LOG.info("Loaded submissions file {}", this.submissionTableFileName);
 	}
 
 	private static List<Submission> loadSubmissionsTable(String submissionTableFileName,
@@ -60,10 +59,12 @@ final class EventUploader {
 			Reader rdr = new InputStreamReader(is, StandardCharsets.UTF_8);
 			CSVParser parser = CSV_FORMAT_IN.parse(rdr);
 		) {
-			return StreamUtil.from(parser)
+			List<Submission> submissions = StreamUtil.from(parser)
 				.map(Submission::new)
 				.sorted(Comparator.comparingInt(Submission::getId))
 				.collect(Collectors.toCollection(ArrayList::new));
+			LOG.info("Loaded submissions file {}", submissionTableFileName);
+			return submissions;
 		} catch (FileNotFoundException ex) {
 			LOG.info("Submissions file {} does not exist -- starting a new one", submissionTableFileName);
 			return new ArrayList<>();

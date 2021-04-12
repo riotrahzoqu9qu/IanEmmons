@@ -95,8 +95,8 @@ public class S3StorageServiceImpl implements StorageService {
 	public File getTempSubmissionTableFile(String submissionTableFileName) throws IOException {
 		File submissionTableFile = new File(submissionTableFileName);
 		Pair<String, String> stemExt = FileUtil.getStemExtPair(submissionTableFile.getName());
-		File tempFile = File.createTempFile(stemExt.getLeft(), stemExt.getRight());
-		LOG.info("Temporary submission table file: '{}'", tempFile.getPath());
+		File tempFile = File.createTempFile(stemExt.getLeft(), "." + stemExt.getRight());
+		LOG.debug("Temporary submission table file: '{}'", tempFile.getPath());
 		return tempFile;
 	}
 

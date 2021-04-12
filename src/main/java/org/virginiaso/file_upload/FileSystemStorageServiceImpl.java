@@ -31,9 +31,12 @@ public class FileSystemStorageServiceImpl implements StorageService {
 	public File getTempSubmissionTableFile(String submissionTableFileName) throws IOException {
 		File submissionTableFile = getSubmissionTableFile(submissionTableFileName);
 		File submissionTableDir = submissionTableFile.getParentFile();
+		if (!submissionTableDir.isDirectory()) {
+			submissionTableDir.mkdirs();
+		}
 		Pair<String, String> stemExt = FileUtil.getStemExtPair(submissionTableFile.getName());
-		File tempFile = File.createTempFile(stemExt.getLeft(), stemExt.getRight(), submissionTableDir);
-		LOG.info("Temporary submission table file: '{}'", tempFile.getPath());
+		File tempFile = File.createTempFile(stemExt.getLeft(), "." + stemExt.getRight(), submissionTableDir);
+		LOG.debug("Temporary submission table file: '{}'", tempFile.getPath());
 		return tempFile;
 	}
 
