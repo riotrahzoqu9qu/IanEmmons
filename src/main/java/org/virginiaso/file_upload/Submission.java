@@ -45,8 +45,6 @@ public class Submission {
 	public Submission(UserSubmission userSub, String eventTemplate, int id,
 		Instant timeStamp) throws NoSuchEventException, FieldValidationException {
 
-		Objects.requireNonNull(timeStamp, "timeStamp");
-
 		event = Event.forTemplate(eventTemplate);
 		this.id = id;
 		division = convertEnumerator(Division.class, userSub.getDivision());
@@ -57,7 +55,7 @@ public class Submission {
 		notes = safeTrim(userSub.getNotes());
 		helicopterMode = convertEnumerator(HelicopterMode.class, userSub.getHelicopterMode());
 		flightDuration = convertDecimal(userSub.getFlightDuration());
-		this.timeStamp = timeStamp;
+		this.timeStamp = Objects.requireNonNull(timeStamp, "timeStamp");
 		fileNames = new ArrayList<>();
 
 		validate();

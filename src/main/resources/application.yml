@@ -5,8 +5,7 @@ fileUpload:
       submissionBucket: "virginia-science-olympiad"
       submissionRootKey: "vaso-file-upload"
    localFileSystem:
-      submissionRootDir: /Users/iemmons/file-upload
-   submissionTableFileName: submissions.csv
+      submissionRootDir: "/Users/iemmons/file-upload"
 
 spring:
    servlet:

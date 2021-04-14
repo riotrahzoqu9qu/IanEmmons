@@ -1,5 +1,5 @@
 aws s3 ls s3://virginia-science-olympiad/ --recursive
-aws s3 cp s3://virginia-science-olympiad/vaso-file-upload/submissions.csv submissions.csv
+aws s3 cp s3://virginia-science-olympiad/vaso-file-upload/helicopter-C/helicopter-C-submissions.csv submissions.csv
 aws s3 cp s3://virginia-science-olympiad/vaso-file-upload/ vaso-file-upload --recursive
 aws s3 rm s3://virginia-science-olympiad/ --recursive
 
