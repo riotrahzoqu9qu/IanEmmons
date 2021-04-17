@@ -55,6 +55,13 @@
 		</div>
 	</div>
 
+	<div th:fragment="submit-buttons">
+		<div class="button-panel">
+			<button type="submit" class="btn">Submit</button>
+			<button type="reset" class="btn">Reset</button>
+		</div>
+	</div>
+
 	<div th:fragment="notes-and-buttons">
 		<div class="entry-field-panel">
 			<label>
@@ -63,10 +70,7 @@
 					placeholder="Use this space to tell us about any unusual circumstances surrounding your file upload."/>
 			</label>
 		</div>
-		<div class="button-panel">
-			<button type="submit" class="btn">Submit</button>
-			<button type="reset" class="btn">Reset</button>
-		</div>
+		<div th:replace="~{fragments :: submit-buttons}"/>
 	</div>
 
 	<footer th:fragment="page-footer">

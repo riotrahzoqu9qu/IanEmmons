@@ -7,10 +7,14 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.TextStyle;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVPrinter;
@@ -20,14 +24,29 @@ import org.slf4j.LoggerFactory;
 import org.virginiaso.file_upload.util.FieldValidationException;
 import org.virginiaso.file_upload.util.NoSuchEventException;
 
-public class Submission {
+public final class Submission {
 	public static final MathContext DURATION_ROUNDING = MathContext.UNLIMITED;
 	private static final Logger LOG = LoggerFactory.getLogger(Submission.class);
 
 	private static final ZoneId EASTERN_TZ = ZoneId.of("America/New_York");
 	private static final DateTimeFormatter UTC = DateTimeFormatter.ISO_INSTANT;
-	private static final DateTimeFormatter ZONED_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
-	private static final DateTimeFormatter ZONED_TIME = DateTimeFormatter.ISO_LOCAL_TIME;
+	private static final DateTimeFormatter ZONED_DATE_TIME = new DateTimeFormatterBuilder()
+		.parseStrict()
+		.appendValue(ChronoField.YEAR, 4)
+		.appendLiteral('-')
+		.appendValue(ChronoField.MONTH_OF_YEAR, 2)
+		.appendLiteral('-')
+		.appendValue(ChronoField.DAY_OF_MONTH, 2)
+		.appendLiteral(", at ")
+		.appendValue(ChronoField.HOUR_OF_DAY, 2)
+		.appendLiteral(':')
+		.appendValue(ChronoField.MINUTE_OF_HOUR, 2)
+		.appendLiteral(':')
+		.appendValue(ChronoField.SECOND_OF_MINUTE, 2)
+		.appendLiteral(" (")
+		.appendZoneText(TextStyle.SHORT)
+		.appendLiteral(')')
+		.toFormatter();
 
 	private final Event event;
 	private final int id;
@@ -38,7 +57,8 @@ public class Submission {
 	private final String studentNames;
 	private final String notes;
 	private final HelicopterMode helicopterMode;
-	private BigDecimal flightDuration;
+	private final BigDecimal flightDuration;
+	private final String passCode;
 	private final List<String> fileNames;
 	private final Instant timeStamp;
 
@@ -55,6 +75,9 @@ public class Submission {
 		notes = safeTrim(userSub.getNotes());
 		helicopterMode = convertEnumerator(HelicopterMode.class, userSub.getHelicopterMode());
 		flightDuration = convertDecimal(userSub.getFlightDuration());
+		passCode = (event == Event.HELICOPTER_START)
+			? generatePassCode()
+			: null;
 		this.timeStamp = Objects.requireNonNull(timeStamp, "timeStamp");
 		fileNames = new ArrayList<>();
 
@@ -72,6 +95,7 @@ public class Submission {
 		notes = safeTrim(record.get(Column.NOTES));
 		helicopterMode = convertEnumerator(HelicopterMode.class, record.get(Column.HELICOPTER_MODE));
 		flightDuration = convertDecimal(record.get(Column.FLIGHT_DURATION));
+		passCode = safeTrim(record.get(Column.PASS_CODE));
 		timeStamp = Instant.from(UTC.parse(record.get(Column.UTC_TIME_STAMP)));
 		fileNames = Column.fileColumns().stream()
 			.map(record::get)
@@ -116,10 +140,25 @@ public class Submission {
 		}
 	}
 
-	private static String safeTrim(String decimalStr) {
-		return (decimalStr == null || decimalStr.isBlank())
+	private static String safeTrim(String str) {
+		return (str == null || str.isBlank())
 			? null
-			: decimalStr.trim();
+			: str.trim();
+	}
+
+	/**
+	 * Generates a random five-to-seven letter string of capital letters A-Z to be
+	 * used as the pass code in the Helicopter event.
+	 *
+	 * @return A random pass code
+	 */
+	private static String generatePassCode() {
+		int numChars = ThreadLocalRandom.current().nextInt(5, 8);
+		StringBuilder buffer = new StringBuilder();
+		ThreadLocalRandom.current().ints(numChars, 'A', 'Z' + 1)
+			.mapToObj(Character::toChars)
+			.forEach(charArray -> buffer.append(charArray[0]));
+		return buffer.toString();
 	}
 
 	public void print(CSVPrinter printer) throws IOException {
@@ -127,18 +166,18 @@ public class Submission {
 
 		printer.print(event.name());
 		printer.print(Integer.toString(id));
-		printer.print(ZONED_DATE.format(zonedTimeStamp));
-		printer.print(ZONED_TIME.format(zonedTimeStamp));
+		printer.print(ZONED_DATE_TIME.format(zonedTimeStamp));
 		printer.print(division.name());
 		printer.print(Integer.toString(teamNumber));
 		printer.print(schoolName);
 		printer.print(teamName);
 		printer.print(studentNames);
 		printer.print(notes);
-		printer.print((event != Event.HELICOPTER || helicopterMode == null)
+		printer.print((event != Event.HELICOPTER_FINISH || helicopterMode == null)
 			? null : helicopterMode.name());
-		printer.print((event != Event.HELICOPTER || flightDuration == null)
+		printer.print((event != Event.HELICOPTER_FINISH || flightDuration == null)
 			? null : flightDuration.toPlainString());
+		printer.print(passCode);
 		printer.print(UTC.format(timeStamp));
 		for (String fileName : fileNames) {
 			printer.print(fileName);
@@ -160,9 +199,14 @@ public class Submission {
 
 	public String getSubmissionTime() {
 		ZonedDateTime zonedTimeStamp = getZonedTimeStamp();
-		return String.format("%1$s, at %2$s",
-			ZONED_DATE.format(zonedTimeStamp),
-			ZONED_TIME.format(zonedTimeStamp));
+		return ZONED_DATE_TIME.format(zonedTimeStamp);
+	}
+
+	// Only used for helicopter:
+	public String getFinishTime() {
+		ZonedDateTime zonedTimeStamp = getZonedTimeStamp();
+		ZonedDateTime zonedFinishTime = zonedTimeStamp.plusHours(1);
+		return ZONED_DATE_TIME.format(zonedFinishTime);
 	}
 
 	public Division getDivision() {
@@ -197,8 +241,8 @@ public class Submission {
 		return flightDuration.toPlainString();
 	}
 
-	public void setflightDuration(String flightDuration) {
-		this.flightDuration = new BigDecimal(flightDuration, DURATION_ROUNDING);
+	public String getPassCode() {
+		return passCode;
 	}
 
 	public List<String> getFileNames() {
@@ -227,8 +271,11 @@ public class Submission {
 		}
 		requireNonNull(errors, schoolName, "School Name");
 		requireNonNull(errors, studentNames, "Student Name(s)");
-		if (event == Event.HELICOPTER) {
+		if (event == Event.HELICOPTER_FINISH) {
 			requireNonNull(errors, helicopterMode, "Kind of Submission");
+		}
+		if (event == Event.HELICOPTER_START) {
+			requireNonNull(errors, passCode, "Pass Code");
 		}
 		requireNonNull(errors, timeStamp, "timeStamp");
 

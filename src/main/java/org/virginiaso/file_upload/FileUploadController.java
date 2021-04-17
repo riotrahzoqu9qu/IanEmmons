@@ -2,6 +2,8 @@ package org.virginiaso.file_upload;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +59,7 @@ public class FileUploadController {
 		@RequestParam(name = "fileH", required = false) MultipartFile fileH,
 		@RequestParam(name = "fileI", required = false) MultipartFile fileI,
 		@RequestParam(name = "fileJ", required = false) MultipartFile fileJ,
+		HttpServletRequest request,
 		Model model) throws IOException, NoSuchEventException {
 
 		Submission submission = fileUploadService.receiveFileUpload(eventTemplate,
@@ -64,7 +67,15 @@ public class FileUploadController {
 
 		model.addAttribute("event", submission.getEvent());
 		model.addAttribute("submission", submission);
-		return "submissionResult";
+		if (submission.getEvent() != Event.HELICOPTER_START) {
+			return "submissionResult";
+		} else {
+			String submitUrl = request.getRequestURL().toString().replace(
+				Event.HELICOPTER_START.getTemplateName(),
+				Event.HELICOPTER_FINISH.getTemplateName());
+			model.addAttribute("submitUrl", submitUrl);
+			return "helicopterGo";
+		}
 	}
 
 	@ExceptionHandler

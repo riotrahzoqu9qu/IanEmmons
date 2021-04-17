@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+	<title>VASO File Upload</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
+	<link rel="stylesheet" href="/VasoFileUploadStylesheet.css"/>
+</head>
+<body>
+	<div th:replace="~{fragments :: page-header}"/>
+	<h1>Your Competition Period has Started:</h1>
+
+	<p><i>Recommended:</i> Print this page (or save as a PDF) for future reference.</p>
+	<p>Your Unique Word: <span th:text="${submission.passCode}" class="content-emphasis-large"/></p>
+	<p>Start Time: <span th:text="${submission.submissionTime}" class="content-emphasis"/></p>
+	<p>Submit Your Video By: <span th:text="${submission.finishTime}" class="content-emphasis-large"/></p>
+	<p>Team Number: <span th:text="${submission.division}" class="content-emphasis"/><span
+		th:text="${submission.teamNumber}" class="content-emphasis"/></p>
+	<p>School: <span th:text="${submission.schoolName}" class="content-emphasis"/></p>
+	<p>Team Name: <span th:text="${submission.teamName}" class="content-emphasis"/></p>
+	<p>Student Name(s): <span th:text="${submission.studentNames}" class="content-emphasis"/></p>
+	<p>
+		Click here to submit your video and flight log:
+		<a th:href="${submitUrl}" th:text="${submitUrl}"/>
+	</p>
+
+	<div th:replace="~{fragments :: page-footer}"/>
+</body>
+</html>
