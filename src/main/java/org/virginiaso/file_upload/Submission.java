@@ -238,7 +238,7 @@ public final class Submission {
 	}
 
 	public String getFlightDuration() {
-		return flightDuration.toPlainString();
+		return (flightDuration == null) ? null : flightDuration.toPlainString();
 	}
 
 	public String getPassCode() {
