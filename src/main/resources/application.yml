@@ -6,6 +6,7 @@ fileUpload:
       submissionRootKey: "vaso-file-upload"
    localFileSystem:
       submissionRootDir: "/Users/iemmons/file-upload"
+   baseEventUrl: "https://file-upload.virginiaso.org/fileUpload/"
 
 spring:
    servlet:

@@ -6,16 +6,16 @@ import java.util.List;
 enum Column {
 	EVENT,
 	ID,
-	VA_DATE,
-	VA_TIME,
+	VA_DATE_TIME,
 	DIVISION,
 	TEAM_NUMBER,
 	SCHOOL_NAME,
 	TEAM_NAME,
 	STUDENT_NAMES,
 	NOTES,
-	HELICOPTER_MODE,
-	FLIGHT_DURATION,
+	HELICOPTER_MODE,	// Helicopter only
+	FLIGHT_DURATION,	// Helicopter only
+	PASS_CODE,			// Helicopter only
 	UTC_TIME_STAMP,
 	FILE_NAME_0,
 	FILE_NAME_1,

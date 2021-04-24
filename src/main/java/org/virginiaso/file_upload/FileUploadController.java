@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,6 +23,9 @@ public class FileUploadController {
 	private static final Logger LOG = LoggerFactory.getLogger(FileUploadController.class);
 
 	private final FileUploadService fileUploadService;
+
+	@Value("${fileUpload.baseEventUrl}")
+	private String baseEventUrl;
 
 	@Autowired
 	public FileUploadController(FileUploadService fileUploadService) {
@@ -64,7 +68,13 @@ public class FileUploadController {
 
 		model.addAttribute("event", submission.getEvent());
 		model.addAttribute("submission", submission);
-		return "submissionResult";
+		if (submission.getEvent() != Event.HELICOPTER_START) {
+			return "submissionResult";
+		} else {
+			model.addAttribute("submitUrl",
+				baseEventUrl + Event.HELICOPTER_FINISH.getTemplateName());
+			return "helicopterGo";
+		}
 	}
 
 	@ExceptionHandler

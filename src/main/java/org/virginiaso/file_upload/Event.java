@@ -8,7 +8,8 @@ import org.virginiaso.file_upload.util.NoSuchEventException;
 
 enum Event {
 	DETECTOR_DESIGN("detectorDesign", "Detector Design"),
-	HELICOPTER("helicopter", "Helicopter"),
+	HELICOPTER_START("helicopterStart", "Helicopter (Start)"),
+	HELICOPTER_FINISH("helicopterFinish", "Helicopter (Final Submission)"),
 	VEHICLE_DESIGN("vehicleDesign", "Vehicle Design"),
 	WICI("wici", "Write It/CAD It (WICI)");
 

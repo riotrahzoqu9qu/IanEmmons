@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<div th:replace="~{fragments :: head}"/>
+<body>
+	<div th:replace="~{fragments :: page-header}"/>
+
+	<form th:object="${userSub}" th:action="${'/fileUpload/' + event.templateName}"
+			method="post" enctype="multipart/form-data">
+		<div th:replace="~{fragments :: heading}"/>
+		Instructions:
+		<ul>
+			<li>
+				When you click Submit below, you will be issued your unique word.
+			</li>
+			<li>
+				This unique word will be a random collection of letters that is
+				most likely not a valid word in the English language.
+			</li>
+			<li>
+				Write this word on a piece of paper, along with your team number,
+				name, school, and team name.
+			</li>
+			<li>
+				Display your paper prominently at the beginning of your video to
+				certify that the recording is being made on tournament day.
+			</li>
+			<li>
+				Your time for this event starts when you click Submit.
+			</li>
+			<li>
+				You must submit your video within one hour of your start time.
+			</li>
+			<li>
+				The URL for submitting your video and flight log will be displayed
+				on the next page along with your unique word.
+			</li>
+		</ul>
+		<div th:replace="~{fragments :: id-fields}"/>
+		<div th:replace="~{fragments :: submit-buttons}"/>
+	</form>
+
+	<div th:replace="~{fragments :: page-footer}"/>
+</body>
+</html>
