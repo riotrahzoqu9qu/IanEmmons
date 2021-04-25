@@ -1,0 +1,36 @@
+This was never used, but is preserved for possible use in the future.
+
+{
+	"Version": "2020-12-06",
+	"Id": "vaso-file-upload-bucket-access-policy",
+	"Statement": [
+		{
+			"Sid": "uploader-statement",
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": "arn:aws:iam::363197948456:group/VasoFileUploaders"
+			},
+			"Action": "Action": "s3:*",
+			"Resource": [
+				"arn:aws:s3:::virginia-science-olympiad/*",
+				"arn:aws:s3:::virginia-science-olympiad"
+			]
+		},
+		{
+			"Sid": "upload-reader-statement",
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": arn:aws:iam::363197948456:group/VasoFileUploadReaders
+			},
+			"Action": [
+				"s3:GetObject",
+				"s3:GetBucketLocation",
+				"s3:ListBucket"
+			],
+			"Resource": [
+				"arn:aws:s3:::virginia-science-olympiad/*",
+				"arn:aws:s3:::virginia-science-olympiad"
+			]
+		}
+	]
+}
