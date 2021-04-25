@@ -17,7 +17,8 @@ public final class AwsDetector {
 		try {
 			String os = System.getProperty("os.name");
 			if (os != null && os.toLowerCase().contains("linux")) {
-				result = new RestTemplate().getForObject(AWS_METADATA_URL, String.class).trim();
+				result = StringUtil.safeTrim(
+					new RestTemplate().getForObject(AWS_METADATA_URL, String.class));
 				LOG.info("Running on AWS EC2 instance '{}'", result);
 			}
 		} catch (RestClientException ex) {

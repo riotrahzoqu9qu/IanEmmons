@@ -2,7 +2,6 @@ package org.virginiaso.file_upload;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -23,9 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.virginiaso.file_upload.util.FieldValidationException;
 import org.virginiaso.file_upload.util.NoSuchEventException;
+import org.virginiaso.file_upload.util.StringUtil;
 
 public final class Submission {
-	public static final MathContext DURATION_ROUNDING = MathContext.UNLIMITED;
 	private static final Logger LOG = LoggerFactory.getLogger(Submission.class);
 
 	private static final ZoneId EASTERN_TZ = ZoneId.of("America/New_York");
@@ -67,14 +66,14 @@ public final class Submission {
 
 		event = Event.forTemplate(eventTemplate);
 		this.id = id;
-		division = convertEnumerator(Division.class, userSub.getDivision());
-		teamNumber = convertInteger(userSub.getTeamNumber());
-		schoolName = safeTrim(userSub.getSchoolName());
-		teamName = safeTrim(userSub.getTeamName());
-		studentNames = safeTrim(userSub.getStudentNames());
-		notes = safeTrim(userSub.getNotes());
-		helicopterMode = convertEnumerator(HelicopterMode.class, userSub.getHelicopterMode());
-		flightDuration = convertDecimal(userSub.getFlightDuration());
+		division = StringUtil.convertEnumerator(Division.class, userSub.getDivision());
+		teamNumber = StringUtil.convertInteger(userSub.getTeamNumber());
+		schoolName = StringUtil.safeTrim(userSub.getSchoolName());
+		teamName = StringUtil.safeTrim(userSub.getTeamName());
+		studentNames = StringUtil.safeTrim(userSub.getStudentNames());
+		notes = StringUtil.safeTrim(userSub.getNotes());
+		helicopterMode = StringUtil.convertEnumerator(HelicopterMode.class, userSub.getHelicopterMode());
+		flightDuration = StringUtil.convertDecimal(userSub.getFlightDuration());
 		passCode = (event == Event.HELICOPTER_START)
 			? generatePassCode()
 			: null;
@@ -85,17 +84,17 @@ public final class Submission {
 	}
 
 	public Submission(CSVRecord record) throws FieldValidationException {
-		event = convertEnumerator(Event.class, record.get(Column.EVENT));
-		id = convertInteger(record.get(Column.ID));
-		division = convertEnumerator(Division.class, record.get(Column.DIVISION));
-		teamNumber = convertInteger(record.get(Column.TEAM_NUMBER));
-		schoolName = safeTrim(record.get(Column.SCHOOL_NAME));
-		teamName = safeTrim(record.get(Column.TEAM_NAME));
-		studentNames = safeTrim(record.get(Column.STUDENT_NAMES));
-		notes = safeTrim(record.get(Column.NOTES));
-		helicopterMode = convertEnumerator(HelicopterMode.class, record.get(Column.HELICOPTER_MODE));
-		flightDuration = convertDecimal(record.get(Column.FLIGHT_DURATION));
-		passCode = safeTrim(record.get(Column.PASS_CODE));
+		event = StringUtil.convertEnumerator(Event.class, record.get(Column.EVENT));
+		id = StringUtil.convertInteger(record.get(Column.ID));
+		division = StringUtil.convertEnumerator(Division.class, record.get(Column.DIVISION));
+		teamNumber = StringUtil.convertInteger(record.get(Column.TEAM_NUMBER));
+		schoolName = StringUtil.safeTrim(record.get(Column.SCHOOL_NAME));
+		teamName = StringUtil.safeTrim(record.get(Column.TEAM_NAME));
+		studentNames = StringUtil.safeTrim(record.get(Column.STUDENT_NAMES));
+		notes = StringUtil.safeTrim(record.get(Column.NOTES));
+		helicopterMode = StringUtil.convertEnumerator(HelicopterMode.class, record.get(Column.HELICOPTER_MODE));
+		flightDuration = StringUtil.convertDecimal(record.get(Column.FLIGHT_DURATION));
+		passCode = StringUtil.safeTrim(record.get(Column.PASS_CODE));
 		timeStamp = Instant.from(UTC.parse(record.get(Column.UTC_TIME_STAMP)));
 		fileNames = Column.fileColumns().stream()
 			.map(record::get)
@@ -104,46 +103,6 @@ public final class Submission {
 			.collect(Collectors.toCollection(ArrayList::new));
 
 		validate();
-	}
-
-	private static <E extends Enum<E>> E convertEnumerator(Class<E> enumClass, String enumStr) {
-		Objects.requireNonNull(enumClass, "enumClass");
-		try {
-			return (enumStr == null || enumStr.isBlank())
-				? null
-				: E.valueOf(enumClass, enumStr.trim());
-		} catch (IllegalArgumentException ex) {
-			LOG.warn("Bad {} enum value '{}'", enumClass.getSimpleName(), enumStr);
-			return null;
-		}
-	}
-
-	private static int convertInteger(String integerStr) {
-		try {
-			return (integerStr == null || integerStr.isBlank())
-				? -1
-				: Integer.parseUnsignedInt(integerStr.trim());
-		} catch (NumberFormatException ex) {
-			LOG.warn("Bad integer value '{}'", integerStr);
-			return -1;
-		}
-	}
-
-	private static BigDecimal convertDecimal(String decimalStr) {
-		try {
-			return (decimalStr == null || decimalStr.isBlank())
-				? null
-				: new BigDecimal(decimalStr.trim(), DURATION_ROUNDING);
-		} catch (NumberFormatException ex) {
-			LOG.warn("Bad decimal value '{}'", decimalStr);
-			return null;
-		}
-	}
-
-	private static String safeTrim(String str) {
-		return (str == null || str.isBlank())
-			? null
-			: str.trim();
 	}
 
 	/**
