@@ -7,13 +7,102 @@ interface that competitors use to enter their identifying information (team numb
 school name, and so on) and upload their files.  The files are stored in an AWS
 Simple Storage Service (S3) bucket for retrieval by event supervisors.
 
-## Building the Service
-
-(Yet to be written)
-
 ## Deploying the Service in EC2
 
-(Yet to be written)
+Create a bucket.  This is currently called "virginia-science-olympiad" in the "us-east-1" (Northern Virginia) region, though the bucket name and region are configurable in `application.yml`.
+
+Create two IAM groups, "VasoFileUploaders" and "VasoFileUploadReaders".  Attach the policy "AdministratorAccess" to the first and attach "AmazonS3ReadOnlyAccess" to the second.
+
+Create one IAM profile in the VasoFileUploaders group and install it in your `~/.aws` directory.  The service will use this profile to write to the bucket.  The name of the profile is configurable in `application.yml`.  _(TODO: Figure out the minimum permissions needed for this profile.)_
+
+Create one IAM profile in VasoFileUploadReaders for each person who needs to retrieve files from the bucket.  Typically these people will be event supervisors, and perhaps a score master as well.  Instructions are below for these people to set up Cyberduck to retrieve their files.
+
+Create and start an EC2 instance:
+
+- Amazon Linux 2 AMI, either ARM or x86
+- `a1.xlarge` for tournament day, `t2.micro` for free tier.
+- EBS storage: 8 or 10 GB
+- In the Security Group configuration, it should have SSH (port 22) access by default.  Add HTTP (port 80) and HTTPS (port 443) as well.
+- Accept defaults everywhere else
+- When you finish the process, you will be given the option to create a new key pair.  If you have a key pair already, go ahead and select it.  Otherwise, give your new key pair a name, download it and save the `.pem` file in your `~/.ssh` directory with `u=rw,go=` permissions.
+
+To connect: `ssh -i ~/.ssh/<key-pair-file-name>.pem <ec2-public-dns-name>`
+
+To transfer files: `sftp -i ~/.ssh/<key-pair-file-name>.pem <ec2-public-dns-name>`
+
+Connect to the instance via SSH and set up some basic user configuration:
+
+- Set up `~/.bashrc` and `~/.vimrc` according to preferences
+- Create the `~/.aws` directory and set the permissions on it to `u=rwx,go=`
+- Create `~/.aws/config` with `u=rw,go=` permissions:
+
+>> ```
+>> [profile <iam-profile-name>]
+>> region = us-east-1
+>> ```
+
+- Create `~/.aws/credentials` with `u=rw,go=` permissions:
+
+>> ```
+>> [<iam-profile-name>]
+>> aws_access_key_id = <from-iam-profile>
+>> aws_secret_access_key = <from-iam-profile>
+>> ```
+
+Install software packages:
+
+- sudo yum update
+- sudo yum install java-11-amazon-corretto-headless
+- sudo yum install httpd
+- sudo yum install mod_ssl
+
+Acquire a web site certificate.  In this case I used the host name `file-upload.virginiaso.org`.  (One handy certificate issuer is https://sslforfree.com/.)  Upload the certificate package to the EC2 instance.  The `~/.ssh` directory is a handy place to store it.
+
+Create the `/etc/certs` directory and unzip the certificate package there.  You should end up with three files, named something like `ca_bundle.crt`, `certificate.crt`, and `private.key`.  Run these commands:
+
+```
+sudo chmod u=rw,go= /etc/certs/*
+sudo chown root.root /etc/certs/*
+```
+
+Upload the file `redirect_http.conf` from the git repository to `/etc/httpd/conf.d`.  (You will likely need to upload to your home directory and then move the file using `sudo`.)  Make sure that file contains correct paths to the three certificate files.
+
+Restart the web server to pick up the new SSL configuration with this command:
+
+```
+sudo systemctl restart httpd
+```
+
+Build the file upload service jar with the command `./gradlew clean build`.  Issue this command in your git working directory, not on the EC2 instance.  Then upload the jar from the `build/lib` directory to the EC2 instance, in your home directory.  Start the file upload service with this command:
+
+```
+java -jar VasoFileUpload-1.1.0-SNAPSHOT.jar &
+```
+
+Shut down the service like so:
+
+```
+ps -ef | grep VasoFileUpload | grep -v grep
+kill <first-number-from-output-of-previous-command>
+```
+
+The final piece of configuration is to direct the host name `file-upload.virginiaso.org` to the new server.  To do this, log into the VASO iPage account, click on the `virginiaso.org` domain, click on "DNS & Nameservers" in the left-hand menu, and click on "DNS RECORDS."  Add a DNS record with the following parameters:
+
+- Name: file-upload
+- Type: A
+- IP Address: Enter the EC2 instance's public IP address
+- TTL: 1 hour
+- Priority: Leave blank
+
+Once that DNS record takes effect, either `http://file-upload.virginiaso.org/` or `https://file-upload.virginiaso.org/` should bring up the file upload service's index page.
+
+Deployment references:
+
+- https://simpleprogrammingguides.com/deploy-a-spring-boot-application-to-aws-cloud/
+- https://medium.com/javarevisited/spring-boot-aws-8cf2f1df84a6
+- https://aws.amazon.com/premiumsupport/knowledge-center/acm-ssl-certificate-ec2-elb/
+
+
 
 ## Retrieving the Files
 
@@ -80,24 +169,24 @@ Each event folder also contains one special file called
 contains the form entries.  Each upload is one row in the file, with the
 following column headings:
 
-* EVENT: The event name
-* ID: The ordinal number appended to the file name
-* VA_DATE_TIME: The date and time of the upload, in Eastern standard time
-* DIVISION
-* TEAM_NUMBER
-* SCHOOL_NAME
-* TEAM_NAME
-* STUDENT_NAMES
-* NOTES: A free text field for the students to use to communicate unusual
+- EVENT: The event name
+- ID: The ordinal number appended to the file name
+- VA_DATE_TIME: The date and time of the upload, in Eastern standard time
+- DIVISION
+- TEAM_NUMBER
+- SCHOOL_NAME
+- TEAM_NAME
+- STUDENT_NAMES
+- NOTES: A free text field for the students to use to communicate unusual
   circumstances
-* HELICOPTER_MODE: Used only in Helicopter
-* FLIGHT_DURATION: Used only in Helicopter
-* PASS_CODE: Used only in Helicopter
-* UTC_TIME_STAMP: The same value as VA_DATE_TIME, except in UTC.  This is
+- HELICOPTER_MODE: Used only in Helicopter
+- FLIGHT_DURATION: Used only in Helicopter
+- PASS_CODE: Used only in Helicopter
+- UTC_TIME_STAMP: The same value as VA_DATE_TIME, except in UTC.  This is
   for the benefit of the server program -- you can safely ignore it.
-* FILE_NAME_0: The first file name
-* FILE_NAME_1: The second file name, if there is one
-* FILE_NAME_2 through FILE_NAME_9: Unused
+- FILE_NAME_0: The first file name
+- FILE_NAME_1: The second file name, if there is one
+- FILE_NAME_2 through FILE_NAME_9: Unused
 
 There are a few differences for the Helicopter event.  For most events, the
 students visit the upload form only once, at the end of the event.  But for
@@ -114,7 +203,7 @@ upload time.
 The HELICOPTER_MODE column will be set to one of the following values in the
 second CSV:
 
-* TWO_HELICOPTERS_TWO_STUDENTS
-* TWO_HELICOPTERS_ONE_STUDENT
-* ONE_HELICOPTER_ONE_STUDENT_TWO_VIDEOS
-* ONE_HELICOPTER_ONE_STUDENT_ONE_VIDEO
+- TWO_HELICOPTERS_TWO_STUDENTS
+- TWO_HELICOPTERS_ONE_STUDENT
+- ONE_HELICOPTER_ONE_STUDENT_TWO_VIDEOS
+- ONE_HELICOPTER_ONE_STUDENT_ONE_VIDEO

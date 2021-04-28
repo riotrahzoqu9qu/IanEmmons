@@ -34,6 +34,7 @@ public class FileUploadController {
 
 	@GetMapping({"/", "/fileUpload"})
 	public String homePage(Model model) {
+		model.addAttribute("cores", Runtime.getRuntime().availableProcessors());
 		return "index";
 	}
 
