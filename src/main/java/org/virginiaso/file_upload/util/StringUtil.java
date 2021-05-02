@@ -13,7 +13,8 @@ public final class StringUtil {
 
 	private StringUtil() {}	// prevent instantiation
 
-	public static <E extends Enum<E>> E convertEnumerator(Class<E> enumClass, String enumStr) {
+	public static <E extends Enum<E>> E convertEnumerator(
+			Class<E> enumClass, String enumStr) {
 		Objects.requireNonNull(enumClass, "enumClass");
 		try {
 			return (enumStr == null || enumStr.isBlank())

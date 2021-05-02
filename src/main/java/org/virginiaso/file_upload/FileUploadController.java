@@ -79,22 +79,22 @@ public class FileUploadController {
 	}
 
 	@ExceptionHandler
-	public String handleIOException(Model model, IOException ex) {
+	public String handleIoEx(Model model, IOException ex) {
 		return handleException(model, ex);
 	}
 
 	@ExceptionHandler
-	public String handleNoSuchEventException(Model model, NoSuchEventException ex) {
+	public String handleNoSuchEventEx(Model model, NoSuchEventException ex) {
 		return handleException(model, ex);
 	}
 
 	@ExceptionHandler
-	public String handleFieldValidationException(Model model, FieldValidationException ex) {
+	public String handleFieldValidationEx(Model model, FieldValidationException ex) {
 		return handleException(model, ex);
 	}
 
 	@ExceptionHandler
-	public String handleRuntimeException(Model model, RuntimeException ex) {
+	public String handleRuntimeEx(Model model, RuntimeException ex) {
 		return handleException(model, ex);
 	}
 

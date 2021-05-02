@@ -38,6 +38,7 @@ final class EventDivisionPair {
 
 	@Override
 	public String toString() {
-		return String.format("EventDivisionPair [event=%1$s, division=%2$s]", event, division);
+		return String.format("EventDivisionPair [event=%1$s, division=%2$s]",
+			event, division);
 	}
 }

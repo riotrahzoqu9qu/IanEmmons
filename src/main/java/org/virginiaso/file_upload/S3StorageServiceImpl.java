@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.virginiaso.file_upload.util.FileUtil;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -57,7 +58,7 @@ public class S3StorageServiceImpl implements StorageService {
 		HeadBucketRequest hbRequest = HeadBucketRequest.builder()
 			.bucket(s3SubmissionBucket)
 			.build();
-		if(s3Client.headBucket(hbRequest).sdkHttpResponse().isSuccessful()) {
+		if (s3Client.headBucket(hbRequest).sdkHttpResponse().isSuccessful()) {
 			LOG.info("Bucket '{}' exists", s3SubmissionBucket);
 		} else {
 			CreateBucketRequest cbRequest = CreateBucketRequest.builder()
@@ -79,7 +80,8 @@ public class S3StorageServiceImpl implements StorageService {
 	}
 
 	@Override
-	public InputStream getSubmissionTableAsInputStream(String submissionTableFileName) throws FileNotFoundException {
+	public InputStream getSubmissionTableAsInputStream(String submissionTableFileName)
+			throws FileNotFoundException {
 		try {
 			GetObjectRequest request = GetObjectRequest.builder()
 				.bucket(s3SubmissionBucket)
@@ -92,14 +94,18 @@ public class S3StorageServiceImpl implements StorageService {
 	}
 
 	@Override
-	public File getTempSubmissionTableFile(String submissionTableFileName) throws IOException {
+	public File getTempSubmissionTableFile(String submissionTableFileName)
+			throws IOException {
 		File submissionTableFile = new File(submissionTableFileName);
-		Pair<String, String> stemExt = FileUtil.getStemExtPair(submissionTableFile.getName());
+		Pair<String, String> stemExt = FileUtil.getStemExtPair(
+			submissionTableFile.getName());
 		File tempFile = File.createTempFile(stemExt.getLeft(), "." + stemExt.getRight());
 		LOG.debug("Temporary submission table file: '{}'", tempFile.getPath());
 		return tempFile;
 	}
 
+	@SuppressFBWarnings(value = "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE",
+		justification = "Return value of delete does not matter in this case")
 	@Override
 	public void transferTempSubmissionTableFile(File tempSubmissionTableFile,
 		String submissionTableFileName) throws IOException {
@@ -108,7 +114,8 @@ public class S3StorageServiceImpl implements StorageService {
 				.bucket(s3SubmissionBucket)
 				.key(getSubmissionTableKey(submissionTableFileName))
 				.build();
-			PutObjectResponse response = s3Client.putObject(poRequest, tempSubmissionTableFile.toPath());
+			PutObjectResponse response = s3Client.putObject(
+				poRequest, tempSubmissionTableFile.toPath());
 			if (!response.sdkHttpResponse().isSuccessful()) {
 				throw new IOException(String.format(
 					"Unable to transfer submission table to S3, status code %1$d",

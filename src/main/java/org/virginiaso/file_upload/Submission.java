@@ -72,7 +72,8 @@ public final class Submission {
 		teamName = StringUtil.safeTrim(userSub.getTeamName());
 		studentNames = StringUtil.safeTrim(userSub.getStudentNames());
 		notes = StringUtil.safeTrim(userSub.getNotes());
-		helicopterMode = StringUtil.convertEnumerator(HelicopterMode.class, userSub.getHelicopterMode());
+		helicopterMode = StringUtil.convertEnumerator(
+			HelicopterMode.class, userSub.getHelicopterMode());
 		flightDuration = StringUtil.convertDecimal(userSub.getFlightDuration());
 		passCode = (event == Event.HELICOPTER_START)
 			? generatePassCode()
@@ -92,7 +93,8 @@ public final class Submission {
 		teamName = StringUtil.safeTrim(record.get(Column.TEAM_NAME));
 		studentNames = StringUtil.safeTrim(record.get(Column.STUDENT_NAMES));
 		notes = StringUtil.safeTrim(record.get(Column.NOTES));
-		helicopterMode = StringUtil.convertEnumerator(HelicopterMode.class, record.get(Column.HELICOPTER_MODE));
+		helicopterMode = StringUtil.convertEnumerator(
+			HelicopterMode.class, record.get(Column.HELICOPTER_MODE));
 		flightDuration = StringUtil.convertDecimal(record.get(Column.FLIGHT_DURATION));
 		passCode = StringUtil.safeTrim(record.get(Column.PASS_CODE));
 		timeStamp = Instant.from(UTC.parse(record.get(Column.UTC_TIME_STAMP)));
@@ -247,9 +249,9 @@ public final class Submission {
 		}
 	}
 
-	private static void requireNonNull(List<String> errors, Object field, String fieldName) {
+	private static void requireNonNull(List<String> errors, Object field, String name) {
 		if (field == null) {
-			errors.add(String.format("%1$s is a required field", fieldName));
+			errors.add(String.format("%1$s is a required field", name));
 		}
 	}
 }
