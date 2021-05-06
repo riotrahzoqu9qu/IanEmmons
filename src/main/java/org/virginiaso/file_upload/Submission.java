@@ -31,20 +31,19 @@ public final class Submission {
 	private static final DateTimeFormatter UTC = DateTimeFormatter.ISO_INSTANT;
 	private static final DateTimeFormatter ZONED_DATE_TIME = new DateTimeFormatterBuilder()
 		.parseStrict()
-		.appendValue(ChronoField.YEAR, 4)
-		.appendLiteral('-')
 		.appendValue(ChronoField.MONTH_OF_YEAR, 2)
-		.appendLiteral('-')
+		.appendLiteral('/')
 		.appendValue(ChronoField.DAY_OF_MONTH, 2)
-		.appendLiteral(", at ")
-		.appendValue(ChronoField.HOUR_OF_DAY, 2)
+		.appendLiteral('/')
+		.appendValue(ChronoField.YEAR, 4)
+		.appendLiteral(' ')
+		.appendValue(ChronoField.CLOCK_HOUR_OF_AMPM, 2)
 		.appendLiteral(':')
 		.appendValue(ChronoField.MINUTE_OF_HOUR, 2)
 		.appendLiteral(':')
 		.appendValue(ChronoField.SECOND_OF_MINUTE, 2)
-		.appendLiteral(" (")
-		.appendZoneText(TextStyle.SHORT)
-		.appendLiteral(')')
+		.appendLiteral(' ')
+		.appendText(ChronoField.AMPM_OF_DAY, TextStyle.FULL)
 		.toFormatter();
 
 	private final Event event;
@@ -78,8 +77,8 @@ public final class Submission {
 		passCode = (event == Event.HELICOPTER_START)
 			? generatePassCode()
 			: null;
-		this.timeStamp = Objects.requireNonNull(timeStamp, "timeStamp");
 		fileNames = new ArrayList<>();
+		this.timeStamp = Objects.requireNonNull(timeStamp, "timeStamp");
 
 		validate();
 	}
@@ -97,12 +96,12 @@ public final class Submission {
 			HelicopterMode.class, record.get(Column.HELICOPTER_MODE));
 		flightDuration = StringUtil.convertDecimal(record.get(Column.FLIGHT_DURATION));
 		passCode = StringUtil.safeTrim(record.get(Column.PASS_CODE));
-		timeStamp = Instant.from(UTC.parse(record.get(Column.UTC_TIME_STAMP)));
 		fileNames = Column.fileColumns().stream()
 			.map(record::get)
 			.filter(Objects::nonNull)
 			.filter(value -> !value.isBlank())
 			.collect(Collectors.toCollection(ArrayList::new));
+		timeStamp = Instant.from(UTC.parse(record.get(Column.UTC_TIME_STAMP)));
 
 		validate();
 	}
@@ -139,7 +138,6 @@ public final class Submission {
 		printer.print((event != Event.HELICOPTER_FINISH || flightDuration == null)
 			? null : flightDuration.toPlainString());
 		printer.print(passCode);
-		printer.print(UTC.format(timeStamp));
 		for (String fileName : fileNames) {
 			printer.print(fileName);
 		}
@@ -147,6 +145,7 @@ public final class Submission {
 		for (int i = 0; i < numEmptyFileColumns; ++i) {
 			printer.print(null);
 		}
+		printer.print(UTC.format(timeStamp));
 		printer.println();
 	}
 

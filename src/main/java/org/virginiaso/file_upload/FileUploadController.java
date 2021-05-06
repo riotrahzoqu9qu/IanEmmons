@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.virginiaso.file_upload.util.FieldValidationException;
+import org.virginiaso.file_upload.util.HostNameUtil;
 import org.virginiaso.file_upload.util.NoSuchEventException;
 
 @Controller
@@ -34,6 +35,7 @@ public class FileUploadController {
 
 	@GetMapping({"/", "/fileUpload"})
 	public String homePage(Model model) {
+		model.addAttribute("host", HostNameUtil.getHostName());
 		model.addAttribute("cores", Runtime.getRuntime().availableProcessors());
 		return "index";
 	}

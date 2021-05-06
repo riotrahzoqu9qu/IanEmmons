@@ -38,3 +38,12 @@ a1.xlarge:
 * Subnet: subnet-e824a5b7
 * ssh -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-3-84-90-45.compute-1.amazonaws.com
 * sftp -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-3-84-90-45.compute-1.amazonaws.com
+
+
+
+TODO
+====
+x Everywhere: Excel-friendly date-time format: 11/23/2020 11:34:52 AM
+x Everywhere: Put UTC date-time as last column
+* Helicopter: Add pass code entry to finish form (students must fill in)
+* Helicopter: Singular student name -- "Name of student (only one!) uploading video"

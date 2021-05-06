@@ -16,6 +16,6 @@
 		</li>
 	</ul>
 	<div th:replace="~{fragments :: page-footer}"/>
-	<p th:text="${cores}"/>
+	<p style="font-style: italic"><span th:text="${host}"/>, <span th:text="${cores}"/> cores</p>
 </body>
 </html>
