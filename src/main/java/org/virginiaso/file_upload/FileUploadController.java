@@ -24,13 +24,13 @@ public class FileUploadController {
 	private static final Logger LOG = LoggerFactory.getLogger(FileUploadController.class);
 
 	private final FileUploadService fileUploadService;
-
-	@Value("${fileUpload.baseEventUrl}")
-	private String baseEventUrl;
+	private final String baseEventUrl;
 
 	@Autowired
-	public FileUploadController(FileUploadService fileUploadService) {
+	public FileUploadController(FileUploadService fileUploadService,
+		@Value("${fileUpload.baseEventUrl}") String baseEventUrl) {
 		this.fileUploadService = fileUploadService;
+		this.baseEventUrl = baseEventUrl;
 	}
 
 	@GetMapping({"/", "/fileUpload"})

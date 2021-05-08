@@ -25,11 +25,20 @@
 		<div class="entry-field-panel">
 			Kind of Submission:<span class="required-star"><sup>&starf;</sup></span><br/>
 			<label th:each="hMode: ${T(org.virginiaso.file_upload.HelicopterMode).values()}">
-				<input type="radio" name="helicopterMode" th:value="${hMode.name}" th:checked="${helicopterMode eq hMode.name}" required>
+				<input type="radio" name="helicopterMode" th:value="${hMode.name}"
+					th:checked="${helicopterMode eq hMode.name}" required>
 				<span th:text="${hMode.label}"/><br/>
 			</label>
 		</div>
-		<div th:replace="~{fragments :: id-fields}"/>
+		<div th:replace="~{fragments :: id-fields('Name of the one student uploading files:',
+			'Your name only &mdash; your partner&rsquo;s name should be on their upload')}"/>
+		<div class="entry-field-panel">
+			<label>
+				Your Unique Word:<span class="required-star"><sup>&starf;</sup></span><br/>
+				<input type="text" th:field="*{passCode}" size="70"
+					placeholder="Enter the unique word you were given when you started" required/>
+			</label>
+		</div>
 		<div class="entry-field-panel">
 			<label>
 				Flight duration (in seconds, with up to 2 decimal places):<br/>

@@ -1,6 +1,7 @@
 package org.virginiaso.file_upload;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,7 +23,7 @@ class FileUploadApplicationTests {
 	}
 
 	@Test
-	void timeZoneTest() {
+	void timeZoneFromUtcTest() {
 		Instant utcNow = Instant.now();
 		ZonedDateTime easternNow = ZonedDateTime.ofInstant(
 			utcNow, ZoneId.of("America/New_York"));
@@ -32,6 +33,17 @@ class FileUploadApplicationTests {
 			DateTimeFormatter.ISO_LOCAL_DATE.format(easternNow));
 		System.out.format("Eastern time = '%1$s'%n",
 			DateTimeFormatter.ISO_LOCAL_TIME.format(easternNow));
+	}
+
+	@Test
+	void timeZoneToUtcTest() {
+		ZoneId tz = ZoneId.of("America/New_York");
+		String dateTimeToParse = "2021-01-16T12:00:00";
+		LocalDateTime ldt = LocalDateTime.parse(dateTimeToParse);
+		ZonedDateTime zdt = ZonedDateTime.of(ldt, tz);
+		Instant instant = zdt.toInstant();
+		System.out.format("%1$s EDT converted to UTC is %2$s%n",
+			dateTimeToParse, DateTimeFormatter.ISO_INSTANT.format(instant));
 	}
 
 	@Test

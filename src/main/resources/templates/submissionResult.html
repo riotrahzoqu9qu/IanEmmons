@@ -15,6 +15,8 @@
 	<p>Submission Time: <span th:text="${submission.submissionTime}" class="content-emphasis"/></p>
 	<p th:if="${event.name eq 'HELICOPTER_FINISH' and submission.helicopterMode ne null}"
 		>Kind of Submission: <span th:text="${submission.helicopterMode.label}" class="content-emphasis"/></p>
+	<p th:if="${event.name eq 'HELICOPTER_FINISH' and submission.passCode ne null}"
+		>Your unique word: <span th:text="${submission.passCode}" class="content-emphasis"/></p>
 	<p th:if="${event.name eq 'HELICOPTER_FINISH' and submission.flightDuration ne null}"
 		>Flight Duration: <span th:text="${submission.flightDuration}" class="content-emphasis"/> seconds</p>
 	<p>Team Number: <span th:text="${submission.division}" class="content-emphasis"/><span

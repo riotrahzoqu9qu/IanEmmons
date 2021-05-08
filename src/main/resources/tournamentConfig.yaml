@@ -1,0 +1,59 @@
+tournaments:
+  - name: "Software Practice Day"
+    date: "2021-01-16"
+    teams:
+      B: "1-90"
+      C: "1-90"
+    events:
+      - name: "DETECTOR_DESIGN"
+        C: { from: "", to: "" }
+      - name: "HELICOPTER_START"
+        BC: { from: "", to: "" }
+      - name: "HELICOPTER_FINISH"
+        BC: { from: "", to: "" }
+      - name: "VEHICLE_DESIGN"
+        BC: { from: "", to: "" }
+      - name: "WICI"
+        BC: { from: "", to: "" }
+  - name: "Newton Regional"
+    date: "2021-01-30"
+    teams:
+      B: "1-30"
+      C: "1-30"
+    events:
+      - name: "DETECTOR_DESIGN"
+        C: { from: "", to: "" }
+      - name: "HELICOPTER_START"
+        BC: { from: "", to: "" }
+      - name: "HELICOPTER_FINISH"
+        BC: { from: "", to: "" }
+      - name: "VEHICLE_DESIGN"
+        B:
+          from: "2021-01-17T01:00:00"
+          to:   "2021-01-23T12:00:00"
+        C:
+          from: "2021-01-17T01:00:00"
+          to:   "2021-01-23T12:00:00"
+      - name: "WICI"
+        BC: { from: "", to: "" }
+  - name: "Hook/Leibniz Regional"
+    date: "2021-02-06"
+    teams:
+      B: "31,33-40,43-60"
+      C: "31,33-40,43-60"
+    events:
+      - name: "DETECTOR_DESIGN"
+        C: { from: "", to: "" }
+      - name: "HELICOPTER_START"
+        BC: { from: "", to: "" }
+      - name: "HELICOPTER_FINISH"
+        BC: { from: "", to: "" }
+      - name: "VEHICLE_DESIGN"
+        B:
+          from: "2021-01-17T01:00:00"
+          to:   "2021-01-30T12:00:00"
+        C:
+          from: "2021-01-17T01:00:00"
+          to:   "2021-01-30T12:00:00"
+      - name: "WICI"
+        BC: { from: "", to: "" }

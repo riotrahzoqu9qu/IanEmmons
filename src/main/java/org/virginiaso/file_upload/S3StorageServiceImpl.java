@@ -15,12 +15,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.virginiaso.file_upload.util.FileUtil;
+import org.virginiaso.file_upload.util.S3Uri;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
@@ -34,35 +35,29 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 public class S3StorageServiceImpl implements StorageService {
 	private static final Logger LOG = LoggerFactory.getLogger(S3StorageServiceImpl.class);
 
-	@Value("${fileUpload.aws.region}")
-	private String awsRegion;
-
-	@Value("${fileUpload.aws.profile}")
-	private String awsProfile;
-
-	@Value("${fileUpload.aws.submissionBucket}")
-	private String s3SubmissionBucket;
-
-	@Value("${fileUpload.aws.submissionRootKey}")
-	private String s3SubmissionRootKey;
-
+	private final S3Uri submissionRoot;
 	private S3Client s3Client;
+
+	public S3StorageServiceImpl(
+		@Value("${fileUpload.aws-s3.submissionRoot}") String submissionRootUri) {
+		submissionRoot = new S3Uri(submissionRootUri);
+	}
 
 	@PostConstruct
 	public void initialize() {
 		s3Client = S3Client.builder()
-			.credentialsProvider(ProfileCredentialsProvider.create(awsProfile))
-			.region(Region.of(awsRegion))
+			.credentialsProvider(DefaultCredentialsProvider.create())
+			.region(DefaultAwsRegionProviderChain.builder().build().getRegion())
 			.build();
 
 		HeadBucketRequest hbRequest = HeadBucketRequest.builder()
-			.bucket(s3SubmissionBucket)
+			.bucket(submissionRoot.getBucket())
 			.build();
 		if (s3Client.headBucket(hbRequest).sdkHttpResponse().isSuccessful()) {
-			LOG.info("Bucket '{}' exists", s3SubmissionBucket);
+			LOG.info("Bucket '{}' exists", submissionRoot.getBucket());
 		} else {
 			CreateBucketRequest cbRequest = CreateBucketRequest.builder()
-				.bucket(s3SubmissionBucket)
+				.bucket(submissionRoot.getBucket())
 				.build();
 			CreateBucketResponse cbResponse = s3Client.createBucket(cbRequest);
 			if (!cbResponse.sdkHttpResponse().isSuccessful()) {
@@ -70,7 +65,7 @@ public class S3StorageServiceImpl implements StorageService {
 					"Unable to create S3 bucket, status code %1$d",
 					cbResponse.sdkHttpResponse().statusCode()));
 			}
-			LOG.info("Created bucket '{}'", s3SubmissionBucket);
+			LOG.info("Created bucket '{}'", submissionRoot.getBucket());
 		}
 	}
 
@@ -84,7 +79,7 @@ public class S3StorageServiceImpl implements StorageService {
 			throws FileNotFoundException {
 		try {
 			GetObjectRequest request = GetObjectRequest.builder()
-				.bucket(s3SubmissionBucket)
+				.bucket(submissionRoot.getBucket())
 				.key(getSubmissionTableKey(submissionTableFileName))
 				.build();
 			return s3Client.getObject(request);
@@ -111,7 +106,7 @@ public class S3StorageServiceImpl implements StorageService {
 		String submissionTableFileName) throws IOException {
 		try {
 			PutObjectRequest poRequest = PutObjectRequest.builder()
-				.bucket(s3SubmissionBucket)
+				.bucket(submissionRoot.getBucket())
 				.key(getSubmissionTableKey(submissionTableFileName))
 				.build();
 			PutObjectResponse response = s3Client.putObject(
@@ -132,9 +127,9 @@ public class S3StorageServiceImpl implements StorageService {
 		String newFileName) throws IOException {
 
 		String newFileKey = String.format("%1$s/%2$s/%3$s",
-			getSubmissionRootKey(), eventDirName, newFileName);
+			submissionRoot.getKey(), eventDirName, newFileName);
 		PutObjectRequest poRequest = PutObjectRequest.builder()
-			.bucket(s3SubmissionBucket)
+			.bucket(submissionRoot.getBucket())
 			.key(newFileKey)
 			.build();
 		try (InputStream is = file.getInputStream()) {
@@ -150,11 +145,7 @@ public class S3StorageServiceImpl implements StorageService {
 		}
 	}
 
-	private String getSubmissionRootKey() {
-		return s3SubmissionRootKey;
-	}
-
 	private String getSubmissionTableKey(String submissionTableFileName) {
-		return String.format("%1$s/%2$s", getSubmissionRootKey(), submissionTableFileName);
+		return String.format("%1$s/%2$s", submissionRoot.getKey(), submissionTableFileName);
 	}
 }

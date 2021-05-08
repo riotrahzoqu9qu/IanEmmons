@@ -18,7 +18,7 @@
 
 	<h1 th:fragment="heading" th:text="${'Submit Your ' + event.label + ' Entry:'}"/>
 
-	<div th:fragment="id-fields">
+	<div th:fragment="id-fields(studNameLbl, studNamePlHldr)">
 		<div class="entry-field-panel">
 			Division:<span class="required-star"><sup>&starf;</sup></span><br/>
 			<label th:each="d: ${T(org.virginiaso.file_upload.Division).values()}">
@@ -31,6 +31,10 @@
 				Team Number:<span class="required-star"><sup>&starf;</sup></span><br/>
 				<input type="number" th:field="*{teamNumber}" min="1" required/>
 			</label>
+			<a href="https://virginiaso.org/pdf/TeamNumbers.pdf" target="_blank"
+				rel="noreferrer noopener">Click here to look up your team number.<span
+				class="required-star"><sup><img src="/externalLink.png" class="external-link"
+				alt="This link will open in a new browser tab or window"/></sup></span></a>
 		</div>
 		<div class="entry-field-panel">
 			<label>
@@ -48,9 +52,11 @@
 		</div>
 		<div class="entry-field-panel">
 			<label>
-				Student Name(s):<span class="required-star"><sup>&starf;</sup></span><br/>
+				<span th:text="${#strings.defaultString(studNameLbl,'Student Name(s):')}"/><span
+					class="required-star"><sup>&starf;</sup></span><br/>
 				<input type="text" th:field="*{studentNames}" size="70"
-					placeholder="Your name, and if you have a partner, theirs too" required/>
+					th:placeholder="${#strings.defaultString(studNamePlHldr,
+						'Your name, and if you have a partner, theirs too')}" required/>
 			</label>
 		</div>
 	</div>

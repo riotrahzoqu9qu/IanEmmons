@@ -1,19 +1,18 @@
 fileUpload:
-   aws:
-      region: "us-east-1"
-      profile: "iemmons-api"
-      submissionBucket: "virginia-science-olympiad"
-      submissionRootKey: "vaso-file-upload"
-   localFileSystem:
-      submissionRootDir: "/Users/iemmons/file-upload"
-   baseEventUrl: "https://file-upload.virginiaso.org/fileUpload/"
+  timeZone: "America/New_York"
+  tournamentConfigRsrc: "tournamentConfig.yaml"
+  baseEventUrl: "https://file-upload.virginiaso.org/fileUpload/"
+  aws-s3:
+    submissionRoot: "s3://virginia-science-olympiad/vaso-file-upload"
+  localFileSystem:
+    submissionRoot: "/Users/iemmons/file-upload"
 
 spring:
-   servlet:
-      multipart:
-         max-file-size: 5GB
-         max-request-size: 5GB
+  servlet:
+    multipart:
+      max-file-size: 5GB
+      max-request-size: 5GB
 
 server:
-   address: 127.0.0.1
-   port: 8080
+  address: 127.0.0.1
+  port: 8080

@@ -35,7 +35,8 @@
 				on the next page along with your unique word.
 			</li>
 		</ul>
-		<div th:replace="~{fragments :: id-fields}"/>
+		<div th:replace="~{fragments :: id-fields('Name of the one student uploading files:',
+			'Your name only &mdash; your partner&rsquo;s name should be on their upload')}"/>
 		<div th:replace="~{fragments :: submit-buttons}"/>
 	</form>
 

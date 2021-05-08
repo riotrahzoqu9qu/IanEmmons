@@ -22,22 +22,22 @@ EC2 Information
 Default user name: ec2-user
 
 t2.micro:
-* InstanceId: i-0242d20381c7a6f53
-* PublicDnsName: ec2-54-210-207-111.compute-1.amazonaws.com
-* PublicIpAddress: 54.210.207.111
-* VPC: vpc-3510c048
-* Subnet: subnet-daedb997
-* ssh -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-210-207-111.compute-1.amazonaws.com
-* sftp -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-210-207-111.compute-1.amazonaws.com
+- InstanceId: i-0242d20381c7a6f53
+- PublicDnsName: ec2-54-210-207-111.compute-1.amazonaws.com
+- PublicIpAddress: 54.210.207.111
+- VPC: vpc-3510c048
+- Subnet: subnet-daedb997
+- ssh -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-210-207-111.compute-1.amazonaws.com
+- sftp -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-210-207-111.compute-1.amazonaws.com
 
 a1.xlarge:
-* InstanceId: i-0416c71e7a50269cc
-* PublicDnsName: ec2-3-84-90-45.compute-1.amazonaws.com
-* PublicIpAddress: 3.84.90.45
-* VPC: vpc-3510c048
-* Subnet: subnet-e824a5b7
-* ssh -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-3-84-90-45.compute-1.amazonaws.com
-* sftp -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-3-84-90-45.compute-1.amazonaws.com
+- InstanceId: i-0416c71e7a50269cc
+- PublicDnsName: ec2-3-84-90-45.compute-1.amazonaws.com
+- PublicIpAddress: 3.84.90.45
+- VPC: vpc-3510c048
+- Subnet: subnet-e824a5b7
+- ssh -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-3-84-90-45.compute-1.amazonaws.com
+- sftp -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-3-84-90-45.compute-1.amazonaws.com
 
 
 
@@ -45,5 +45,43 @@ TODO
 ====
 x Everywhere: Excel-friendly date-time format: 11/23/2020 11:34:52 AM
 x Everywhere: Put UTC date-time as last column
-* Helicopter: Add pass code entry to finish form (students must fill in)
-* Helicopter: Singular student name -- "Name of student (only one!) uploading video"
+x Helicopter: Add pass code entry to finish form (students must fill in)
+x Helicopter: Singular student name -- "Name of student (only one!) uploading video"
+- Miscellaneous upload page
+x Link to Karen's school-team number table
+- Team number validation, per tournament (including practice day)
+
+Vehicle Design:
+- team number validation tied to cut-off times
+
+Detector Design, Helicopters, and WICI:
+- The only time sensitivity is "on the right day for your team number"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

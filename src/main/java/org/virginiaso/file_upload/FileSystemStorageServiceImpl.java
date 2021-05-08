@@ -21,8 +21,12 @@ public class FileSystemStorageServiceImpl implements StorageService {
 	private static final Logger LOG = LoggerFactory.getLogger(
 		FileSystemStorageServiceImpl.class);
 
-	@Value("${fileUpload.localFileSystem.submissionRootDir}")
-	private String submissionRootDir;
+	private final File submissionRootDir;
+
+	public FileSystemStorageServiceImpl(
+		@Value("${fileUpload.localFileSystem.submissionRoot}") String submissionRoot) {
+		submissionRootDir = new File(submissionRoot);
+	}
 
 	@Override
 	public InputStream getSubmissionTableAsInputStream(String submissionTableFileName)
@@ -75,7 +79,7 @@ public class FileSystemStorageServiceImpl implements StorageService {
 	public void transferUploadedFile(MultipartFile file, String eventDirName,
 		String newFileName) throws IOException {
 
-		File eventDir = new File(getSubmissionDir(), eventDirName);
+		File eventDir = new File(submissionRootDir, eventDirName);
 		if (!eventDir.isDirectory()) {
 			eventDir.mkdirs();
 		}
@@ -83,11 +87,7 @@ public class FileSystemStorageServiceImpl implements StorageService {
 		file.transferTo(newPath);
 	}
 
-	private File getSubmissionDir() {
-		return new File(submissionRootDir);
-	}
-
 	private File getSubmissionTableFile(String submissionTableFileName) {
-		return new File(getSubmissionDir(), submissionTableFileName);
+		return new File(submissionRootDir, submissionTableFileName);
 	}
 }

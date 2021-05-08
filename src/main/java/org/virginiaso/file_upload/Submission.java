@@ -3,7 +3,6 @@ package org.virginiaso.file_upload;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -27,7 +26,6 @@ import org.virginiaso.file_upload.util.StringUtil;
 public final class Submission {
 	private static final Logger LOG = LoggerFactory.getLogger(Submission.class);
 
-	private static final ZoneId EASTERN_TZ = ZoneId.of("America/New_York");
 	private static final DateTimeFormatter UTC = DateTimeFormatter.ISO_INSTANT;
 	private static final DateTimeFormatter ZONED_DATE_TIME = new DateTimeFormatterBuilder()
 		.parseStrict()
@@ -76,7 +74,7 @@ public final class Submission {
 		flightDuration = StringUtil.convertDecimal(userSub.getFlightDuration());
 		passCode = (event == Event.HELICOPTER_START)
 			? generatePassCode()
-			: null;
+			: StringUtil.safeTrim(userSub.getPassCode());
 		fileNames = new ArrayList<>();
 		this.timeStamp = Objects.requireNonNull(timeStamp, "timeStamp");
 
@@ -218,7 +216,7 @@ public final class Submission {
 	}
 
 	public ZonedDateTime getZonedTimeStamp() {
-		return ZonedDateTime.ofInstant(timeStamp, EASTERN_TZ);
+		return ZonedDateTime.ofInstant(timeStamp, Configuration.getTimeZone());
 	}
 
 	private void validate() throws FieldValidationException {

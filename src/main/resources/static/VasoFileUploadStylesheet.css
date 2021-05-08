@@ -68,6 +68,11 @@ span.required-star {
 	color: crimson;
 }
 
+img.external-link {
+	max-width: 0.75rem;
+	height: auto;
+}
+
 textarea {
 	border: 2px solid;
 	border-radius: 4px;
