@@ -26,7 +26,7 @@
 			Kind of Submission:<span class="required-star"><sup>&starf;</sup></span><br/>
 			<label th:each="hMode: ${T(org.virginiaso.file_upload.HelicopterMode).values()}">
 				<input type="radio" name="helicopterMode" th:value="${hMode.name}"
-					th:checked="${helicopterMode eq hMode.name}" required>
+					th:checked="${userSub.helicopterMode eq hMode.name}" required>
 				<span th:text="${hMode.label}"/><br/>
 			</label>
 		</div>

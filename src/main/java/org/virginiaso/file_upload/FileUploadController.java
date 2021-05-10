@@ -15,9 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.virginiaso.file_upload.util.FieldValidationException;
 import org.virginiaso.file_upload.util.HostNameUtil;
-import org.virginiaso.file_upload.util.NoSuchEventException;
+import org.virginiaso.file_upload.util.ValidationException;
 
 @Controller
 public class FileUploadController {
@@ -43,10 +42,11 @@ public class FileUploadController {
 	@GetMapping("/fileUpload/{eventTemplate}")
 	public String fileUploadForm(
 		@PathVariable("eventTemplate") String eventTemplate,
-		Model model) throws NoSuchEventException {
+		Model model) {
 
 		model.addAttribute("event", Event.forTemplate(eventTemplate));
 		model.addAttribute("userSub", new UserSubmission());
+		model.addAttribute("errorMessage", null);
 		return eventTemplate;
 	}
 
@@ -64,34 +64,32 @@ public class FileUploadController {
 		@RequestParam(name = "fileH", required = false) MultipartFile fileH,
 		@RequestParam(name = "fileI", required = false) MultipartFile fileI,
 		@RequestParam(name = "fileJ", required = false) MultipartFile fileJ,
-		Model model) throws IOException, NoSuchEventException {
+		Model model) throws IOException {
 
-		Submission submission = fileUploadService.receiveFileUpload(eventTemplate,
-			userSub, fileA, fileB, fileC, fileD, fileE, fileF, fileG, fileH, fileI, fileJ);
+		try {
+			Submission submission = fileUploadService.receiveFileUpload(eventTemplate,
+				userSub, fileA, fileB, fileC, fileD, fileE, fileF, fileG, fileH, fileI, fileJ);
 
-		model.addAttribute("event", submission.getEvent());
-		model.addAttribute("submission", submission);
-		if (submission.getEvent() != Event.HELICOPTER_START) {
-			return "submissionResult";
-		} else {
-			model.addAttribute("submitUrl",
-				baseEventUrl + Event.HELICOPTER_FINISH.getTemplateName());
-			return "helicopterGo";
+			model.addAttribute("event", submission.getEvent());
+			model.addAttribute("submission", submission);
+			model.addAttribute("errorMessage", null);
+			if (submission.getEvent() != Event.HELICOPTER_START) {
+				return "submissionResult";
+			} else {
+				model.addAttribute("submitUrl",
+					baseEventUrl + Event.HELICOPTER_FINISH.getTemplateName());
+				return "helicopterGo";
+			}
+		} catch (ValidationException ex) {
+			model.addAttribute("event", Event.forTemplate(eventTemplate));
+			model.addAttribute("userSub", userSub);
+			model.addAttribute("errorMessage", ex.getMessage());
+			return eventTemplate;
 		}
 	}
 
 	@ExceptionHandler
 	public String handleIoEx(Model model, IOException ex) {
-		return handleException(model, ex);
-	}
-
-	@ExceptionHandler
-	public String handleNoSuchEventEx(Model model, NoSuchEventException ex) {
-		return handleException(model, ex);
-	}
-
-	@ExceptionHandler
-	public String handleFieldValidationEx(Model model, FieldValidationException ex) {
 		return handleException(model, ex);
 	}
 

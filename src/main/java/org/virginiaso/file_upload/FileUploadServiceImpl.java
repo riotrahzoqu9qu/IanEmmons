@@ -14,11 +14,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.virginiaso.file_upload.util.NoSuchEventException;
 
 @Service
 public class FileUploadServiceImpl implements FileUploadService {
-	@SuppressWarnings("unused")
 	private final List<Tournament> tournamentConfiguration;
 	private final EnumMap<Event, EnumMap<Division, EventUploader>> eventUploaders;
 	private final AtomicInteger previousSequenceNumber;
@@ -61,10 +59,11 @@ public class FileUploadServiceImpl implements FileUploadService {
 
 	@Override
 	public Submission receiveFileUpload(String eventTemplate, UserSubmission userSub,
-		MultipartFile... files) throws IOException, NoSuchEventException {
+		MultipartFile... files) throws IOException {
 
 		Submission submission = new Submission(userSub, eventTemplate,
 			getNextSequenceNumber(), Instant.now());
+		submission.validateTeamAndTime(tournamentConfiguration);
 		return getEventUploader(submission).receiveFileUpload(submission, files);
 	}
 

@@ -5,22 +5,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.apache.logging.log4j.util.Strings;
+import org.virginiaso.file_upload.util.StringUtil;
 import org.virginiaso.file_upload.yaml_dto.ConfigurationDto;
 import org.virginiaso.file_upload.yaml_dto.EventDto;
 import org.virginiaso.file_upload.yaml_dto.TimeIntervalDto;
@@ -75,18 +73,14 @@ final class Configuration {
 	@SuppressFBWarnings(value = "NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD",
 		justification = "SnakeYAML initializes DTO object fields via reflection")
 	private static Tournament convertTournament(TournamentDto tournamentDto) {
-		LocalDate ld = LocalDate.parse(tournamentDto.date.trim());
-		LocalDateTime ldt = ld.atTime(0, 0);
-		ZonedDateTime zdt = ZonedDateTime.of(ldt, getTimeZone());
-		Instant tournamentDate = zdt.toInstant();
-
-		EnumMap<Division, List<Integer>> teams = convertTeams(tournamentDto.teams);
+		LocalDate tournamentDate = LocalDate.parse(tournamentDto.date.trim());
+		EnumMap<Division, Set<Integer>> teams = convertTeams(tournamentDto.teams);
 		EnumMap<Event, EnumMap<Division, TimeInterval>> events = convertEvents(
 			tournamentDto.events, tournamentDate);
 		return new Tournament(tournamentDto.name, tournamentDate, teams, events);
 	}
 
-	private static EnumMap<Division, List<Integer>> convertTeams(
+	private static EnumMap<Division, Set<Integer>> convertTeams(
 			Map<String, String> teams) {
 		return teams.entrySet().stream().collect(Collectors.toMap(
 			entry -> Division.valueOf(entry.getKey()),	// key mapper
@@ -97,12 +91,15 @@ final class Configuration {
 			() -> new EnumMap<>(Division.class)));			// map factory
 	}
 
-	private static List<Integer> convertTeamList(String listDescriptor) {
+	static Set<Integer> convertTeamList(String listDescriptor) {
+		if (StringUtil.isBlank(listDescriptor)) {
+			throw new IllegalArgumentException("Team list is empty");
+		}
 		return Stream.of(listDescriptor.split(Pattern.quote(",")))
 			.map(String::trim)
 			.map(Configuration::convertTeamListEntry)
 			.flatMap(IntStream::boxed)
-			.collect(Collectors.toUnmodifiableList());
+			.collect(Collectors.toUnmodifiableSet());
 	}
 
 	private static IntStream convertTeamListEntry(String entryDescriptor) {
@@ -121,7 +118,7 @@ final class Configuration {
 	}
 
 	private static EnumMap<Event, EnumMap<Division, TimeInterval>> convertEvents(
-			List<EventDto> events, Instant tournamentDate) {
+			List<EventDto> events, LocalDate tournamentDate) {
 		return events.stream().collect(Collectors.toMap(
 			eventDto -> Event.valueOf(eventDto.name),						// key mapper
 			eventDto -> convertIntervals(eventDto, tournamentDate),	// value mapper
@@ -132,7 +129,7 @@ final class Configuration {
 	}
 
 	private static EnumMap<Division, TimeInterval> convertIntervals(EventDto eventDto,
-			Instant tournamentDate) {
+			LocalDate tournamentDate) {
 		EnumMap<Division, TimeInterval> result = new EnumMap<>(Division.class);
 		if (eventDto.BC != null) {
 			if (eventDto.B != null || eventDto.C != null) {
@@ -158,8 +155,8 @@ final class Configuration {
 	}
 
 	private static TimeInterval convertInterval(TimeIntervalDto intervalDto,
-			Instant tournamentDate) {
-		if (Strings.isBlank(intervalDto.from) || Strings.isBlank(intervalDto.to)) {
+		LocalDate tournamentDate) {
+		if (StringUtil.isBlank(intervalDto.from) || StringUtil.isBlank(intervalDto.to)) {
 			return new TimeInterval(tournamentDate);
 		} else {
 			return new TimeInterval(intervalDto.from, intervalDto.to);

@@ -71,7 +71,7 @@ public class UserSubmission {
 		return flightDuration;
 	}
 
-	public void setflightDuration(String flightDuration) {
+	public void setFlightDuration(String flightDuration) {
 		this.flightDuration = flightDuration;
 	}
 

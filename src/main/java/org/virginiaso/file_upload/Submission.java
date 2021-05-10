@@ -19,9 +19,8 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.virginiaso.file_upload.util.FieldValidationException;
-import org.virginiaso.file_upload.util.NoSuchEventException;
 import org.virginiaso.file_upload.util.StringUtil;
+import org.virginiaso.file_upload.util.ValidationException;
 
 public final class Submission {
 	private static final Logger LOG = LoggerFactory.getLogger(Submission.class);
@@ -59,8 +58,7 @@ public final class Submission {
 	private final Instant timeStamp;
 
 	public Submission(UserSubmission userSub, String eventTemplate, int id,
-		Instant timeStamp) throws NoSuchEventException, FieldValidationException {
-
+			Instant timeStamp) {
 		event = Event.forTemplate(eventTemplate);
 		this.id = id;
 		division = StringUtil.convertEnumerator(Division.class, userSub.getDivision());
@@ -69,19 +67,22 @@ public final class Submission {
 		teamName = StringUtil.safeTrim(userSub.getTeamName());
 		studentNames = StringUtil.safeTrim(userSub.getStudentNames());
 		notes = StringUtil.safeTrim(userSub.getNotes());
-		helicopterMode = StringUtil.convertEnumerator(
-			HelicopterMode.class, userSub.getHelicopterMode());
-		flightDuration = StringUtil.convertDecimal(userSub.getFlightDuration());
+		helicopterMode = (event == Event.HELICOPTER_FINISH)
+			? StringUtil.convertEnumerator(HelicopterMode.class, userSub.getHelicopterMode())
+			: null;
+		flightDuration = (event == Event.HELICOPTER_FINISH)
+			? StringUtil.convertDecimal(userSub.getFlightDuration())
+			: null;
 		passCode = (event == Event.HELICOPTER_START)
 			? generatePassCode()
 			: StringUtil.safeTrim(userSub.getPassCode());
 		fileNames = new ArrayList<>();
 		this.timeStamp = Objects.requireNonNull(timeStamp, "timeStamp");
 
-		validate();
+		validateFields();
 	}
 
-	public Submission(CSVRecord record) throws FieldValidationException {
+	public Submission(CSVRecord record) {
 		event = StringUtil.convertEnumerator(Event.class, record.get(Column.EVENT));
 		id = StringUtil.convertInteger(record.get(Column.ID));
 		division = StringUtil.convertEnumerator(Division.class, record.get(Column.DIVISION));
@@ -90,9 +91,13 @@ public final class Submission {
 		teamName = StringUtil.safeTrim(record.get(Column.TEAM_NAME));
 		studentNames = StringUtil.safeTrim(record.get(Column.STUDENT_NAMES));
 		notes = StringUtil.safeTrim(record.get(Column.NOTES));
-		helicopterMode = StringUtil.convertEnumerator(
-			HelicopterMode.class, record.get(Column.HELICOPTER_MODE));
-		flightDuration = StringUtil.convertDecimal(record.get(Column.FLIGHT_DURATION));
+		helicopterMode = (event == Event.HELICOPTER_FINISH)
+			? StringUtil.convertEnumerator(HelicopterMode.class,
+				record.get(Column.HELICOPTER_MODE))
+			: null;
+		flightDuration = (event == Event.HELICOPTER_FINISH)
+			? StringUtil.convertDecimal(record.get(Column.FLIGHT_DURATION))
+			: null;
 		passCode = StringUtil.safeTrim(record.get(Column.PASS_CODE));
 		fileNames = Column.fileColumns().stream()
 			.map(record::get)
@@ -101,7 +106,7 @@ public final class Submission {
 			.collect(Collectors.toCollection(ArrayList::new));
 		timeStamp = Instant.from(UTC.parse(record.get(Column.UTC_TIME_STAMP)));
 
-		validate();
+		validateFields();
 	}
 
 	/**
@@ -219,36 +224,98 @@ public final class Submission {
 		return ZonedDateTime.ofInstant(timeStamp, Configuration.getTimeZone());
 	}
 
-	private void validate() throws FieldValidationException {
+	/**
+	 * Checks that the individual fields of this submission are valid, e.g.,
+	 * required fields are not missing, numbers in range, enumerated values are
+	 * proper, etc.
+	 *
+	 * @throws ValidationException if the submission is invalid. The exception
+	 *                             message will contain an explanation of why.
+	 */
+	private void validateFields() {
 		List<String> errors = new ArrayList<>();
 
 		requireNonNull(errors, event, "the event name (in the URL)");
+		if (id < 0) {
+			addError(errors, "Submission ID '%1$d' must be a non-negative integer", id);
+		}
 		requireNonNull(errors, division, "Division");
 		if (teamNumber < 1) {
-			errors.add("Team Number must be a positive integer");
+			addError(errors, "Team Number '%1$d' must be a positive integer", teamNumber);
 		}
 		requireNonNull(errors, schoolName, "School Name");
 		requireNonNull(errors, studentNames, "Student Name(s)");
 		if (event == Event.HELICOPTER_FINISH) {
 			requireNonNull(errors, helicopterMode, "Kind of Submission");
 		}
-		if (event == Event.HELICOPTER_START) {
-			requireNonNull(errors, passCode, "Pass Code");
+		if (event == Event.HELICOPTER_START || event == Event.HELICOPTER_FINISH) {
+			requireNonNull(errors, passCode, "Unique Word");
 		}
 		requireNonNull(errors, timeStamp, "timeStamp");
 
 		if (!errors.isEmpty()) {
 			String errorMessage = errors.stream()
 				.collect(Collectors.joining(String.format("<br/>%n")));
-			FieldValidationException ex = new FieldValidationException(errorMessage);
-			LOG.error("Validation exception:", ex);
-			throw ex;
+			LOG.warn("Validation error message: {}", errorMessage);
+			throw new ValidationException(errorMessage);
 		}
 	}
 
 	private static void requireNonNull(List<String> errors, Object field, String name) {
 		if (field == null) {
-			errors.add(String.format("%1$s is a required field", name));
+			addError(errors, "%1$s is a required field", name);
+		}
+	}
+
+	private static void addError(List<String> errors, String format, Object... args) {
+		errors.add(String.format(format, args));
+	}
+
+	/**
+	 * Checks that this submission is valid according to the given tournaments
+	 * (typically loaded from the configuration). This checks that the team number
+	 * is valid in the given division and that the submission is within the time
+	 * limits for the declared event and division.
+	 *
+	 * @param tournaments The list of tournaments against which to check
+	 * @throws ValidationException if the submission is invalid. The exception
+	 *                             message will contain an explanation of why.
+	 */
+	public void validateTeamAndTime(List<Tournament> tournaments) {
+		// Check whether the given event and division are a thing:
+		List<Tournament> tournamentsWithEventAndDiv = tournaments.stream()
+			.filter(t -> t.getEvents().containsKey(getEvent()))
+			.filter(t -> t.getEvents().get(getEvent()).containsKey(getDivision()))
+			.collect(Collectors.toList());
+		if (tournamentsWithEventAndDiv.isEmpty()) {
+			throw new ValidationException("%1$s is not an event in division %2$s.",
+				getEvent().getLabel(), getDivision());
+		}
+
+		// Find the tournaments that are open for submissions in this
+		// submission's event and division and at this submission's time:
+		List<Tournament> tournamentsAtTime = tournamentsWithEventAndDiv.stream()
+			.filter(t -> t.getEvents().get(getEvent()).get(getDivision()).contains(
+				getUtcTimeStamp()))
+			.collect(Collectors.toList());
+		if (tournamentsAtTime.isEmpty()) {
+			throw new ValidationException(
+				"%1$s-%2$s is not accepting submissions at this time.",
+				getEvent().getLabel(), getDivision());
+		}
+
+		// Now winnow the list to those that have this submission's team:
+		List<Tournament> tournamentsWithTeam = tournamentsAtTime.stream()
+			.filter(t -> t.getTeams().containsKey(getDivision()))
+			.filter(t -> t.getTeams().get(getDivision()).contains(getTeamNumber()))
+			.collect(Collectors.toList());
+		if (tournamentsWithTeam.isEmpty()) {
+			String tournamentNameList = tournamentsAtTime.stream()
+				.map(t -> t.getName())
+				.collect(Collectors.joining(", "));
+			throw new ValidationException("Team %1$s%2$d is not competing at any of "
+				+ "the tournaments that are accepting %3$s-%1$s submissions (%4$s).",
+				getDivision(), teamNumber, getEvent().getLabel(), tournamentNameList);
 		}
 	}
 }

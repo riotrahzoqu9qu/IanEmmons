@@ -1,10 +1,9 @@
 package org.virginiaso.file_upload;
 
-enum HelicopterMode {
-	TWO_HELICOPTERS_TWO_STUDENTS("Two helicopters, two students, two videos"),
-	TWO_HELICOPTERS_ONE_STUDENT("Two helicopters, one student, two videos"),
-	ONE_HELICOPTER_ONE_STUDENT_TWO_VIDEOS("One helicopter, one student, two videos"),
-	ONE_HELICOPTER_ONE_STUDENT_ONE_VIDEO("One helicopter, one student, one video");
+public enum HelicopterMode {
+	TWO_HELICOPTERS_TWO_STUDENTS_TWO_VIDEOS("Two helicopters, two students, two videos"),
+	TWO_HELICOPTERS_ONE_STUDENT_TWO_VIDEOS("Two helicopters, one student, two videos"),
+	ONE_HELICOPTER_ONE_STUDENT_TWO_VIDEOS("One helicopter, one student, two videos");
 
 	private final String label;
 

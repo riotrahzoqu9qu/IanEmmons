@@ -1,6 +1,6 @@
 package org.virginiaso.file_upload;
 
-enum Division {
+public enum Division {
 	B, C;
 
 	// For Thymeleaf:

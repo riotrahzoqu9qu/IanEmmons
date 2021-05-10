@@ -16,13 +16,21 @@
 		</a>
 	</header>
 
-	<h1 th:fragment="heading" th:text="${'Submit Your ' + event.label + ' Entry:'}"/>
+	<div th:fragment="heading">
+		<h1>Submit Your <span th:text="${event.label}"/> Entry:</h1>
+		<div th:if="${not #strings.isEmpty(errorMessage)}" class="error-message">
+			We are not able to accept your submission for the following reasons:
+			<blockquote th:utext="${errorMessage}"/>
+			If possible, please correct these issues and try again.
+		</div>
+	</div>
 
 	<div th:fragment="id-fields(studNameLbl, studNamePlHldr)">
 		<div class="entry-field-panel">
 			Division:<span class="required-star"><sup>&starf;</sup></span><br/>
 			<label th:each="d: ${T(org.virginiaso.file_upload.Division).values()}">
-				<input type="radio" name="division" th:value="${d.name}" th:checked="${division eq d.name}" required>
+				<input type="radio" name="division" th:value="${d.name}"
+					th:checked="${userSub.division eq d.name}" required>
 				<span th:text="${d.name}"/><br/>
 			</label>
 		</div>

@@ -4,9 +4,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.virginiaso.file_upload.util.NoSuchEventException;
+import org.virginiaso.file_upload.util.ValidationException;
+import org.virginiaso.file_upload.util.StringUtil;
 
-enum Event {
+public enum Event {
 	DETECTOR_DESIGN("detectorDesign", "Detector Design"),
 	HELICOPTER_START("helicopterStart", "Helicopter (Start)"),
 	HELICOPTER_FINISH("helicopterFinish", "Helicopter (Final Submission)"),
@@ -34,15 +35,15 @@ enum Event {
 		return name();
 	}
 
-	public static Event forTemplate(String template) throws NoSuchEventException {
+	public static Event forTemplate(String template) {
 		return Stream.of(Event.values())
-			.filter(event -> event.templateName.equals(template))
+			.filter(event -> event.templateName.equals(StringUtil.safeTrim(template)))
 			.findAny()
 			.orElseThrow(() -> {
 				String knownEvents = Stream.of(Event.values())
 					.map(Event::getTemplateName)
 					.collect(Collectors.joining(", "));
-				return new NoSuchEventException(
+				return new ValidationException(
 					"'%1$s' is not a recognized Science Olympiad event.  Must be one of %2$s",
 					template, knownEvents);
 			});

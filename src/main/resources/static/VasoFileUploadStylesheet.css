@@ -4,7 +4,6 @@ https://www.digitalocean.com/community/tutorials/css-styling-form-input-validity
 
 * {
 	font-family: Georgia, Cambria, "Times New Roman", Times, serif;
-	font-size: medium;
 }
 
 pre, code, textarea {
@@ -51,6 +50,15 @@ div.button-panel {
 	padding-left: 7rem;
 }
 
+div.error-message {
+	font-size: large;
+	font-weight: bold;
+	font-style: italic;
+	background-color: #ffffff;
+	border: 2px solid crimson;
+	padding: 1rem;
+}
+
 pre.notes {
 	margin-left: 2rem;
 }
@@ -74,6 +82,7 @@ img.external-link {
 }
 
 textarea {
+	font-size: medium;
 	border: 2px solid;
 	border-radius: 4px;
 	border-color: gray;
@@ -83,6 +92,7 @@ textarea {
 }
 
 input {
+	font-size: medium;
 	border: 2px solid;
 	border-radius: 4px;
 	margin: 0.25rem 0.25rem 0.25rem 1.2rem;	/* top, right, bottom, left */
@@ -113,6 +123,7 @@ input:focus:invalid {
 }
 
 .btn {
+	font-size: medium;
 	background: transparent;
 	color: black; 
 	text-align: center;

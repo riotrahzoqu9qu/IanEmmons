@@ -1,0 +1,18 @@
+tournaments:
+  - name: "Test Regional"
+    date: "2021-02-06"
+    teams:
+      B: "31,33-40,44-60"
+      C: "31,33-40,43-59"
+    events:
+      - name: "DETECTOR_DESIGN"
+        C: { from: "", to: "" }
+      - name: "VEHICLE_DESIGN"
+        B:
+          from: "2021-01-17T01:00:00"
+          to:   "2021-01-30T12:00:00"
+        C:
+          from: "2021-01-18T01:00:00"
+          to:   "2021-01-29T12:00:00"
+      - name: "WICI"
+        BC: { from: "", to: "" }

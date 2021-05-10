@@ -1,24 +1,36 @@
 package org.virginiaso.file_upload;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.EnumMap;
-import java.util.List;
+import java.util.Set;
 
 final class Tournament {
-	@SuppressWarnings("unused")
 	private final String name;
-	@SuppressWarnings("unused")
-	private final Instant date;
-	@SuppressWarnings("unused")
-	private final EnumMap<Division, List<Integer>> teams;
-	@SuppressWarnings("unused")
+	private final LocalDate date;
+	private final EnumMap<Division, Set<Integer>> teams;
 	private final EnumMap<Event, EnumMap<Division, TimeInterval>> events;
 
-	public Tournament(String name, Instant date, EnumMap<Division, List<Integer>> teams,
+	public Tournament(String name, LocalDate date, EnumMap<Division, Set<Integer>> teams,
 			EnumMap<Event, EnumMap<Division, TimeInterval>> events) {
 		this.name = name;
 		this.date = date;
 		this.teams = teams;
 		this.events = events;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public EnumMap<Division, Set<Integer>> getTeams() {
+		return teams;
+	}
+
+	public EnumMap<Event, EnumMap<Division, TimeInterval>> getEvents() {
+		return events;
 	}
 }

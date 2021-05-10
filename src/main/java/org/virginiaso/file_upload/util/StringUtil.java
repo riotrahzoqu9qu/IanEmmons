@@ -1,8 +1,12 @@
 package org.virginiaso.file_upload.util;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,43 +18,52 @@ public final class StringUtil {
 	private StringUtil() {}	// prevent instantiation
 
 	public static <E extends Enum<E>> E convertEnumerator(
-			Class<E> enumClass, String enumStr) {
+			Class<E> enumClass, String str) {
 		Objects.requireNonNull(enumClass, "enumClass");
 		try {
-			return (enumStr == null || enumStr.isBlank())
-				? null
-				: E.valueOf(enumClass, enumStr.trim());
-		} catch (IllegalArgumentException ex) {
-			LOG.warn("Bad {} enum value '{}'", enumClass.getSimpleName(), enumStr);
-			return null;
+			return E.valueOf(enumClass, safeTrim(str));
+		} catch (NullPointerException | IllegalArgumentException ex) {
+			try {
+				Method valuesMethod = enumClass.getMethod("values");
+				Object[] enumValues = (Object[]) valuesMethod.invoke(null);
+				String enumerators = Stream.of(enumValues)
+					.map(Object::toString)
+					.collect(Collectors.joining(", "));
+				throw new ValidationException(
+					"Unrecognized %1$s value '%2$s' (should be one of %3$s)",
+					enumClass.getSimpleName(), str, enumerators);
+			} catch (NoSuchMethodException | SecurityException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException nestedEx) {
+				LOG.warn("Nested exception:", nestedEx);
+				throw new ValidationException("Unrecognized %1$s value '%2$s'",
+					enumClass.getSimpleName(), str);
+			}
 		}
 	}
 
-	public static int convertInteger(String integerStr) {
+	public static int convertInteger(String str) {
 		try {
-			return (integerStr == null || integerStr.isBlank())
-				? -1
-				: Integer.parseUnsignedInt(integerStr.trim());
-		} catch (NumberFormatException ex) {
-			LOG.warn("Bad integer value '{}'", integerStr);
-			return -1;
+			return Integer.parseUnsignedInt(safeTrim(str));
+		} catch (NullPointerException | NumberFormatException ex) {
+			throw new ValidationException("Ill-formed integer: '%1$s'", str);
 		}
 	}
 
-	public static BigDecimal convertDecimal(String decimalStr) {
+	public static BigDecimal convertDecimal(String str) {
 		try {
-			return (decimalStr == null || decimalStr.isBlank())
-				? null
-				: new BigDecimal(decimalStr.trim(), DURATION_ROUNDING);
-		} catch (NumberFormatException ex) {
-			LOG.warn("Bad decimal value '{}'", decimalStr);
-			return null;
+			return new BigDecimal(safeTrim(str), DURATION_ROUNDING);
+		} catch (NullPointerException | NumberFormatException ex) {
+			throw new ValidationException("Ill-formed decimal number: '%1$s'", str);
 		}
 	}
 
 	public static String safeTrim(String str) {
-		return (str == null || str.isBlank())
+		return isBlank(str)
 			? null
 			: str.trim();
+	}
+
+	public static boolean isBlank(String str) {
+		return str == null || str.isBlank();
 	}
 }
