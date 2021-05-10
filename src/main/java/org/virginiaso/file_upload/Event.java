@@ -4,13 +4,14 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.virginiaso.file_upload.util.ValidationException;
 import org.virginiaso.file_upload.util.StringUtil;
+import org.virginiaso.file_upload.util.ValidationException;
 
 public enum Event {
 	DETECTOR_DESIGN("detectorDesign", "Detector Design"),
 	HELICOPTER_START("helicopterStart", "Helicopter (Start)"),
 	HELICOPTER_FINISH("helicopterFinish", "Helicopter (Final Submission)"),
+	MISCELLANEOUS("miscellaneous", "Miscellaneous"),
 	VEHICLE_DESIGN("vehicleDesign", "Vehicle Design"),
 	WICI("wici", "Write It/CAD It (WICI)");
 

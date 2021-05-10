@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<div th:replace="~{fragments :: head}"/>
+<body>
+	<div th:replace="~{fragments :: page-header}"/>
+
+	<form th:object="${userSub}" th:action="${'/fileUpload/' + event.templateName}"
+			method="post" enctype="multipart/form-data">
+		<div th:replace="~{fragments :: heading}"/>
+		Please do not use this submission form unless you have been specifically
+		advised to do so by an event supervisor or other tournament official.
+		<div th:replace="~{fragments :: id-fields(null, null)}"/>
+		<div class="entry-field-panel">
+			<label>
+				File 1:<span class="required-star"><sup>&starf;</sup></span><br/>
+				<input type="file" name="fileA" size="70" required/>
+			</label>
+		</div>
+		<div class="entry-field-panel">
+			<label>
+				File 2:<br/>
+				<input type="file" name="fileB" size="70"/>
+			</label>
+		</div>
+		<div class="entry-field-panel">
+			<label>
+				File 3:<br/>
+				<input type="file" name="fileC" size="70"/>
+			</label>
+		</div>
+		<div class="entry-field-panel">
+			<label>
+				File 4:<br/>
+				<input type="file" name="fileD" size="70"/>
+			</label>
+		</div>
+		<div class="entry-field-panel">
+			<label>
+				File 5:<br/>
+				<input type="file" name="fileE" size="70"/>
+			</label>
+		</div>
+		<div class="entry-field-panel">
+			<label>
+				File 6:<br/>
+				<input type="file" name="fileF" size="70"/>
+			</label>
+		</div>
+		<div class="entry-field-panel">
+			<label>
+				File 7:<br/>
+				<input type="file" name="fileG" size="70"/>
+			</label>
+		</div>
+		<div class="entry-field-panel">
+			<label>
+				File 8:<br/>
+				<input type="file" name="fileH" size="70"/>
+			</label>
+		</div>
+		<div class="entry-field-panel">
+			<label>
+				File 9:<br/>
+				<input type="file" name="fileI" size="70"/>
+			</label>
+		</div>
+		<div class="entry-field-panel">
+			<label>
+				File 10:<br/>
+				<input type="file" name="fileJ" size="70"/>
+			</label>
+		</div>
+		<div th:replace="~{fragments :: notes-and-buttons}"/>
+	</form>
+
+	<div th:replace="~{fragments :: page-footer}"/>
+</body>
+</html>

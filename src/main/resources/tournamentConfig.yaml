@@ -2,8 +2,8 @@ tournaments:
   - name: "Software Practice Day"
     date: "2021-01-16"
     teams:
-      B: "1-90"
-      C: "1-90"
+      B: "1-60"
+      C: "1-60"
     events:
       - name: "DETECTOR_DESIGN"
         C: { from: "", to: "" }
@@ -11,6 +11,10 @@ tournaments:
         BC: { from: "", to: "" }
       - name: "HELICOPTER_FINISH"
         BC: { from: "", to: "" }
+      - name: "MISCELLANEOUS"
+        BC:
+          from: "2020-12-01T00:00:00"
+          to:   "2021-02-10T23:59:59"
       - name: "VEHICLE_DESIGN"
         BC: { from: "", to: "" }
       - name: "WICI"
@@ -27,6 +31,10 @@ tournaments:
         BC: { from: "", to: "" }
       - name: "HELICOPTER_FINISH"
         BC: { from: "", to: "" }
+      - name: "MISCELLANEOUS"
+        BC:
+          from: "2020-12-01T00:00:00"
+          to:   "2021-02-10T23:59:59"
       - name: "VEHICLE_DESIGN"
         BC:
           from: "2021-01-17T01:00:00"
@@ -45,6 +53,10 @@ tournaments:
         BC: { from: "", to: "" }
       - name: "HELICOPTER_FINISH"
         BC: { from: "", to: "" }
+      - name: "MISCELLANEOUS"
+        BC:
+          from: "2020-12-01T00:00:00"
+          to:   "2021-02-10T23:59:59"
       - name: "VEHICLE_DESIGN"
         BC:
           from: "2021-01-17T01:00:00"

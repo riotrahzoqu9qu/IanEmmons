@@ -47,6 +47,7 @@ x Everywhere: Excel-friendly date-time format: 11/23/2020 11:34:52 AM
 x Everywhere: Put UTC date-time as last column
 x Helicopter: Add pass code entry to finish form (students must fill in)
 x Helicopter: Singular student name -- "Name of student (only one!) uploading video"
-- Miscellaneous upload page
+x Miscellaneous upload page
 x Link to Karen's school-team number table
 x Team number validation, per tournament: In the right time interval for your team number
+- Documentation review
