@@ -2,8 +2,8 @@ tournaments:
   - name: "Software Practice Day"
     date: "2021-01-16"
     teams:
-      B: "1-60"
-      C: "1-60"
+      B: "1-23,31-48,61-79"
+      C: "1-18,31-55,61-87"
     events:
       - name: "DETECTOR_DESIGN"
         C: { from: "", to: "" }
@@ -15,15 +15,13 @@ tournaments:
         BC:
           from: "2020-12-01T00:00:00"
           to:   "2021-02-10T23:59:59"
-      - name: "VEHICLE_DESIGN"
-        BC: { from: "", to: "" }
       - name: "WICI"
         BC: { from: "", to: "" }
   - name: "Newton Regional"
     date: "2021-01-30"
     teams:
-      B: "1-30"
-      C: "1-30"
+      B: "1-23"
+      C: "1-18"
     events:
       - name: "DETECTOR_DESIGN"
         C: { from: "", to: "" }
@@ -38,14 +36,14 @@ tournaments:
       - name: "VEHICLE_DESIGN"
         BC:
           from: "2021-01-17T01:00:00"
-          to:   "2021-01-23T12:00:00"
+          to:   "2021-01-24T12:00:00"
       - name: "WICI"
         BC: { from: "", to: "" }
   - name: "Hook/Leibniz Regional"
     date: "2021-02-06"
     teams:
-      B: "31,33-40,43-60"
-      C: "31,33-40,43-60"
+      B: "31-48,61-79"
+      C: "31-55,61-87"
     events:
       - name: "DETECTOR_DESIGN"
         C: { from: "", to: "" }
@@ -60,6 +58,6 @@ tournaments:
       - name: "VEHICLE_DESIGN"
         BC:
           from: "2021-01-17T01:00:00"
-          to:   "2021-01-30T12:00:00"
+          to:   "2021-01-31T12:00:00"
       - name: "WICI"
         BC: { from: "", to: "" }
