@@ -3,7 +3,7 @@ tournaments:
     date: "2021-01-16"
     teams:
       B: "1-23,31-48,61-79"
-      C: "1-18,31-55,61-87"
+      C: "1-19,31-59,61-88"
     events:
       - name: "DETECTOR_DESIGN"
         C: { from: "", to: "" }
@@ -21,7 +21,7 @@ tournaments:
     date: "2021-01-30"
     teams:
       B: "1-23"
-      C: "1-18"
+      C: "1-19"
     events:
       - name: "DETECTOR_DESIGN"
         C: { from: "", to: "" }
@@ -43,7 +43,7 @@ tournaments:
     date: "2021-02-06"
     teams:
       B: "31-48,61-79"
-      C: "31-55,61-87"
+      C: "31-59,61-88"
     events:
       - name: "DETECTOR_DESIGN"
         C: { from: "", to: "" }
