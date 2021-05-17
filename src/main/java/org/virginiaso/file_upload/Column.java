@@ -17,6 +17,7 @@ public enum Column {
 	HELICOPTER_MODE(false),	// Helicopter only
 	FLIGHT_DURATION(false),	// Helicopter only
 	PASS_CODE(false),			// Helicopter only
+	LOAD_ESTIMATE(false),	// Digital Structures only
 	FILE_NAME_0(true),
 	FILE_NAME_1(true),
 	FILE_NAME_2(true),

@@ -10,6 +10,7 @@ public class UserSubmission {
 	private String helicopterMode;
 	private String flightDuration;
 	private String passCode;
+	private String loadEstimate;
 
 	public String getDivision() {
 		return division;
@@ -81,5 +82,13 @@ public class UserSubmission {
 
 	public void setPassCode(String passCode) {
 		this.passCode = passCode;
+	}
+
+	public String getLoadEstimate() {
+		return loadEstimate;
+	}
+
+	public void setLoadEstimate(String loadEstimate) {
+		this.loadEstimate = loadEstimate;
 	}
 }

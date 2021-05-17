@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<div th:replace="~{fragments :: head}"/>
+<body>
+	<div th:replace="~{fragments :: page-header}"/>
+
+	<form th:object="${userSub}" th:action="${'/fileUpload/' + event.templateName}"
+			method="post" enctype="multipart/form-data">
+		<div th:replace="~{fragments :: heading}"/>
+		Instructions:
+		<ul>
+			<li>
+				The purpose of this form is to collect your Estimated Load Supported,
+				which is used to break ties.
+			</li>
+			<li>
+				Before you submit this form, you must visit the
+				<span th:text="${event.label}"/> test in Scilympiad.  That test has no
+				actual questions, but it contains important instructions and the two
+				unknown construction parameters, minimum distance from wall to load and
+				minimum contact width.
+			</li>
+			<li>
+				This form must be submitted within five (5) minutes of starting the test
+				in Scilympiad.  Then you should log into SkyCiv, start competition mode,
+				and build your boom.
+			</li>
+			<li>
+				Leave the test open in Scilympiad.  This will let you refer to the
+				instructions there, and it will also give you access to the chat with
+				the event supervisor in case there is an announcement or you need to ask
+				a question.
+			</li>
+		</ul>
+		<div th:replace="~{fragments :: id-fields(null, null)}"/>
+		<div class="entry-field-panel">
+			<label>
+				Estimated Load Supported (in <b><i>grams,</i></b> with no decimal places):<span
+					class="required-star"><sup>&starf;</sup></span><br/>
+				<input type="number" th:field="*{loadEstimate}" min="0"
+					placeholder="Est. load in grams" required/>
+			</label>
+		</div>
+		<div th:replace="~{fragments :: notes-and-buttons}"/>
+	</form>
+
+	<div th:replace="~{fragments :: page-footer}"/>
+</body>
+</html>

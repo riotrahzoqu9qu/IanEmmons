@@ -9,6 +9,7 @@ import org.virginiaso.file_upload.util.ValidationException;
 
 public enum Event {
 	DETECTOR_DESIGN("detectorDesign", "Detector Design"),
+	DIGITAL_STRUCTURES("digitalStructures", "Digital Structures"),
 	HELICOPTER_START("helicopterStart", "Helicopter (Start)"),
 	HELICOPTER_FINISH("helicopterFinish", "Helicopter (Final Submission)"),
 	MISCELLANEOUS("miscellaneous", "Miscellaneous"),

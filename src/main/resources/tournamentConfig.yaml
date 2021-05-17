@@ -7,6 +7,8 @@ tournaments:
     events:
       - name: "DETECTOR_DESIGN"
         C: { from: "", to: "" }
+      - name: "DIGITAL_STRUCTURES"
+        BC: { from: "", to: "" }
       - name: "HELICOPTER_START"
         BC: { from: "", to: "" }
       - name: "HELICOPTER_FINISH"
@@ -25,6 +27,8 @@ tournaments:
     events:
       - name: "DETECTOR_DESIGN"
         C: { from: "", to: "" }
+      - name: "DIGITAL_STRUCTURES"
+        BC: { from: "", to: "" }
       - name: "HELICOPTER_START"
         BC: { from: "", to: "" }
       - name: "HELICOPTER_FINISH"
@@ -47,6 +51,8 @@ tournaments:
     events:
       - name: "DETECTOR_DESIGN"
         C: { from: "", to: "" }
+      - name: "DIGITAL_STRUCTURES"
+        BC: { from: "", to: "" }
       - name: "HELICOPTER_START"
         BC: { from: "", to: "" }
       - name: "HELICOPTER_FINISH"

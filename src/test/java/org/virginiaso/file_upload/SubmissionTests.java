@@ -151,7 +151,17 @@ public class SubmissionTests {
 				"helicopterFinish", 139, Instant.now(),
 				createFieldTest("B", "12", "Wandering Minds Academy", "Red", "Kim & Joe",
 					"A note", null, "37.12", "ABCDEF"),
-				"^Unrecognized HelicopterMode value 'null' \\(should be one of.*$"));
+				"^Unrecognized HelicopterMode value 'null' \\(should be one of.*$"),
+			Arguments.of(
+				"digitalStructures", 139, Instant.now(),
+				createFieldTest("B", "12", "Wandering Minds Academy", "Red", "Kim & Joe",
+					"A note", null, "37.12", "ABCDEF", "13000"),
+				null),
+			Arguments.of(
+				"digitalStructures", 139, Instant.now(),
+				createFieldTest("B", "12", "Wandering Minds Academy", "Red", "Kim & Joe",
+					"A note", null, "37.12", "ABCDEF", null),
+				"^Ill-formed integer: 'null'$"));
 	}
 
 	private static UserSubmission createFieldTest(String division, String teamNumber,
@@ -167,6 +177,16 @@ public class SubmissionTests {
 		userSub.setHelicopterMode(helicopterMode);
 		userSub.setFlightDuration(flightDuration);
 		userSub.setPassCode(passCode);
+		return userSub;
+	}
+
+	private static UserSubmission createFieldTest(String division, String teamNumber,
+			String schoolName, String teamName, String studentNames, String notes,
+			String helicopterMode, String flightDuration, String passCode,
+			String loadEstimate) {
+		UserSubmission userSub = createFieldTest(division, teamNumber, schoolName,
+			teamName, studentNames, notes, helicopterMode, flightDuration, passCode);
+		userSub.setLoadEstimate(loadEstimate);
 		return userSub;
 	}
 

@@ -54,6 +54,7 @@ public final class Submission {
 	private final HelicopterMode helicopterMode;
 	private final BigDecimal flightDuration;
 	private final String passCode;
+	private final int loadEstimate;
 	private final List<String> fileNames;
 	private final Instant timeStamp;
 
@@ -76,6 +77,9 @@ public final class Submission {
 		passCode = (event == Event.HELICOPTER_START)
 			? generatePassCode()
 			: StringUtil.safeTrim(userSub.getPassCode());
+		loadEstimate = (event == Event.DIGITAL_STRUCTURES)
+			? StringUtil.convertInteger(userSub.getLoadEstimate())
+			: -1;
 		fileNames = new ArrayList<>();
 		this.timeStamp = Objects.requireNonNull(timeStamp, "timeStamp");
 
@@ -99,6 +103,9 @@ public final class Submission {
 			? StringUtil.convertDecimal(record.get(Column.FLIGHT_DURATION))
 			: null;
 		passCode = StringUtil.safeTrim(record.get(Column.PASS_CODE));
+		loadEstimate = (event == Event.DIGITAL_STRUCTURES)
+			? StringUtil.convertInteger(record.get(Column.LOAD_ESTIMATE))
+			: -1;
 		fileNames = Column.fileColumns().stream()
 			.map(record::get)
 			.filter(Objects::nonNull)
@@ -141,6 +148,8 @@ public final class Submission {
 		printer.print((event != Event.HELICOPTER_FINISH || flightDuration == null)
 			? null : flightDuration.toPlainString());
 		printer.print(passCode);
+		printer.print((event != Event.DIGITAL_STRUCTURES || loadEstimate < 0)
+			? null : Integer.toString(loadEstimate));
 		for (String fileName : fileNames) {
 			printer.print(fileName);
 		}
@@ -208,6 +217,10 @@ public final class Submission {
 		return passCode;
 	}
 
+	public int getLoadEstimate() {
+		return loadEstimate;
+	}
+
 	public List<String> getFileNames() {
 		return Collections.unmodifiableList(fileNames);
 	}
@@ -250,6 +263,10 @@ public final class Submission {
 		}
 		if (event == Event.HELICOPTER_START || event == Event.HELICOPTER_FINISH) {
 			requireNonNull(errors, passCode, "Unique Word");
+		}
+		if (event == Event.DIGITAL_STRUCTURES && loadEstimate < 0) {
+			addError(errors, "Estimated Load Supported '%1$d' must be a non-negative integer",
+				loadEstimate);
 		}
 		requireNonNull(errors, timeStamp, "timeStamp");
 
