@@ -149,6 +149,7 @@ Each event folder also contains one special file called `<event-name>-<division>
 - HELICOPTER_MODE: Used only in Helicopter
 - FLIGHT_DURATION: Used only in Helicopter
 - PASS_CODE: Used only in Helicopter
+- LOAD_ESTIMATE: Used only in Digital Structures
 - FILE_NAME_0: The first file name
 - FILE_NAME_1: The second file name, if there is one
 - FILE_NAME_2 through FILE_NAME_9: Unused
