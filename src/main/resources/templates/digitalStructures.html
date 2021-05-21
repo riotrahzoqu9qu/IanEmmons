@@ -6,32 +6,14 @@
 
 	<form th:object="${userSub}" th:action="${'/fileUpload/' + event.templateName}"
 			method="post" enctype="multipart/form-data">
-		<div th:replace="~{fragments :: heading}"/>
-		Instructions:
-		<ul>
-			<li>
-				The purpose of this form is to collect your Estimated Load Supported,
-				which is used to break ties.
-			</li>
-			<li>
-				Before you submit this form, you must visit the
-				<span th:text="${event.label}"/> test in Scilympiad.  That test has no
-				actual questions, but it contains important instructions and the two
-				unknown construction parameters, minimum distance from wall to load and
-				minimum contact width.
-			</li>
-			<li>
-				This form must be submitted within five (5) minutes of starting the test
-				in Scilympiad.  Then you should log into SkyCiv, start competition mode,
-				and build your boom.
-			</li>
-			<li>
-				Leave the test open in Scilympiad.  This will let you refer to the
-				instructions there, and it will also give you access to the chat with
-				the event supervisor in case there is an announcement or you need to ask
-				a question.
-			</li>
-		</ul>
+		<h1>Submit Your <span th:text="${event.label}"/> Estimate:</h1>
+		<div th:if="${not #strings.isEmpty(errorMessage)}" class="error-message">
+			We are not able to accept your submission for the following reasons:
+			<blockquote th:utext="${errorMessage}"/>
+			If possible, please correct these issues and try again.
+		</div>
+		The purpose of this form is to collect your <b>Estimated Load Supported,</b>
+		which is used to break ties.
 		<div th:replace="~{fragments :: id-fields(null, null)}"/>
 		<div class="entry-field-panel">
 			<label>
