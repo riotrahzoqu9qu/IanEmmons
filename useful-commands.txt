@@ -32,12 +32,12 @@ t2.micro:
 
 a1.xlarge:
 - InstanceId: i-0416c71e7a50269cc
-- PublicDnsName: ec2-3-84-90-45.compute-1.amazonaws.com
-- PublicIpAddress: 3.84.90.45
+- PublicDnsName: ec2-3-81-101-168.compute-1.amazonaws.com
+- PublicIpAddress: 3.81.101.168
 - VPC: vpc-3510c048
 - Subnet: subnet-e824a5b7
-- ssh -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-3-84-90-45.compute-1.amazonaws.com
-- sftp -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-3-84-90-45.compute-1.amazonaws.com
+- ssh -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-3-81-101-168.compute-1.amazonaws.com
+- sftp -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-3-81-101-168.compute-1.amazonaws.com
 
 
 
