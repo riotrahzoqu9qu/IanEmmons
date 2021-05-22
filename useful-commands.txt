@@ -50,4 +50,4 @@ x Helicopter: Singular student name -- "Name of student (only one!) uploading vi
 x Miscellaneous upload page
 x Link to Karen's school-team number table
 x Team number validation, per tournament: In the right time interval for your team number
-- Documentation review
+x Documentation review

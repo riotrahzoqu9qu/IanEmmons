@@ -12,6 +12,8 @@ spring:
     multipart:
       max-file-size: 5GB
       max-request-size: 5GB
+      #resolve-lazily: true
+      #enabled: true
 
 server:
   address: 127.0.0.1
