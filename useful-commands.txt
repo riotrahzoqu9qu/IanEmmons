@@ -39,6 +39,15 @@ a1.xlarge:
 - ssh -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-3-81-101-168.compute-1.amazonaws.com
 - sftp -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-3-81-101-168.compute-1.amazonaws.com
 
+c5a.8xlarge:
+- InstanceId: i-0f3812ec8033ecd3d
+- PublicDnsName: ec2-54-226-41-109.compute-1.amazonaws.com
+- PublicIpAddress: 54.226.41.109
+- VPC: vpc-3510c048
+- Subnet: subnet-daedb997
+- ssh -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-226-41-109.compute-1.amazonaws.com
+- sftp -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-226-41-109.compute-1.amazonaws.com
+
 
 
 TODO

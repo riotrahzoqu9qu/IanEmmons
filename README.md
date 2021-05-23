@@ -48,9 +48,7 @@ Install required software with these commands:
 
 ```
 sudo yum update
-sudo yum install java-11-amazon-corretto-headless
-sudo yum install httpd
-sudo yum install mod_ssl
+sudo yum install java-11-amazon-corretto-headless httpd mod_ssl
 ```
 
 Acquire a web site certificate.  I used the host name `file-upload.virginiaso.org` and the certificate issuer https://sslforfree.com/.  (I believe Microsoft also provides free certificates, though I haven’t tried them myself.)  Upload the certificate package to the EC2 instance.  The `~/.ssh` directory is a handy place to store it, since it has appropriate permissions.
@@ -70,7 +68,7 @@ Restart the web server to pick up the new SSL configuration with this command:
 sudo systemctl restart httpd
 ```
 
-Build the file upload service jar with the command `./gradlew clean build`.  (Issue this command in your git working directory, not on the EC2 instance.)  Then upload the jar from the `build/lib` directory to the EC2 instance, in your home directory.  Start the file upload service with this command:
+Build the file upload service jar with the command `./gradlew clean build`.  (Issue this command in your git working directory, not on the EC2 instance.)  Then upload the jar from the `build/libs` directory to the EC2 instance, in your home directory.  Start the file upload service with this command:
 
 ```
 java -jar VasoFileUpload-<version>-SNAPSHOT.jar &
