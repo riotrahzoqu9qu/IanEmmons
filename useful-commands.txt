@@ -21,7 +21,7 @@ EC2 Information
 
 Default user name: ec2-user
 
-t2.micro:
+t2.micro: Free
 - InstanceId: i-0242d20381c7a6f53
 - PublicDnsName: ec2-54-210-207-111.compute-1.amazonaws.com
 - PublicIpAddress: 54.210.207.111
@@ -30,7 +30,8 @@ t2.micro:
 - ssh -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-210-207-111.compute-1.amazonaws.com
 - sftp -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-210-207-111.compute-1.amazonaws.com
 
-a1.xlarge:
+a1.xlarge: $0.102/hr
+- 4 cores, ARM-64, 8 GB RAM, 10 GB disk, up to 10 Gb bandwidth
 - InstanceId: i-0416c71e7a50269cc
 - PublicDnsName: ec2-3-81-101-168.compute-1.amazonaws.com
 - PublicIpAddress: 3.81.101.168
@@ -39,14 +40,15 @@ a1.xlarge:
 - ssh -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-3-81-101-168.compute-1.amazonaws.com
 - sftp -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-3-81-101-168.compute-1.amazonaws.com
 
-c5a.8xlarge:
+c5a.8xlarge: $1.232/hr
+- 32 cores, x86_64, 64 GB RAM, 32 GB disk, 10 Gb bandwidth
 - InstanceId: i-0f3812ec8033ecd3d
-- PublicDnsName: ec2-54-226-41-109.compute-1.amazonaws.com
-- PublicIpAddress: 54.226.41.109
+- PublicDnsName: ec2-54-234-130-15.compute-1.amazonaws.com
+- PublicIpAddress: 54.234.130.15
 - VPC: vpc-3510c048
 - Subnet: subnet-daedb997
-- ssh -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-226-41-109.compute-1.amazonaws.com
-- sftp -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-226-41-109.compute-1.amazonaws.com
+- ssh -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-234-130-15.compute-1.amazonaws.com
+- sftp -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-234-130-15.compute-1.amazonaws.com
 
 
 
