@@ -52,7 +52,9 @@ tournaments:
       - name: "DETECTOR_DESIGN"
         C: { from: "", to: "" }
       - name: "DIGITAL_STRUCTURES"
-        BC: { from: "", to: "" }
+        BC:
+          from: "2021-02-06T00:00:00"
+          to:   "2021-02-10T19:00:00"
       - name: "HELICOPTER_START"
         BC: { from: "", to: "" }
       - name: "HELICOPTER_FINISH"
