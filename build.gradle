@@ -8,8 +8,14 @@ plugins {
 }
 
 group = 'org.virginiaso'
-version = '1.3.1-SNAPSHOT'
+version = '1.3.2'
 sourceCompatibility = '11'
+
+ext {
+	eol = "${System.lineSeparator}"
+	genRsrcDir = file("$buildDir/generated/resources")
+	projPropsRsrcFile = file("$genRsrcDir/project-info.properties")
+}
 
 repositories {
 	jcenter()
@@ -32,6 +38,21 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 }
+
+sourceSets {
+	main {
+		resources { srcDir genRsrcDir }
+	}
+}
+
+task generateProjectPropertiesRsrc {
+	outputs.file(projPropsRsrcFile)
+	doLast {
+		projPropsRsrcFile.text = "projectName=${project.name}${eol}projectVersion=${project.version}${eol}"
+	}
+}
+
+processResources.dependsOn generateProjectPropertiesRsrc
 
 checkstyle {
 	configFile file("${projectDir}/config/checkstyle/checkstyle.xml")

@@ -16,6 +16,9 @@
 		</li>
 	</ul>
 	<div th:replace="~{fragments :: page-footer}"/>
-	<p style="font-style: italic"><span th:text="${host}"/>, <span th:text="${cores}"/> cores</p>
+	<p style="font-style: italic">
+		<span th:text="${projName}"/> version <span th:text="${projVer}"/>,
+		running on <span th:text="${host}"/> with <span th:text="${cores}"/> cores
+	</p>
 </body>
 </html>
