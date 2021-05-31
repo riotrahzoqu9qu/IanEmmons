@@ -58,10 +58,10 @@ public class FileUploadServiceImpl implements FileUploadService {
 	}
 
 	@Override
-	public Submission receiveFileUpload(String eventTemplate, UserSubmission userSub,
+	public Submission receiveFileUpload(Event event, UserSubmission userSub,
 		MultipartFile... files) throws IOException {
 
-		Submission submission = new Submission(userSub, eventTemplate,
+		Submission submission = new Submission(userSub, event,
 			getNextSequenceNumber(), Instant.now());
 		submission.validateTeamAndTime(tournamentConfiguration);
 		return getEventUploader(submission).receiveFileUpload(submission, files);

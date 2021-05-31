@@ -34,7 +34,7 @@
 	</ul>
 	Anything else you need to tell us:
 	<pre class="notes" th:text="${submission.notes}"/>
-	<p><a th:href="${'/fileUpload/' + submission.event.templateName}">Submit another</a></p>
+	<p><a th:href="${'/fileUpload/' + submission.event.uri}">Submit another</a></p>
 
 	<div th:replace="~{fragments :: page-footer}"/>
 </body>

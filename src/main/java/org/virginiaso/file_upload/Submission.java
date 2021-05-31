@@ -58,9 +58,8 @@ public final class Submission {
 	private final List<String> fileNames;
 	private final Instant timeStamp;
 
-	public Submission(UserSubmission userSub, String eventTemplate, int id,
-			Instant timeStamp) {
-		event = Event.forTemplate(eventTemplate);
+	public Submission(UserSubmission userSub, Event event, int id, Instant timeStamp) {
+		this.event = event;
 		this.id = id;
 		division = StringUtil.convertEnumerator(Division.class, userSub.getDivision());
 		teamNumber = StringUtil.convertInteger(userSub.getTeamNumber());

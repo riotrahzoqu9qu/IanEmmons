@@ -69,3 +69,27 @@ tournaments:
           to:   "2021-01-31T12:00:00"
       - name: "WICI"
         BC: { from: "", to: "" }
+  - name: "State Tournament"
+    date: "2021-03-20"
+    teams:
+      B: "1-24"
+      C: "1-26"
+    events:
+      - name: "DETECTOR_DESIGN"
+        C: { from: "", to: "" }
+      - name: "DIGITAL_STRUCTURES"
+        BC: { from: "", to: "" }
+      - name: "HELICOPTER_START"
+        BC: { from: "", to: "" }
+      - name: "HELICOPTER_FINISH"
+        BC: { from: "", to: "" }
+      - name: "MISCELLANEOUS"
+        BC:
+          from: "2021-02-21T00:00:00"
+          to:   "2021-03-24T23:59:59"
+      - name: "VEHICLE_DESIGN"
+        BC:
+          from: "2021-03-07T00:00:00"
+          to:   "2021-03-14T12:00:00"
+      - name: "WICI"
+        BC: { from: "", to: "" }

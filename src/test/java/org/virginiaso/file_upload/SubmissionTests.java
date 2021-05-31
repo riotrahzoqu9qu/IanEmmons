@@ -30,16 +30,17 @@ public class SubmissionTests {
 
 	@ParameterizedTest
 	@MethodSource
-	public void fieldValidationTest(String eventTemplate, int id, Instant timeStamp,
+	public void fieldValidationTest(String eventUri, int id, Instant timeStamp,
 			UserSubmission userSub, String errorRegex) {
 		if (errorRegex == null) {
-			assertDoesNotThrow(() -> new Submission(userSub, eventTemplate, id, timeStamp));
+			assertDoesNotThrow(
+				() -> new Submission(userSub, Event.forUri(eventUri), id, timeStamp));
 		} else if (NullPointerException.class.getSimpleName().equals(errorRegex)) {
 			assertThrows(NullPointerException.class,
-				() -> new Submission(userSub, eventTemplate, id, timeStamp));
+				() -> new Submission(userSub, Event.forUri(eventUri), id, timeStamp));
 		} else {
 			ValidationException ex = assertThrows(ValidationException.class,
-				() -> new Submission(userSub, eventTemplate, id, timeStamp));
+				() -> new Submission(userSub, Event.forUri(eventUri), id, timeStamp));
 			LOG.info(ex.getMessage());
 			assertTrue(Pattern.matches(errorRegex, ex.getMessage()));
 		}
@@ -212,82 +213,82 @@ public class SubmissionTests {
 	private static Stream<Arguments> teamTimeValidationTest() {
 		return Stream.of(
 			Arguments.of(
-				createTeamTimeTest("detectorDesign", "B", "12", "2021-02-06T12:00:00"),
+				createTeamTimeTest(Event.DETECTOR_DESIGN, "B", "12", "2021-02-06T12:00:00"),
 				"^Detector Design is not an event in division B\\.$"),
 			Arguments.of(
-				createTeamTimeTest("wici", "B", "12", "2021-02-06T12:00:00"),
+				createTeamTimeTest(Event.WICI, "B", "12", "2021-02-06T12:00:00"),
 				"^Team B12 is not competing at any of the tournaments that are accepting "
 				+ "Write It/CAD It \\(WICI\\)-B submissions \\(Hook/Leibniz Regional\\)\\.$"),
 			Arguments.of(
-				createTeamTimeTest("wici", "B", "37", "2021-02-05T23:59:59"),
+				createTeamTimeTest(Event.WICI, "B", "37", "2021-02-05T23:59:59"),
 				"^Write It/CAD It \\(WICI\\)-B is not accepting submissions at this time\\.$"),
 			Arguments.of(
-				createTeamTimeTest("wici", "B", "37", "2021-02-06T00:00:00"),
+				createTeamTimeTest(Event.WICI, "B", "37", "2021-02-06T00:00:00"),
 				(String) null),
 			Arguments.of(
-				createTeamTimeTest("wici", "B", "37", "2021-02-06T12:00:00"),
+				createTeamTimeTest(Event.WICI, "B", "37", "2021-02-06T12:00:00"),
 				(String) null),
 			Arguments.of(
-				createTeamTimeTest("wici", "B", "37", "2021-02-06T23:59:59"),
+				createTeamTimeTest(Event.WICI, "B", "37", "2021-02-06T23:59:59"),
 				(String) null),
 			Arguments.of(
-				createTeamTimeTest("wici", "B", "37", "2021-02-07T00:00:00"),
+				createTeamTimeTest(Event.WICI, "B", "37", "2021-02-07T00:00:00"),
 				"^Write It/CAD It \\(WICI\\)-B is not accepting submissions at this time\\.$"),
 
 			Arguments.of(
-				createTeamTimeTest("vehicleDesign", "B", "29", "2021-01-17T00:59:59"),
+				createTeamTimeTest(Event.VEHICLE_DESIGN, "B", "29", "2021-01-17T00:59:59"),
 				"^Vehicle Design-B is not accepting submissions at this time\\.$"),
 			Arguments.of(
-				createTeamTimeTest("vehicleDesign", "B", "29", "2021-01-17T01:00:00"),
+				createTeamTimeTest(Event.VEHICLE_DESIGN, "B", "29", "2021-01-17T01:00:00"),
 				(String) null),
 			Arguments.of(
-				createTeamTimeTest("vehicleDesign", "B", "29", "2021-01-18T12:00:00"),
+				createTeamTimeTest(Event.VEHICLE_DESIGN, "B", "29", "2021-01-18T12:00:00"),
 				(String) null),
 			Arguments.of(
-				createTeamTimeTest("vehicleDesign", "B", "29", "2021-01-23T08:00:00"),
+				createTeamTimeTest(Event.VEHICLE_DESIGN, "B", "29", "2021-01-23T08:00:00"),
 				(String) null),
 			Arguments.of(
-				createTeamTimeTest("vehicleDesign", "B", "29", "2021-01-23T12:00:00"),
+				createTeamTimeTest(Event.VEHICLE_DESIGN, "B", "29", "2021-01-23T12:00:00"),
 				(String) null),
 			Arguments.of(
-				createTeamTimeTest("vehicleDesign", "B", "29", "2021-01-23T12:00:01"),
+				createTeamTimeTest(Event.VEHICLE_DESIGN, "B", "29", "2021-01-23T12:00:01"),
 				"^Team B29 is not competing at any of the tournaments that are accepting "
 					+ "Vehicle Design-B submissions \\(Hook/Leibniz Regional\\)\\.$"),
 
 			Arguments.of(
-				createTeamTimeTest("vehicleDesign", "B", "37", "2021-01-17T00:59:59"),
+				createTeamTimeTest(Event.VEHICLE_DESIGN, "B", "37", "2021-01-17T00:59:59"),
 				"^Vehicle Design-B is not accepting submissions at this time\\.$"),
 			Arguments.of(
-				createTeamTimeTest("vehicleDesign", "B", "37", "2021-01-17T01:00:00"),
+				createTeamTimeTest(Event.VEHICLE_DESIGN, "B", "37", "2021-01-17T01:00:00"),
 				(String) null),
 			Arguments.of(
-				createTeamTimeTest("vehicleDesign", "B", "37", "2021-01-18T12:00:00"),
+				createTeamTimeTest(Event.VEHICLE_DESIGN, "B", "37", "2021-01-18T12:00:00"),
 				(String) null),
 			Arguments.of(
-				createTeamTimeTest("vehicleDesign", "B", "37", "2021-01-23T08:00:00"),
+				createTeamTimeTest(Event.VEHICLE_DESIGN, "B", "37", "2021-01-23T08:00:00"),
 				(String) null),
 			Arguments.of(
-				createTeamTimeTest("vehicleDesign", "B", "37", "2021-01-23T12:00:00"),
+				createTeamTimeTest(Event.VEHICLE_DESIGN, "B", "37", "2021-01-23T12:00:00"),
 				(String) null),
 			Arguments.of(
-				createTeamTimeTest("vehicleDesign", "B", "37", "2021-01-23T12:00:01"),
+				createTeamTimeTest(Event.VEHICLE_DESIGN, "B", "37", "2021-01-23T12:00:01"),
 				(String) null),
 			Arguments.of(
-				createTeamTimeTest("vehicleDesign", "B", "37", "2021-01-30T08:00:00"),
+				createTeamTimeTest(Event.VEHICLE_DESIGN, "B", "37", "2021-01-30T08:00:00"),
 				(String) null),
 			Arguments.of(
-				createTeamTimeTest("vehicleDesign", "B", "37", "2021-01-30T12:00:00"),
+				createTeamTimeTest(Event.VEHICLE_DESIGN, "B", "37", "2021-01-30T12:00:00"),
 				(String) null),
 			Arguments.of(
-				createTeamTimeTest("vehicleDesign", "B", "37", "2021-01-30T12:00:01"),
+				createTeamTimeTest(Event.VEHICLE_DESIGN, "B", "37", "2021-01-30T12:00:01"),
 				"^Vehicle Design-B is not accepting submissions at this time\\.$"),
 			Arguments.of(
-				createTeamTimeTest("vehicleDesign", "B", "37", "2021-02-07T00:00:00"),
+				createTeamTimeTest(Event.VEHICLE_DESIGN, "B", "37", "2021-02-07T00:00:00"),
 				"^Vehicle Design-B is not accepting submissions at this time\\.$")
 			);
 	}
 
-	private static Submission createTeamTimeTest(String eventTemplate,
+	private static Submission createTeamTimeTest(Event event,
 			String division, String teamNumber, String timeStampStr) {
 		UserSubmission userSub = new UserSubmission();
 		userSub.setDivision(division);
@@ -304,6 +305,6 @@ public class SubmissionTests {
 			.atZone(Configuration.getTimeZone())
 			.toInstant();
 
-		return new Submission(userSub, eventTemplate, 0, timeStamp);
+		return new Submission(userSub, event, 0, timeStamp);
 	}
 }

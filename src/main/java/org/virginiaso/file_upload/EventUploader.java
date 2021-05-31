@@ -48,9 +48,9 @@ final class EventUploader {
 		this.event = Objects.requireNonNull(event, "event");
 		this.division = Objects.requireNonNull(division, "division");
 		eventDirName = String.format("%1$s-%2$s",
-			this.event.getTemplateName(), this.division);
+			this.event.getUri(), this.division);
 		submissionTableFileName = String.format("%1$s/%2$s-%3$s-submissions.csv",
-			eventDirName, this.event.getTemplateName(), this.division);
+			eventDirName, this.event.getUri(), this.division);
 		this.storageService = Objects.requireNonNull(storageService, "storageService");
 		submissions = loadSubmissionsTable(submissionTableFileName, this.storageService);
 	}

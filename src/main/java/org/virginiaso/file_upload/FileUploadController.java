@@ -42,20 +42,21 @@ public class FileUploadController {
 		return "index";
 	}
 
-	@GetMapping("/fileUpload/{eventTemplate}")
+	@GetMapping("/fileUpload/{eventUri}")
 	public String fileUploadForm(
-		@PathVariable("eventTemplate") String eventTemplate,
+		@PathVariable("eventUri") String eventUri,
 		Model model) {
 
-		model.addAttribute("event", Event.forTemplate(eventTemplate));
+		Event event = Event.forUri(eventUri);
+		model.addAttribute("event", event);
 		model.addAttribute("userSub", new UserSubmission());
 		model.addAttribute("errorMessage", null);
-		return eventTemplate;
+		return event.getTemplateName();
 	}
 
-	@PostMapping("/fileUpload/{eventTemplate}")
+	@PostMapping("/fileUpload/{eventUri}")
 	public String fileUploadSubmit(
-		@PathVariable("eventTemplate") String eventTemplate,
+		@PathVariable("eventUri") String eventUri,
 		@ModelAttribute UserSubmission userSub,
 		@RequestParam(name = "fileA", required = false) MultipartFile fileA,
 		@RequestParam(name = "fileB", required = false) MultipartFile fileB,
@@ -69,9 +70,14 @@ public class FileUploadController {
 		@RequestParam(name = "fileJ", required = false) MultipartFile fileJ,
 		Model model) throws IOException {
 
+		// If this throws, it's because eventUri is unrecognized.  In this
+		// case, we let the exception handler deal with it because we have
+		// no template name to return from this method.
+		Event event = Event.forUri(eventUri);
+
 		try {
-			Submission submission = fileUploadService.receiveFileUpload(eventTemplate,
-				userSub, fileA, fileB, fileC, fileD, fileE, fileF, fileG, fileH, fileI, fileJ);
+			Submission submission = fileUploadService.receiveFileUpload(event, userSub,
+				fileA, fileB, fileC, fileD, fileE, fileF, fileG, fileH, fileI, fileJ);
 
 			model.addAttribute("event", submission.getEvent());
 			model.addAttribute("submission", submission);
@@ -84,10 +90,10 @@ public class FileUploadController {
 				return "helicopterGo";
 			}
 		} catch (ValidationException ex) {
-			model.addAttribute("event", Event.forTemplate(eventTemplate));
+			model.addAttribute("event", event);
 			model.addAttribute("userSub", userSub);
 			model.addAttribute("errorMessage", ex.getMessage());
-			return eventTemplate;
+			return event.getTemplateName();
 		}
 	}
 

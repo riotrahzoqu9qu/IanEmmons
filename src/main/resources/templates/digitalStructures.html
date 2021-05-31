@@ -4,7 +4,7 @@
 <body>
 	<div th:replace="~{fragments :: page-header}"/>
 
-	<form th:object="${userSub}" th:action="${'/fileUpload/' + event.templateName}"
+	<form th:object="${userSub}" th:action="${'/fileUpload/' + event.uri}"
 			method="post" enctype="multipart/form-data">
 		<h1>Submit Your <span th:text="${event.label}"/> Estimate:</h1>
 		<div th:if="${not #strings.isEmpty(errorMessage)}" class="error-message">
