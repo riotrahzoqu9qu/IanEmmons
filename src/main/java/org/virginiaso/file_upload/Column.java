@@ -13,11 +13,12 @@ public enum Column {
 	SCHOOL_NAME(false),
 	TEAM_NAME(false),
 	STUDENT_NAMES(false),
+	NOTES_UPLOAD_MODE(false),	// Notes upload events only
+	HELICOPTER_MODE(false),		// Helicopter only
+	FLIGHT_DURATION(false),		// Helicopter only
+	PASS_CODE(false),				// Helicopter only
+	LOAD_ESTIMATE(false),		// Digital Structures only
 	NOTES(false),
-	HELICOPTER_MODE(false),	// Helicopter only
-	FLIGHT_DURATION(false),	// Helicopter only
-	PASS_CODE(false),			// Helicopter only
-	LOAD_ESTIMATE(false),	// Digital Structures only
 	FILE_NAME_0(true),
 	FILE_NAME_1(true),
 	FILE_NAME_2(true),

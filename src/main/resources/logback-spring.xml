@@ -37,7 +37,7 @@
 		<!-- appender-ref ref="Console"/ -->
 	</root>
 
-	<logger name="org.virginiaso.file_upload" level="trace" additivity="false">
+	<logger name="org.virginiaso.file_upload" level="debug" additivity="false">
 		<appender-ref ref="RollingFile"/>
 		<appender-ref ref="Console"/>
 	</logger>

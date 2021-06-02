@@ -24,14 +24,13 @@
 		</ul>
 		<div class="entry-field-panel">
 			Kind of Submission:<span class="required-star"><sup>&starf;</sup></span><br/>
-			<label th:each="hMode: ${T(org.virginiaso.file_upload.HelicopterMode).values()}">
-				<input type="radio" name="helicopterMode" th:value="${hMode.name}"
-					th:checked="${userSub.helicopterMode eq hMode.name}" required>
-				<span th:text="${hMode.label}"/><br/>
+			<label th:each="mode: ${T(org.virginiaso.file_upload.HelicopterMode).values()}">
+				<input type="radio" name="helicopterMode" th:value="${mode.name}"
+					th:checked="${userSub.helicopterMode eq mode.name}" required>
+				<span th:utext="${mode.label}"/><br/>
 			</label>
 		</div>
-		<div th:replace="~{fragments :: id-fields('Name of the one student uploading files:',
-			'Your name only &mdash; your partner&rsquo;s name should be on their upload')}"/>
+		<div th:replace="~{fragments :: id-fields(null, null)}"/>
 		<div class="entry-field-panel">
 			<label>
 				Your Unique Word:<span class="required-star"><sup>&starf;</sup></span><br/>

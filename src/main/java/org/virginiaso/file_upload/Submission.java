@@ -50,11 +50,12 @@ public final class Submission {
 	private final String schoolName;
 	private final String teamName;
 	private final String studentNames;
-	private final String notes;
+	private final NotesUploadMode notesUploadMode;
 	private final HelicopterMode helicopterMode;
 	private final BigDecimal flightDuration;
 	private final String passCode;
 	private final int loadEstimate;
+	private final String notes;
 	private final List<String> fileNames;
 	private final Instant timeStamp;
 
@@ -66,7 +67,9 @@ public final class Submission {
 		schoolName = StringUtil.safeTrim(userSub.getSchoolName());
 		teamName = StringUtil.safeTrim(userSub.getTeamName());
 		studentNames = StringUtil.safeTrim(userSub.getStudentNames());
-		notes = StringUtil.safeTrim(userSub.getNotes());
+		notesUploadMode = event.isNotesUpload()
+			? StringUtil.convertEnumerator(NotesUploadMode.class, userSub.getNotesUploadMode())
+			: null;
 		helicopterMode = (event == Event.HELICOPTER_FINISH)
 			? StringUtil.convertEnumerator(HelicopterMode.class, userSub.getHelicopterMode())
 			: null;
@@ -79,6 +82,7 @@ public final class Submission {
 		loadEstimate = (event == Event.DIGITAL_STRUCTURES)
 			? StringUtil.convertInteger(userSub.getLoadEstimate())
 			: -1;
+		notes = StringUtil.safeTrim(userSub.getNotes());
 		fileNames = new ArrayList<>();
 		this.timeStamp = Objects.requireNonNull(timeStamp, "timeStamp");
 
@@ -93,7 +97,10 @@ public final class Submission {
 		schoolName = StringUtil.safeTrim(record.get(Column.SCHOOL_NAME));
 		teamName = StringUtil.safeTrim(record.get(Column.TEAM_NAME));
 		studentNames = StringUtil.safeTrim(record.get(Column.STUDENT_NAMES));
-		notes = StringUtil.safeTrim(record.get(Column.NOTES));
+		notesUploadMode = event.isNotesUpload()
+			? StringUtil.convertEnumerator(NotesUploadMode.class,
+				record.get(Column.NOTES_UPLOAD_MODE))
+			: null;
 		helicopterMode = (event == Event.HELICOPTER_FINISH)
 			? StringUtil.convertEnumerator(HelicopterMode.class,
 				record.get(Column.HELICOPTER_MODE))
@@ -105,6 +112,7 @@ public final class Submission {
 		loadEstimate = (event == Event.DIGITAL_STRUCTURES)
 			? StringUtil.convertInteger(record.get(Column.LOAD_ESTIMATE))
 			: -1;
+		notes = StringUtil.safeTrim(record.get(Column.NOTES));
 		fileNames = Column.fileColumns().stream()
 			.map(record::get)
 			.filter(Objects::nonNull)
@@ -141,7 +149,8 @@ public final class Submission {
 		printer.print(schoolName);
 		printer.print(teamName);
 		printer.print(studentNames);
-		printer.print(notes);
+		printer.print((!event.isNotesUpload() || notesUploadMode == null)
+			? null : notesUploadMode.name());
 		printer.print((event != Event.HELICOPTER_FINISH || helicopterMode == null)
 			? null : helicopterMode.name());
 		printer.print((event != Event.HELICOPTER_FINISH || flightDuration == null)
@@ -149,6 +158,7 @@ public final class Submission {
 		printer.print(passCode);
 		printer.print((event != Event.DIGITAL_STRUCTURES || loadEstimate < 0)
 			? null : Integer.toString(loadEstimate));
+		printer.print(notes);
 		for (String fileName : fileNames) {
 			printer.print(fileName);
 		}
@@ -200,8 +210,8 @@ public final class Submission {
 		return studentNames;
 	}
 
-	public String getNotes() {
-		return notes;
+	public NotesUploadMode getNotesUploadMode() {
+		return notesUploadMode;
 	}
 
 	public HelicopterMode getHelicopterMode() {
@@ -218,6 +228,10 @@ public final class Submission {
 
 	public int getLoadEstimate() {
 		return loadEstimate;
+	}
+
+	public String getNotes() {
+		return notes;
 	}
 
 	public List<String> getFileNames() {
@@ -257,6 +271,9 @@ public final class Submission {
 		}
 		requireNonNull(errors, schoolName, "School Name");
 		requireNonNull(errors, studentNames, "Student Name(s)");
+		if (event.isNotesUpload()) {
+			requireNonNull(errors, notesUploadMode, "Kind of Submission");
+		}
 		if (event == Event.HELICOPTER_FINISH) {
 			requireNonNull(errors, helicopterMode, "Kind of Submission");
 		}

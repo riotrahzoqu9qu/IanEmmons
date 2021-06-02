@@ -8,37 +8,37 @@ import org.virginiaso.file_upload.util.StringUtil;
 import org.virginiaso.file_upload.util.ValidationException;
 
 public enum Event {
-	ANATOMY(true, "anatomy", "Anatomy & Physiology"),
-	CHEM_LAB(true, "chemLab", "Chemistry Lab"),
-	CRIME_BUSTERS(true, "crimeBusters", "Crime Busters"),
-	DESIGNER_GENES(true, "designerGenes", "Designer Genes"),
-	DISEASE_DETECTIVES(true, "diseaseDetectives", "Disease Detectives"),
-	FOOD_SCIENCE(true, "foodScience", "Food Science"),
-	FORENSICS(true, "forensics", "Forensics"),
-	HEREDITY(true, "heredity", "Heredity"),
-	METEOROLOGY(true, "meteorology", "Meteorology"),
-	PROTEIN_MODELING(true, "proteinModeling", "Protein Modeling"),
-	REACH_FOR_THE_STARS(true, "reachForTheStars", "Reach for the Stars"),
-	WATER_QUALITY(true, "waterQuality", "Water Quality"),
+	ANATOMY("anatomy", "Anatomy & Physiology", true),
+	CHEM_LAB("chemLab", "Chemistry Lab", true),
+	CRIME_BUSTERS("crimeBusters", "Crime Busters", true),
+	DESIGNER_GENES("designerGenes", "Designer Genes", true),
+	DISEASE_DETECTIVES("diseaseDetectives", "Disease Detectives", true),
+	FOOD_SCIENCE("foodScience", "Food Science", true),
+	FORENSICS("forensics", "Forensics", true),
+	HEREDITY("heredity", "Heredity", true),
+	METEOROLOGY("meteorology", "Meteorology", true),
+	PROTEIN_MODELING("proteinModeling", "Protein Modeling", true),
+	REACH_FOR_THE_STARS("reachForTheStars", "Reach for the Stars", true),
+	WATER_QUALITY("waterQuality", "Water Quality", true),
 
-	DETECTOR_DESIGN(false, "detectorDesign", "Detector Design"),
-	DIGITAL_STRUCTURES(false, "digitalStructures", "Digital Structures"),
-	HELICOPTER_START(false, "helicopterStart", "Helicopter (Start)"),
-	HELICOPTER_FINISH(false, "helicopterFinish", "Helicopter (Final Submission)"),
-	MISCELLANEOUS(false, "miscellaneous", "Miscellaneous"),
-	VEHICLE_DESIGN(false, "vehicleDesign", "Vehicle Design"),
-	WICI(false, "wici", "Write It/CAD It (WICI)");
+	DETECTOR_DESIGN("detectorDesign", "Detector Design", false),
+	DIGITAL_STRUCTURES("digitalStructures", "Digital Structures", false),
+	HELICOPTER_START("helicopterStart", "Helicopter (Start)", false),
+	HELICOPTER_FINISH("helicopterFinish", "Helicopter (Final Submission)", false),
+	MISCELLANEOUS("miscellaneous", "Miscellaneous", false),
+	VEHICLE_DESIGN("vehicleDesign", "Vehicle Design", false),
+	WICI("wici", "Write It/CAD It (WICI)", false);
 
 	private static final String NOTES_TEMPLATE_NAME = "notes";
 
-	private final boolean isNotesUpload;
 	private final String uri;
 	private final String label;
+	private final boolean isNotesUpload;
 
-	private Event(boolean isNotesUpload, String uri, String label) {
-		this.isNotesUpload = isNotesUpload;
+	private Event(String uri, String label, boolean isNotesUpload) {
 		this.uri = Objects.requireNonNull(uri, "uri");
 		this.label = Objects.requireNonNull(label, "label");
+		this.isNotesUpload = isNotesUpload;
 	}
 
 	public String getUri() {
@@ -51,6 +51,10 @@ public enum Event {
 
 	public String getLabel() {
 		return label;
+	}
+
+	public boolean isNotesUpload() {
+		return isNotesUpload;
 	}
 
 	// For Thymeleaf:

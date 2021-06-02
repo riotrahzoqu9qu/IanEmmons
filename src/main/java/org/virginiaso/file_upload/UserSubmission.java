@@ -6,11 +6,12 @@ public class UserSubmission {
 	private String schoolName;
 	private String teamName;
 	private String studentNames;
-	private String notes;
+	private String notesUploadMode;
 	private String helicopterMode;
 	private String flightDuration;
 	private String passCode;
 	private String loadEstimate;
+	private String notes;
 
 	public String getDivision() {
 		return division;
@@ -52,12 +53,12 @@ public class UserSubmission {
 		this.studentNames = studentNames;
 	}
 
-	public String getNotes() {
-		return notes;
+	public String getNotesUploadMode() {
+		return notesUploadMode;
 	}
 
-	public void setNotes(String notes) {
-		this.notes = notes;
+	public void setNotesUploadMode(String notesUploadMode) {
+		this.notesUploadMode = notesUploadMode;
 	}
 
 	public String getHelicopterMode() {
@@ -90,5 +91,13 @@ public class UserSubmission {
 
 	public void setLoadEstimate(String loadEstimate) {
 		this.loadEstimate = loadEstimate;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 }

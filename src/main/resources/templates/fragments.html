@@ -17,7 +17,10 @@
 	</header>
 
 	<div th:fragment="heading">
-		<h1>Submit Your <span th:text="${event.label}"/> Entry:</h1>
+		<h1>Submit Your <span th:text="${event.label}"/>
+			<span th:if="${not event.isNotesUpload}">Entry</span>
+			<span th:if="${event.isNotesUpload}">Notes</span>
+			:</h1>
 		<div th:if="${not #strings.isEmpty(errorMessage)}" class="error-message">
 			We are not able to accept your submission for the following reasons:
 			<blockquote th:utext="${errorMessage}"/>
@@ -41,7 +44,7 @@
 					placeholder="Team number" required/>
 			</label>
 			<a href="https://virginiaso.org/pdf/TeamNumbers.pdf" target="_blank"
-				rel="noreferrer noopener">Click here to look up your team number.<span
+				rel="noreferrer noopener">Look up your team number here.<span
 				class="required-star"><sup><img src="/externalLink.png" class="external-link"
 				alt="This link will open in a new browser tab or window"/></sup></span></a>
 		</div>
@@ -61,11 +64,13 @@
 		</div>
 		<div class="entry-field-panel">
 			<label>
-				<span th:text="${#strings.defaultString(studNameLbl,'Student Name(s):')}"/><span
-					class="required-star"><sup>&starf;</sup></span><br/>
+				<span th:text="${#strings.defaultString(studNameLbl,
+					'Name of the one student submitting this form:')}"
+					/><span class="required-star"><sup>&starf;</sup></span><br/>
 				<input type="text" th:field="*{studentNames}" size="70"
 					th:placeholder="${#strings.defaultString(studNamePlHldr,
-						'Your name, and if you have a partner, theirs too')}" required/>
+					'Your name only &mdash; your partner&rsquo;s name goes on their submission, if any')}"
+					required/>
 			</label>
 		</div>
 	</div>

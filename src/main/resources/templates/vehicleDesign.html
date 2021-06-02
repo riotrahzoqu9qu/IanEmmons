@@ -7,7 +7,8 @@
 	<form th:object="${userSub}" th:action="${'/fileUpload/' + event.uri}"
 			method="post" enctype="multipart/form-data">
 		<div th:replace="~{fragments :: heading}"/>
-		<div th:replace="~{fragments :: id-fields(null, null)}"/>
+		<div th:replace="~{fragments :: id-fields(null,
+			'The name of the student submitting on behalf of the partnership')}"/>
 		<div class="entry-field-panel">
 			<label>
 				Proposal (PDF):<span class="required-star"><sup>&starf;</sup></span><br/>

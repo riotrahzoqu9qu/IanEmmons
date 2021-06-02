@@ -7,25 +7,28 @@
 	<form th:object="${userSub}" th:action="${'/fileUpload/' + event.uri}"
 			method="post" enctype="multipart/form-data">
 		<div th:replace="~{fragments :: heading}"/>
-		Please do not use this submission form unless you have been specifically
-		advised to do so by an event supervisor or other tournament official.
+		Instructions:
+		<ul>
+			<li>
+				You must submit your notes here <b><i>before</i></b> beginning your test.
+			</li>
+			<li>
+				Please submit each student's notes as a single file upload.
+			</li>
+		</ul>
+		<div class="entry-field-panel">
+			Kind of Submission:<span class="required-star"><sup>&starf;</sup></span><br/>
+			<label th:each="mode: ${T(org.virginiaso.file_upload.NotesUploadMode).values()}">
+				<input type="radio" name="notesUploadMode" th:value="${mode.name}"
+					th:checked="${userSub.notesUploadMode eq mode.name}" required>
+				<span th:utext="${mode.label}"/><br/>
+			</label>
+		</div>
 		<div th:replace="~{fragments :: id-fields(null, null)}"/>
 		<div class="entry-field-panel">
 			<label>
-				File 1:<span class="required-star"><sup>&starf;</sup></span><br/>
+				Notes:<span class="required-star"><sup>&starf;</sup></span><br/>
 				<input type="file" name="fileA" size="70" required/>
-			</label>
-		</div>
-		<div class="entry-field-panel">
-			<label>
-				File 2:<br/>
-				<input type="file" name="fileB" size="70"/>
-			</label>
-		</div>
-		<div class="entry-field-panel">
-			<label>
-				File 3:<br/>
-				<input type="file" name="fileC" size="70"/>
 			</label>
 		</div>
 		<div th:replace="~{fragments :: notes-and-buttons}"/>

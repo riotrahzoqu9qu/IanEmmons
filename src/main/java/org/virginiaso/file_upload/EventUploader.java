@@ -72,7 +72,7 @@ final class EventUploader {
 			LOG.info("Loaded submissions file {}", submissionTableFileName);
 			return submissions;
 		} catch (FileNotFoundException ex) {
-			LOG.info("Submissions file {} does not exist -- starting a new one",
+			LOG.trace("Submissions file {} does not exist -- starting a new one",
 				submissionTableFileName);
 			return new ArrayList<>();
 		} catch (IOException ex) {
