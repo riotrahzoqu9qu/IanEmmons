@@ -4,7 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -65,5 +67,22 @@ public final class StringUtil {
 
 	public static boolean isBlank(String str) {
 		return str == null || str.isBlank();
+	}
+
+	private static final List<String> FALSE_STRINGS = List.of(
+		"false", "f", "no", "n", "0");
+	public static boolean interpretOptQueryStrParam(Optional<String> paramValue) {
+		if (paramValue.isEmpty()) {
+			// Parameter is not present in the query string:
+			return false;
+		} else if (paramValue.get().isBlank()) {
+			// Parameter is present but blank, i.e., no value specified:
+			return true;
+		} else {
+			// Parameter is present with a specified value:
+			String value = paramValue.get().trim();
+			return !FALSE_STRINGS.stream().anyMatch(
+				falseStr -> value.equalsIgnoreCase(falseStr));
+		}
 	}
 }

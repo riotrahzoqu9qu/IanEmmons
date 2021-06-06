@@ -8,8 +8,7 @@ public enum Column {
 	EVENT(false),
 	ID(false),
 	VA_DATE_TIME(false),
-	DIVISION(false),
-	TEAM_NUMBER(false),
+	TEAM(false),
 	SCHOOL_NAME(false),
 	TEAM_NAME(false),
 	STUDENT_NAMES(false),
@@ -29,7 +28,9 @@ public enum Column {
 	FILE_NAME_7(true),
 	FILE_NAME_8(true),
 	FILE_NAME_9(true),
-	UTC_TIME_STAMP(false);
+	UTC_TIME_STAMP(false),
+	DIVISION(false),
+	TEAM_NUMBER(false);
 
 	private final boolean isFileColumn;
 

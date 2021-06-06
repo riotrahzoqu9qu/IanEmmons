@@ -11,8 +11,9 @@
 	<h1>Virginia Science Olympiad File Upload</h1>
 	<p>Choose your event:</p>
 	<ul>
-		<li th:each="event: ${T(org.virginiaso.file_upload.Event).values()}">
-			<a th:href="'/fileUpload/' + ${event.uri}" th:text="${event.label}"/>
+		<li th:each="event: ${eventList}">
+			<a th:href="'/fileUpload/' + ${event.uri}" th:text="${event.label}"/>:
+			Division <span th:text="${event.divisionsAsString}"/>
 		</li>
 	</ul>
 	<div th:replace="~{fragments :: page-footer}"/>

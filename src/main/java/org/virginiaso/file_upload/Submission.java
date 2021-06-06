@@ -92,8 +92,6 @@ public final class Submission {
 	public Submission(CSVRecord record) {
 		event = StringUtil.convertEnumerator(Event.class, record.get(Column.EVENT));
 		id = StringUtil.convertInteger(record.get(Column.ID));
-		division = StringUtil.convertEnumerator(Division.class, record.get(Column.DIVISION));
-		teamNumber = StringUtil.convertInteger(record.get(Column.TEAM_NUMBER));
 		schoolName = StringUtil.safeTrim(record.get(Column.SCHOOL_NAME));
 		teamName = StringUtil.safeTrim(record.get(Column.TEAM_NAME));
 		studentNames = StringUtil.safeTrim(record.get(Column.STUDENT_NAMES));
@@ -119,6 +117,8 @@ public final class Submission {
 			.filter(value -> !value.isBlank())
 			.collect(Collectors.toCollection(ArrayList::new));
 		timeStamp = Instant.from(UTC.parse(record.get(Column.UTC_TIME_STAMP)));
+		division = StringUtil.convertEnumerator(Division.class, record.get(Column.DIVISION));
+		teamNumber = StringUtil.convertInteger(record.get(Column.TEAM_NUMBER));
 
 		validateFields();
 	}
@@ -144,8 +144,7 @@ public final class Submission {
 		printer.print(event.name());
 		printer.print(Integer.toString(id));
 		printer.print(ZONED_DATE_TIME.format(zonedTimeStamp));
-		printer.print(division.name());
-		printer.print(Integer.toString(teamNumber));
+		printer.print(String.format("%1$s%2$d", division, teamNumber));
 		printer.print(schoolName);
 		printer.print(teamName);
 		printer.print(studentNames);
@@ -167,6 +166,8 @@ public final class Submission {
 			printer.print(null);
 		}
 		printer.print(UTC.format(timeStamp));
+		printer.print(division.name());
+		printer.print(Integer.toString(teamNumber));
 		printer.println();
 	}
 
@@ -266,6 +267,10 @@ public final class Submission {
 			addError(errors, "Submission ID '%1$d' must be a non-negative integer", id);
 		}
 		requireNonNull(errors, division, "Division");
+		if (!event.isOfferedIn(division)) {
+			addError(errors, "%1$s is not offered in Division %2$s",
+				event.getLabel(), division.toString());
+		}
 		if (teamNumber < 1) {
 			addError(errors, "Team Number '%1$d' must be a positive integer", teamNumber);
 		}
@@ -281,7 +286,7 @@ public final class Submission {
 			requireNonNull(errors, passCode, "Unique Word");
 		}
 		if (event == Event.DIGITAL_STRUCTURES && loadEstimate < 0) {
-			addError(errors, "Estimated Load Supported '%1$d' must be a non-negative integer",
+			addError(errors, "Estimated Load Supported %1$d must be a non-negative integer",
 				loadEstimate);
 		}
 		requireNonNull(errors, timeStamp, "timeStamp");

@@ -68,8 +68,8 @@ public class ConfigurationTests {
 		assertEquals("Test Regional", t.getName());
 		assertEquals("2021-02-06", t.getDate().toString());
 
-		EnumSet<Division> allDivisions = EnumSet.allOf(Division.class);
-		assertEquals(allDivisions, t.getTeams().keySet());
+		EnumSet<Division> divBC = EnumSet.of(Division.B, Division.C);
+		assertEquals(divBC, t.getTeams().keySet());
 		Set<Integer> commonTeams = Configuration.convertTeamList("31,33-40,44-59");
 		Set<Integer> bOnlyTeams = setDifference(t.getTeams().get(Division.B), commonTeams);
 		Set<Integer> cOnlyTeams = setDifference(t.getTeams().get(Division.C), commonTeams);
@@ -82,12 +82,12 @@ public class ConfigurationTests {
 			t.getEvents().get(Event.DETECTOR_DESIGN).keySet());
 		assertEquals("2021-02-06T05:00:00Z", getFrom(t, Event.DETECTOR_DESIGN, Division.C));
 		assertEquals("2021-02-07T04:59:59Z", getTo(t, Event.DETECTOR_DESIGN, Division.C));
-		assertEquals(allDivisions, t.getEvents().get(Event.VEHICLE_DESIGN).keySet());
+		assertEquals(divBC, t.getEvents().get(Event.VEHICLE_DESIGN).keySet());
 		assertEquals("2021-01-17T06:00:00Z", getFrom(t, Event.VEHICLE_DESIGN, Division.B));
 		assertEquals("2021-01-30T17:00:00Z", getTo(t, Event.VEHICLE_DESIGN, Division.B));
 		assertEquals("2021-01-18T06:00:00Z", getFrom(t, Event.VEHICLE_DESIGN, Division.C));
 		assertEquals("2021-01-29T17:00:00Z", getTo(t, Event.VEHICLE_DESIGN, Division.C));
-		assertEquals(allDivisions, t.getEvents().get(Event.WICI).keySet());
+		assertEquals(divBC, t.getEvents().get(Event.WICI).keySet());
 		assertEquals("2021-02-06T05:00:00Z", getFrom(t, Event.WICI, Division.B));
 		assertEquals("2021-02-07T04:59:59Z", getTo(t, Event.WICI, Division.B));
 		assertEquals("2021-02-06T05:00:00Z", getFrom(t, Event.WICI, Division.C));

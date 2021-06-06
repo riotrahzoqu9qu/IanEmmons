@@ -2,6 +2,8 @@ fileUpload:
   timeZone: "America/New_York"
   tournamentConfigRsrc: "tournamentConfig.yaml"
   baseEventUrl: "https://file-upload.virginiaso.org/fileUpload/"
+  teamNumbersUrl: "https://virginiaso.org/pdf/TeamNumbersStates.pdf"
+  #teamNumbersUrl: "https://virginiaso.org/pdf/TeamNumbers.pdf"
   aws-s3:
     submissionRoot: "s3://virginia-science-olympiad/vaso-file-upload"
   localFileSystem:

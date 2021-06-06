@@ -75,6 +75,55 @@ tournaments:
       B: "1-24"
       C: "1-26"
     events:
+      - name: "ANATOMY"
+        BC:
+          from: "2021-03-13T12:00:00"
+          to:   "2021-03-20T17:00:00"
+      - name: "CHEM_LAB"
+        C:
+          from: "2021-03-13T12:00:00"
+          to:   "2021-03-20T17:00:00"
+      - name: "CRIME_BUSTERS"
+        B:
+          from: "2021-03-13T12:00:00"
+          to:   "2021-03-20T17:00:00"
+      - name: "DESIGNER_GENES"
+        C:
+          from: "2021-03-13T12:00:00"
+          to:   "2021-03-20T17:00:00"
+      - name: "DISEASE_DETECTIVES"
+        BC:
+          from: "2021-03-13T12:00:00"
+          to:   "2021-03-20T17:00:00"
+      - name: "FOOD_SCIENCE"
+        B:
+          from: "2021-03-13T12:00:00"
+          to:   "2021-03-20T17:00:00"
+      - name: "FORENSICS"
+        C:
+          from: "2021-03-13T12:00:00"
+          to:   "2021-03-20T17:00:00"
+      - name: "HEREDITY"
+        B:
+          from: "2021-03-13T12:00:00"
+          to:   "2021-03-20T17:00:00"
+      - name: "METEOROLOGY"
+        B:
+          from: "2021-03-13T12:00:00"
+          to:   "2021-03-20T17:00:00"
+      - name: "PROTEIN_MODELING"
+        C:
+          from: "2021-03-13T12:00:00"
+          to:   "2021-03-20T17:00:00"
+      - name: "REACH_FOR_THE_STARS"
+        B:
+          from: "2021-03-13T12:00:00"
+          to:   "2021-03-20T17:00:00"
+      - name: "WATER_QUALITY"
+        BC:
+          from: "2021-03-13T12:00:00"
+          to:   "2021-03-20T17:00:00"
+
       - name: "DETECTOR_DESIGN"
         C: { from: "", to: "" }
       - name: "DIGITAL_STRUCTURES"

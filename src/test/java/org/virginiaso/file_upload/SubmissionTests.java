@@ -29,7 +29,7 @@ public class SubmissionTests {
 	}
 
 	@ParameterizedTest
-	@MethodSource
+	@MethodSource("fieldValidationData")
 	public void fieldValidationTest(String eventUri, int id, Instant timeStamp,
 			UserSubmission userSub, String errorRegex) {
 		if (errorRegex == null) {
@@ -42,11 +42,11 @@ public class SubmissionTests {
 			ValidationException ex = assertThrows(ValidationException.class,
 				() -> new Submission(userSub, Event.forUri(eventUri), id, timeStamp));
 			LOG.info(ex.getMessage());
-			assertTrue(Pattern.matches(errorRegex, ex.getMessage()));
+			assertTrue(Pattern.matches(errorRegex, ex.getMessage()), ex.getMessage());
 		}
 	}
 
-	private static Stream<Arguments> fieldValidationTest() {
+	private static Stream<Arguments> fieldValidationData() {
 		return Stream.of(
 			Arguments.of(
 				"wici", 139, Instant.now(),
@@ -87,7 +87,7 @@ public class SubmissionTests {
 				"wici", 139, Instant.now(),
 				createFieldTest("BC", "12", "Wandering Minds Academy", "Red", "Kim & Joe",
 					"A note", "TWO_HELICOPTERS_TWO_STUDENTS_TWO_VIDEOS", "37.12", "ABCDEF"),
-				"^Unrecognized Division value 'BC' \\(should be one of B, C\\)$"),
+				"^Unrecognized Division value 'BC' \\(should be one of A, B, C\\)$"),
 			Arguments.of(
 				"wici", 139, Instant.now(),
 				createFieldTest("B", " 12 ", "Wandering Minds Academy", "Red", "Kim & Joe",
@@ -159,10 +159,20 @@ public class SubmissionTests {
 					"A note", null, "37.12", "ABCDEF", "13000"),
 				null),
 			Arguments.of(
-				"digitalStructures", 139, Instant.now(),
+				"digitalStructures", 140, Instant.now(),
 				createFieldTest("B", "12", "Wandering Minds Academy", "Red", "Kim & Joe",
 					"A note", null, "37.12", "ABCDEF", null),
-				"^Ill-formed integer: 'null'$"));
+				"^Ill-formed integer: 'null'$"),
+			Arguments.of(
+				"digitalStructures", 141, Instant.now(),
+				createFieldTest("B", "12", "Wandering Minds Academy", "Red", "Kim & Joe",
+					"A note", null, "37.12", "ABCDEF", "-1500"),
+				"^Ill-formed integer: '-1500'$"),
+			Arguments.of(
+				"detectorDesign", 143, Instant.now(),
+				createFieldTest("B", "12", "Wandering Minds Academy", "Red", "Kim & Joe",
+					"A note", null, null, null, null),
+				"^Detector Design is not offered in Division B$"));
 	}
 
 	private static UserSubmission createFieldTest(String division, String teamNumber,
@@ -192,7 +202,7 @@ public class SubmissionTests {
 	}
 
 	@ParameterizedTest
-	@MethodSource
+	@MethodSource("teamTimeValidationData")
 	public void teamTimeValidationTest(Submission submission, String errorRegex) {
 		try {
 			List<Tournament> tournaments = Configuration.parse("testTournamentConfig2.yaml");
@@ -202,7 +212,7 @@ public class SubmissionTests {
 				ValidationException ex = assertThrows(ValidationException.class,
 					() -> submission.validateTeamAndTime(tournaments));
 				LOG.info(ex.getMessage());
-				assertTrue(Pattern.matches(errorRegex, ex.getMessage()));
+				assertTrue(Pattern.matches(errorRegex, ex.getMessage()), ex.getMessage());
 			}
 		} catch (IOException ex) {
 			LOG.error("Error loading configuration:", ex);
@@ -210,11 +220,11 @@ public class SubmissionTests {
 		}
 	}
 
-	private static Stream<Arguments> teamTimeValidationTest() {
+	private static Stream<Arguments> teamTimeValidationData() {
 		return Stream.of(
 			Arguments.of(
-				createTeamTimeTest(Event.DETECTOR_DESIGN, "B", "12", "2021-02-06T12:00:00"),
-				"^Detector Design is not an event in division B\\.$"),
+				createTeamTimeTest(Event.ANATOMY, "C", "12", "2021-02-06T12:00:00"),
+				"^Anatomy & Physiology is not an event in division C\\.$"),
 			Arguments.of(
 				createTeamTimeTest(Event.WICI, "B", "12", "2021-02-06T12:00:00"),
 				"^Team B12 is not competing at any of the tournaments that are accepting "
@@ -288,8 +298,8 @@ public class SubmissionTests {
 			);
 	}
 
-	private static Submission createTeamTimeTest(Event event,
-			String division, String teamNumber, String timeStampStr) {
+	private static Submission createTeamTimeTest(Event event, String division,
+			String teamNumber, String timeStampStr) {
 		UserSubmission userSub = new UserSubmission();
 		userSub.setDivision(division);
 		userSub.setTeamNumber(teamNumber);
@@ -299,6 +309,8 @@ public class SubmissionTests {
 		userSub.setStudentNames("John Doe and Mary Smith");
 		userSub.setHelicopterMode(
 			HelicopterMode.TWO_HELICOPTERS_TWO_STUDENTS_TWO_VIDEOS.toString());
+		userSub.setNotesUploadMode(
+			NotesUploadMode.TWO_STUDENT_DIFFERENT_NOTES.toString());
 		userSub.setPassCode("ABCDEF");
 
 		Instant timeStamp = LocalDateTime.parse(timeStampStr)

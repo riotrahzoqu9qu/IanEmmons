@@ -18,9 +18,9 @@
 
 	<div th:fragment="heading">
 		<h1>Submit Your <span th:text="${event.label}"/>
-			<span th:if="${not event.isNotesUpload}">Entry</span>
-			<span th:if="${event.isNotesUpload}">Notes</span>
-			:</h1>
+			<span th:if="${not event.isNotesUpload}">Entry:</span>
+			<span th:if="${event.isNotesUpload}">Notes:</span>
+		</h1>
 		<div th:if="${not #strings.isEmpty(errorMessage)}" class="error-message">
 			We are not able to accept your submission for the following reasons:
 			<blockquote th:utext="${errorMessage}"/>
@@ -29,13 +29,17 @@
 	</div>
 
 	<div th:fragment="id-fields(studNameLbl, studNamePlHldr)">
-		<div class="entry-field-panel">
+		<div th:if="${event.divisions.size} gt 1" class="entry-field-panel">
 			Division:<span class="required-star"><sup>&starf;</sup></span><br/>
-			<label th:each="d: ${T(org.virginiaso.file_upload.Division).values()}">
+			<label th:each="d: ${event.divisions}">
 				<input type="radio" name="division" th:value="${d.name}"
 					th:checked="${userSub.division eq d.name}" required>
 				<span th:text="${d.name}"/><br/>
 			</label>
+		</div>
+		<div th:if="${event.divisions.size} le 1" th:each="d: ${event.divisions}" class="entry-field-panel">
+			Division: <b><span th:text="${d.name}"/> only</b>
+			<input type="hidden" name="division" th:value="${d.name}">
 		</div>
 		<div class="entry-field-panel">
 			<label>
@@ -43,7 +47,7 @@
 				<input type="number" th:field="*{teamNumber}" min="1"
 					placeholder="Team number" required/>
 			</label>
-			<a href="https://virginiaso.org/pdf/TeamNumbers.pdf" target="_blank"
+			<a th:href="${teamNumbersUrl}" target="_blank"
 				rel="noreferrer noopener">Look up your team number here.<span
 				class="required-star"><sup><img src="/externalLink.png" class="external-link"
 				alt="This link will open in a new browser tab or window"/></sup></span></a>
