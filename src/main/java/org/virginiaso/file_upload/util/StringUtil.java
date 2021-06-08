@@ -71,6 +71,7 @@ public final class StringUtil {
 
 	private static final List<String> FALSE_STRINGS = List.of(
 		"false", "f", "no", "n", "0");
+
 	public static boolean interpretOptQueryStrParam(Optional<String> paramValue) {
 		if (paramValue.isEmpty()) {
 			// Parameter is not present in the query string:

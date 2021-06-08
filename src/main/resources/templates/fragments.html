@@ -59,7 +59,7 @@
 					placeholder="School name with no abbreviations except HS, JHS, MS, SS, or ES" required/>
 			</label>
 		</div>
-		<div class="entry-field-panel">
+		<div th:if="${not isStateTournament}" class="entry-field-panel">
 			<label>
 				Team Name (if applicable):<br/>
 				<input type="text" th:field="*{teamName}" size="70"

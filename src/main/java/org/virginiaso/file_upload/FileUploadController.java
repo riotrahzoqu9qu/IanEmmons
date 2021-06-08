@@ -28,14 +28,17 @@ public class FileUploadController {
 	private final FileUploadService fileUploadService;
 	private final String baseEventUrl;
 	private final String teamNumbersUrl;
+	private final boolean isStateTournament;
 
 	@Autowired
 	public FileUploadController(FileUploadService fileUploadService,
 		@Value("${fileUpload.baseEventUrl}") String baseEventUrl,
-		@Value("${fileUpload.teamNumbersUrl}") String teamNumbersUrl) {
+		@Value("${fileUpload.teamNumbersUrl}") String teamNumbersUrl,
+		@Value("${fileUpload.isStateTournament}") boolean isStateTournament) {
 		this.fileUploadService = fileUploadService;
 		this.baseEventUrl = baseEventUrl;
 		this.teamNumbersUrl = teamNumbersUrl;
+		this.isStateTournament = isStateTournament;
 	}
 
 	@GetMapping({"/", "/fileUpload"})
@@ -50,6 +53,7 @@ public class FileUploadController {
 		model.addAttribute("projName", ProjectInfo.getProjName());
 		model.addAttribute("projVer", ProjectInfo.getProjVersion());
 		model.addAttribute("teamNumbersUrl", teamNumbersUrl);
+		model.addAttribute("isStateTournament", isStateTournament);
 		model.addAttribute("eventList", notesUploadsOnly
 			? Event.getNotesUploadEvents()
 			: Event.getAllEvents());
@@ -66,6 +70,7 @@ public class FileUploadController {
 		model.addAttribute("userSub", new UserSubmission());
 		model.addAttribute("errorMessage", null);
 		model.addAttribute("teamNumbersUrl", teamNumbersUrl);
+		model.addAttribute("isStateTournament", isStateTournament);
 		return event.getTemplateName();
 	}
 
@@ -98,6 +103,7 @@ public class FileUploadController {
 			model.addAttribute("submission", submission);
 			model.addAttribute("errorMessage", null);
 			model.addAttribute("teamNumbersUrl", teamNumbersUrl);
+			model.addAttribute("isStateTournament", isStateTournament);
 			if (submission.getEvent() != Event.HELICOPTER_START) {
 				return "submissionResult";
 			} else {
@@ -110,6 +116,7 @@ public class FileUploadController {
 			model.addAttribute("userSub", userSub);
 			model.addAttribute("errorMessage", ex.getMessage());
 			model.addAttribute("teamNumbersUrl", teamNumbersUrl);
+			model.addAttribute("isStateTournament", isStateTournament);
 			return event.getTemplateName();
 		}
 	}
