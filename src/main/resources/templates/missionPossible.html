@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<div th:replace="~{fragments :: head}"/>
+<body>
+	<div th:replace="~{fragments :: page-header}"/>
+
+	<form th:object="${userSub}" th:action="${'/fileUpload/' + event.uri}"
+			method="post" enctype="multipart/form-data">
+		<div th:replace="~{fragments :: heading}"/>
+		<div th:replace="~{fragments :: id-fields(null, null)}"/>
+		<div class="entry-field-panel">
+			<label>
+				Action List:<br/>
+				<input type="file" name="fileA" class="file-input" size="70"/>
+			</label>
+		</div>
+		<div class="entry-field-panel">
+			<label>
+				Video:<span class="required-star"><sup>&starf;</sup></span><br/>
+				<input type="file" name="fileB" class="file-input" size="70" required/>
+			</label>
+		</div>
+		<div th:replace="~{fragments :: notes-and-buttons}"/>
+	</form>
+
+	<div th:replace="~{fragments :: page-footer}"/>
+</body>
+</html>

@@ -13,6 +13,9 @@ public final class EventDto {
 	 */
 
 	@SuppressWarnings("checkstyle:MemberName")
+	public TimeIntervalDto A;
+
+	@SuppressWarnings("checkstyle:MemberName")
 	public TimeIntervalDto B;
 
 	@SuppressWarnings("checkstyle:MemberName")

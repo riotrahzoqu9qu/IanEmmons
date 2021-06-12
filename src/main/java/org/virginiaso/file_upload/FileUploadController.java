@@ -34,7 +34,7 @@ public class FileUploadController {
 	public FileUploadController(FileUploadService fileUploadService,
 		@Value("${fileUpload.baseEventUrl}") String baseEventUrl,
 		@Value("${fileUpload.teamNumbersUrl}") String teamNumbersUrl,
-		@Value("${fileUpload.isStateTournament}") boolean isStateTournament) {
+		@Value("${fileUpload.isStateTournament:false}") boolean isStateTournament) {
 		this.fileUploadService = fileUploadService;
 		this.baseEventUrl = baseEventUrl;
 		this.teamNumbersUrl = teamNumbersUrl;
