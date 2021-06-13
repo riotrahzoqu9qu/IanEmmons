@@ -35,7 +35,13 @@ public enum Event {
 	HELICOPTER_FINISH("helicopterFinish", "Helicopter (Final Submission)", false, "BC"),
 	MISCELLANEOUS("miscellaneous", "Miscellaneous", false, "ABC"),
 	VEHICLE_DESIGN("vehicleDesign", "Vehicle Design", false, "BC"),
-	WICI("wici", "Write It/CAD It (WICI)", false, "BC");
+	WICI("wici", "Write It/CAD It (WICI)", false, "BC"),
+
+	BUILD_A_BARGE("barge", "Build-A-Barge", false, "A"),
+	CHOPPER_CHALLENGE("chopper", "Chopper Challenge", false, "A"),
+	MISSION_POSSIBLE("missionPossible", "Mission Possible", false, "A"),
+	WIND_POWER("windPower", "Wind Power", false, "A"),
+	WRIGHT_STUFF("wrightStuff", "Wright Stuff", false, "A");
 
 	private static final String NOTES_TEMPLATE_NAME = "notes";
 	private static final Logger LOG = LoggerFactory.getLogger(Event.class);

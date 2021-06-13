@@ -132,14 +132,21 @@ final class Configuration {
 			LocalDate tournamentDate) {
 		EnumMap<Division, TimeInterval> result = new EnumMap<>(Division.class);
 		if (eventDto.BC != null) {
-			if (eventDto.B != null || eventDto.C != null) {
+			if (eventDto.A != null || eventDto.B != null || eventDto.C != null) {
 				throw new IllegalArgumentException(String.format(
-					"Event '%1$s' cannot have a B or C time interval if it has a BC one",
+					"Event '%1$s' cannot have an A, B, or C time interval if it has a BC one",
 					eventDto.name));
 			}
 			TimeInterval ti = convertInterval(eventDto.BC, tournamentDate);
 			result.put(Division.B, ti);
 			result.put(Division.C, ti);
+		} else if (eventDto.A != null) {
+			if (eventDto.B != null || eventDto.C != null || eventDto.BC != null) {
+				throw new IllegalArgumentException(String.format(
+					"Event '%1$s' cannot have a B or C time interval if it has an A one",
+					eventDto.name));
+			}
+			result.put(Division.A, convertInterval(eventDto.A, tournamentDate));
 		} else if (eventDto.B == null && eventDto.C == null) {
 			throw new IllegalArgumentException(String.format(
 				"Event '%1$s' has no time interval", eventDto.name));

@@ -19,6 +19,7 @@ tournaments:
           to:   "2021-02-10T23:59:59"
       - name: "WICI"
         BC: { from: "", to: "" }
+
   - name: "Newton Regional"
     date: "2021-01-30"
     teams:
@@ -43,6 +44,7 @@ tournaments:
           to:   "2021-01-24T12:00:00"
       - name: "WICI"
         BC: { from: "", to: "" }
+
   - name: "Hook/Leibniz Regional"
     date: "2021-02-06"
     teams:
@@ -69,6 +71,7 @@ tournaments:
           to:   "2021-01-31T12:00:00"
       - name: "WICI"
         BC: { from: "", to: "" }
+
   - name: "State Tournament"
     date: "2021-03-20"
     teams:
@@ -142,3 +145,43 @@ tournaments:
           to:   "2021-03-14T12:00:00"
       - name: "WICI"
         BC: { from: "", to: "" }
+
+  - name: "Division A Upload Practice Day"
+    date: "2021-03-27"
+    teams:
+      A: "1-41"
+    events:
+      - name: "BUILD_A_BARGE"
+        A: { from: "", to: "" }
+      - name: "CHOPPER_CHALLENGE"
+        A: { from: "", to: "" }
+      - name: "MISCELLANEOUS"
+        A:
+          from: "2021-02-21T00:00:00"
+          to:   "2021-04-15T23:59:59"
+      - name: "MISSION_POSSIBLE"
+        A: { from: "", to: "" }
+      - name: "WIND_POWER"
+        A: { from: "", to: "" }
+      - name: "WRIGHT_STUFF"
+        A: { from: "", to: "" }
+
+  - name: "Division A Tournament"
+    date: "2021-04-10"
+    teams:
+      A: "1-41"
+    events:
+      - name: "BUILD_A_BARGE"
+        A: { from: "", to: "" }
+      - name: "CHOPPER_CHALLENGE"
+        A: { from: "", to: "" }
+      - name: "MISCELLANEOUS"
+        A:
+          from: "2021-02-21T00:00:00"
+          to:   "2021-04-15T23:59:59"
+      - name: "MISSION_POSSIBLE"
+        A: { from: "", to: "" }
+      - name: "WIND_POWER"
+        A: { from: "", to: "" }
+      - name: "WRIGHT_STUFF"
+        A: { from: "", to: "" }
