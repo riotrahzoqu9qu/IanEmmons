@@ -28,16 +28,19 @@ public class FileUploadController {
 	private final FileUploadService fileUploadService;
 	private final String baseEventUrl;
 	private final String teamNumbersUrl;
+	private final String notesUploadFaqUrl;
 	private final boolean isStateTournament;
 
 	@Autowired
 	public FileUploadController(FileUploadService fileUploadService,
 		@Value("${fileUpload.baseEventUrl}") String baseEventUrl,
 		@Value("${fileUpload.teamNumbersUrl}") String teamNumbersUrl,
+		@Value("${fileUpload.notesUploadFaqUrl}") String notesUploadFaqUrl,
 		@Value("${fileUpload.isStateTournament:false}") boolean isStateTournament) {
 		this.fileUploadService = fileUploadService;
 		this.baseEventUrl = baseEventUrl;
 		this.teamNumbersUrl = teamNumbersUrl;
+		this.notesUploadFaqUrl = notesUploadFaqUrl;
 		this.isStateTournament = isStateTournament;
 	}
 
@@ -46,13 +49,16 @@ public class FileUploadController {
 		@RequestParam("notesUploadsOnly") Optional<String> notesUploadStr,
 		Model model) {
 
-		boolean notesUploadsOnly = StringUtil.interpretOptQueryStrParam(notesUploadStr);
+		final boolean notesUploadsOnly = StringUtil.interpretOptReqParam(notesUploadStr);
 
 		model.addAttribute("host", HostNameUtil.getHostName());
 		model.addAttribute("cores", Runtime.getRuntime().availableProcessors());
 		model.addAttribute("projName", ProjectInfo.getProjName());
 		model.addAttribute("projVer", ProjectInfo.getProjVersion());
 		model.addAttribute("teamNumbersUrl", teamNumbersUrl);
+		if (notesUploadsOnly) {
+			model.addAttribute("notesUploadFaqUrl", notesUploadFaqUrl);
+		}
 		model.addAttribute("isStateTournament", isStateTournament);
 		model.addAttribute("eventList", notesUploadsOnly
 			? Event.getNotesUploadEvents()

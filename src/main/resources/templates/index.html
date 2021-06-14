@@ -8,7 +8,15 @@
 </head>
 <body>
 	<div th:replace="~{fragments :: page-header}"/>
-	<h1>Virginia Science Olympiad File Upload</h1>
+	<h1 th:if="${#strings.isEmpty(notesUploadFaqUrl)}"
+		>Virginia Science Olympiad File Upload</h1>
+	<h1 th:if="${not #strings.isEmpty(notesUploadFaqUrl)}"
+		>Virginia Science Olympiad Notes Upload</h1>
+	<a th:if="${not #strings.isEmpty(notesUploadFaqUrl)}"
+		th:href="${notesUploadFaqUrl}" target="_blank"
+		rel="noreferrer noopener">Frequently Asked Questions about Notes Uploads<span
+		class="required-star"><sup><img src="/externalLink.png" class="external-link"
+		alt="This link will open in a new browser tab or window"/></sup></span></a>
 	<p>Choose your event:</p>
 	<ul>
 		<li th:each="event: ${eventList}">
