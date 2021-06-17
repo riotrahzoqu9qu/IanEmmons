@@ -24,12 +24,12 @@ Default user name: ec2-user
 t2.micro: $0.0116/hr (but free)
 - 1 core, x86_64, 1 GB RAM, 8 GB disk, Low to moderate bandwidth
 - InstanceId: i-0242d20381c7a6f53
-- PublicDnsName: ec2-3-80-41-58.compute-1.amazonaws.com
-- PublicIpAddress: 3.80.41.58
+- PublicDnsName: ec2-54-147-131-145.compute-1.amazonaws.com
+- PublicIpAddress: 54.147.131.145
 - VPC: vpc-3510c048
 - Subnet: subnet-daedb997
-- ssh -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-3-80-41-58.compute-1.amazonaws.com
-- sftp -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-3-80-41-58.compute-1.amazonaws.com
+- ssh -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-147-131-145.compute-1.amazonaws.com
+- sftp -i ~/.ssh/ians-aws-key-pair.pem ec2-user@ec2-54-147-131-145.compute-1.amazonaws.com
 
 a1.xlarge: $0.102/hr
 - 4 cores, ARM-64, 8 GB RAM, 10 GB disk, up to 10 Gb bandwidth
