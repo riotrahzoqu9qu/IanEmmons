@@ -144,7 +144,7 @@ public final class Submission {
 		printer.print(event.name());
 		printer.print(Integer.toString(id));
 		printer.print(ZONED_DATE_TIME.format(zonedTimeStamp));
-		printer.print(String.format("%1$s%2$d", division, teamNumber));
+		printer.print(String.format("%1$s%2$02d", division, teamNumber));
 		printer.print(schoolName);
 		printer.print(teamName);
 		printer.print(studentNames);
