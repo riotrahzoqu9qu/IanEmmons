@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.virginiaso.file_upload.util.FileUtil;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 @Service("fileSystemStorageService")
 public class FileSystemStorageServiceImpl implements StorageService {
 	private static final Logger LOG = LoggerFactory.getLogger(
@@ -34,8 +32,6 @@ public class FileSystemStorageServiceImpl implements StorageService {
 		return new FileInputStream(getSubmissionTableFile(submissionTableFileName));
 	}
 
-	@SuppressFBWarnings(value = "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE",
-		justification = "Return value of mkdirs does not matter in this case")
 	@Override
 	public File getTempSubmissionTableFile(String submissionTableFileName)
 			throws IOException {
@@ -53,8 +49,6 @@ public class FileSystemStorageServiceImpl implements StorageService {
 	}
 
 	// Replace the existing file by swapping file names and then deleting the old file:
-	@SuppressFBWarnings(value = "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE",
-		justification = "Return value of mkdirs does not matter in this case")
 	@Override
 	public void transferTempSubmissionTableFile(File tempSubmissionTableFile,
 		String submissionTableFileName) throws IOException {
@@ -73,8 +67,6 @@ public class FileSystemStorageServiceImpl implements StorageService {
 		}
 	}
 
-	@SuppressFBWarnings(value = "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE",
-		justification = "Return value of mkdirs does not matter in this case")
 	@Override
 	public void transferUploadedFile(MultipartFile file, String eventDirName,
 		String newFileName) throws IOException {

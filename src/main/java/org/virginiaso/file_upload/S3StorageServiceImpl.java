@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.virginiaso.file_upload.util.FileUtil;
 import org.virginiaso.file_upload.util.S3Uri;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -99,8 +98,6 @@ public class S3StorageServiceImpl implements StorageService {
 		return tempFile;
 	}
 
-	@SuppressFBWarnings(value = "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE",
-		justification = "Return value of delete does not matter in this case")
 	@Override
 	public void transferTempSubmissionTableFile(File tempSubmissionTableFile,
 		String submissionTableFileName) throws IOException {

@@ -6,10 +6,6 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-@SuppressFBWarnings(value = "DMI_HARDCODED_ABSOLUTE_FILENAME",
-	justification = "Hardcoded file names are okay in tests of file path utilities")
 public class FileUtilTests {
 	@Test
 	void testWithFileExt() {

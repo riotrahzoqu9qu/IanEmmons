@@ -26,8 +26,6 @@ import org.virginiaso.file_upload.yaml_dto.TournamentDto;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 final class Configuration {
 	private static final Pattern SINGLE_INT_PATTERN = Pattern.compile(
 		"[0-9]+");
@@ -70,8 +68,6 @@ final class Configuration {
 		return result;
 	}
 
-	@SuppressFBWarnings(value = "NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD",
-		justification = "SnakeYAML initializes DTO object fields via reflection")
 	private static Tournament convertTournament(TournamentDto tournamentDto) {
 		LocalDate tournamentDate = LocalDate.parse(tournamentDto.date.trim());
 		EnumMap<Division, Set<Integer>> teams = convertTeams(tournamentDto.teams);
