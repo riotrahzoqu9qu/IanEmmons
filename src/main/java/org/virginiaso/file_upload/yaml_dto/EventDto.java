@@ -8,15 +8,8 @@ public final class EventDto {
 	 * they need to match the case used in the configuration file.
 	 */
 
-	@SuppressWarnings("checkstyle:MemberName")
 	public TimeIntervalDto A;
-
-	@SuppressWarnings("checkstyle:MemberName")
 	public TimeIntervalDto B;
-
-	@SuppressWarnings("checkstyle:MemberName")
 	public TimeIntervalDto C;
-
-	@SuppressWarnings("checkstyle:MemberName")
 	public TimeIntervalDto BC;
 }

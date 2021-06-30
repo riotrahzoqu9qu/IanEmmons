@@ -42,10 +42,10 @@ public class FileUploadServiceImpl implements FileUploadService {
 	 */
 	@PostConstruct
 	public void initialize() {
-		for (Event event : Event.values()) {
+		for (var event : Event.values()) {
 			EnumMap<Division, EventUploader> subMap = eventUploaders.computeIfAbsent(
 				event, key -> new EnumMap<>(Division.class));
-			for (Division division : Division.values()) {
+			for (var division : Division.values()) {
 				subMap.put(division, new EventUploader(event, division, storageService));
 			}
 		}
@@ -61,8 +61,7 @@ public class FileUploadServiceImpl implements FileUploadService {
 	public Submission receiveFileUpload(Event event, UserSubmission userSub,
 		MultipartFile... files) throws IOException {
 
-		Submission submission = new Submission(userSub, event,
-			getNextSequenceNumber(), Instant.now());
+		var submission = new Submission(userSub, event, getNextSequenceNumber(), Instant.now());
 		submission.validateTeamAndTime(tournamentConfiguration);
 		return getEventUploader(submission).receiveFileUpload(submission, files);
 	}

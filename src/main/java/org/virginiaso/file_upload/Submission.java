@@ -130,8 +130,8 @@ public final class Submission {
 	 * @return A random pass code
 	 */
 	private static String generatePassCode() {
-		int numChars = ThreadLocalRandom.current().nextInt(5, 8);
-		StringBuilder buffer = new StringBuilder();
+		var numChars = ThreadLocalRandom.current().nextInt(5, 8);
+		var buffer = new StringBuilder();
 		ThreadLocalRandom.current().ints(numChars, 'A', 'Z' + 1)
 			.mapToObj(Character::toChars)
 			.forEach(charArray -> buffer.append(charArray[0]));
@@ -139,7 +139,7 @@ public final class Submission {
 	}
 
 	public void print(CSVPrinter printer) throws IOException {
-		ZonedDateTime zonedTimeStamp = getZonedTimeStamp();
+		var zonedTimeStamp = getZonedTimeStamp();
 
 		printer.print(event.name());
 		printer.print(Integer.toString(id));
@@ -161,8 +161,8 @@ public final class Submission {
 		for (String fileName : fileNames) {
 			printer.print(fileName);
 		}
-		int numEmptyFileColumns = Column.fileColumns().size() - fileNames.size();
-		for (int i = 0; i < numEmptyFileColumns; ++i) {
+		var numEmptyFileColumns = Column.fileColumns().size() - fileNames.size();
+		for (var i = 0; i < numEmptyFileColumns; ++i) {
 			printer.print(null);
 		}
 		printer.print(UTC.format(timeStamp));
@@ -180,14 +180,14 @@ public final class Submission {
 	}
 
 	public String getSubmissionTime() {
-		ZonedDateTime zonedTimeStamp = getZonedTimeStamp();
+		var zonedTimeStamp = getZonedTimeStamp();
 		return ZONED_DATE_TIME.format(zonedTimeStamp);
 	}
 
 	// Only used for helicopter:
 	public String getFinishTime() {
-		ZonedDateTime zonedTimeStamp = getZonedTimeStamp();
-		ZonedDateTime zonedFinishTime = zonedTimeStamp.plusHours(1);
+		var zonedTimeStamp = getZonedTimeStamp();
+		var zonedFinishTime = zonedTimeStamp.plusHours(1);
 		return ZONED_DATE_TIME.format(zonedFinishTime);
 	}
 
@@ -292,7 +292,7 @@ public final class Submission {
 		requireNonNull(errors, timeStamp, "timeStamp");
 
 		if (!errors.isEmpty()) {
-			String errorMessage = errors.stream()
+			var errorMessage = errors.stream()
 				.collect(Collectors.joining(String.format("<br/>%n")));
 			LOG.warn("Validation error message: {}", errorMessage);
 			throw new ValidationException(errorMessage);
@@ -322,8 +322,8 @@ public final class Submission {
 	public void validateTeamAndTime(List<Tournament> tournaments) {
 		// Check whether the given event and division are a thing:
 		List<Tournament> tournamentsWithEventAndDiv = tournaments.stream()
-			.filter(t -> t.getEvents().containsKey(getEvent()))
-			.filter(t -> t.getEvents().get(getEvent()).containsKey(getDivision()))
+			.filter(t -> t.events().containsKey(getEvent()))
+			.filter(t -> t.events().get(getEvent()).containsKey(getDivision()))
 			.collect(Collectors.toList());
 		if (tournamentsWithEventAndDiv.isEmpty()) {
 			throw new ValidationException("%1$s is not an event in division %2$s.",
@@ -333,7 +333,7 @@ public final class Submission {
 		// Find the tournaments that are open for submissions in this
 		// submission's event and division and at this submission's time:
 		List<Tournament> tournamentsAtTime = tournamentsWithEventAndDiv.stream()
-			.filter(t -> t.getEvents().get(getEvent()).get(getDivision()).contains(
+			.filter(t -> t.events().get(getEvent()).get(getDivision()).contains(
 				getUtcTimeStamp()))
 			.collect(Collectors.toList());
 		if (tournamentsAtTime.isEmpty()) {
@@ -344,12 +344,12 @@ public final class Submission {
 
 		// Now winnow the list to those that have this submission's team:
 		List<Tournament> tournamentsWithTeam = tournamentsAtTime.stream()
-			.filter(t -> t.getTeams().containsKey(getDivision()))
-			.filter(t -> t.getTeams().get(getDivision()).contains(getTeamNumber()))
+			.filter(t -> t.teams().containsKey(getDivision()))
+			.filter(t -> t.teams().get(getDivision()).contains(getTeamNumber()))
 			.collect(Collectors.toList());
 		if (tournamentsWithTeam.isEmpty()) {
 			String tournamentNameList = tournamentsAtTime.stream()
-				.map(t -> t.getName())
+				.map(t -> t.name())
 				.collect(Collectors.joining(", "));
 			throw new ValidationException("Team %1$s%2$d is not competing at any of "
 				+ "the tournaments that are accepting %3$s-%1$s submissions (%4$s).",

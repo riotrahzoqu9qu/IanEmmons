@@ -65,29 +65,29 @@ public class ConfigurationTests {
 		List<Tournament> tournaments = Configuration.parse("testTournamentConfig.yaml");
 		assertEquals(1, tournaments.size());
 		Tournament t = tournaments.get(0);
-		assertEquals("Test Regional", t.getName());
-		assertEquals("2021-02-06", t.getDate().toString());
+		assertEquals("Test Regional", t.name());
+		assertEquals("2021-02-06", t.date().toString());
 
 		EnumSet<Division> divBC = EnumSet.of(Division.B, Division.C);
-		assertEquals(divBC, t.getTeams().keySet());
+		assertEquals(divBC, t.teams().keySet());
 		Set<Integer> commonTeams = Configuration.convertTeamList("31,33-40,44-59");
-		Set<Integer> bOnlyTeams = setDifference(t.getTeams().get(Division.B), commonTeams);
-		Set<Integer> cOnlyTeams = setDifference(t.getTeams().get(Division.C), commonTeams);
+		Set<Integer> bOnlyTeams = setDifference(t.teams().get(Division.B), commonTeams);
+		Set<Integer> cOnlyTeams = setDifference(t.teams().get(Division.C), commonTeams);
 		assertEquals(Set.of(60), bOnlyTeams);
 		assertEquals(Set.of(43), cOnlyTeams);
 
 		assertEquals(EnumSet.of(Event.DETECTOR_DESIGN, Event.VEHICLE_DESIGN, Event.WICI),
-			t.getEvents().keySet());
+			t.events().keySet());
 		assertEquals(EnumSet.of(Division.C),
-			t.getEvents().get(Event.DETECTOR_DESIGN).keySet());
+			t.events().get(Event.DETECTOR_DESIGN).keySet());
 		assertEquals("2021-02-06T05:00:00Z", getFrom(t, Event.DETECTOR_DESIGN, Division.C));
 		assertEquals("2021-02-07T04:59:59Z", getTo(t, Event.DETECTOR_DESIGN, Division.C));
-		assertEquals(divBC, t.getEvents().get(Event.VEHICLE_DESIGN).keySet());
+		assertEquals(divBC, t.events().get(Event.VEHICLE_DESIGN).keySet());
 		assertEquals("2021-01-17T06:00:00Z", getFrom(t, Event.VEHICLE_DESIGN, Division.B));
 		assertEquals("2021-01-30T17:00:00Z", getTo(t, Event.VEHICLE_DESIGN, Division.B));
 		assertEquals("2021-01-18T06:00:00Z", getFrom(t, Event.VEHICLE_DESIGN, Division.C));
 		assertEquals("2021-01-29T17:00:00Z", getTo(t, Event.VEHICLE_DESIGN, Division.C));
-		assertEquals(divBC, t.getEvents().get(Event.WICI).keySet());
+		assertEquals(divBC, t.events().get(Event.WICI).keySet());
 		assertEquals("2021-02-06T05:00:00Z", getFrom(t, Event.WICI, Division.B));
 		assertEquals("2021-02-07T04:59:59Z", getTo(t, Event.WICI, Division.B));
 		assertEquals("2021-02-06T05:00:00Z", getFrom(t, Event.WICI, Division.C));
@@ -101,10 +101,10 @@ public class ConfigurationTests {
 	}
 
 	private static String getFrom(Tournament t, Event event, Division division) {
-		return t.getEvents().get(event).get(division).getFrom().toString();
+		return t.events().get(event).get(division).getFrom().toString();
 	}
 
 	private static String getTo(Tournament t, Event event, Division division) {
-		return t.getEvents().get(event).get(division).getTo().toString();
+		return t.events().get(event).get(division).getTo().toString();
 	}
 }

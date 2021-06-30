@@ -1,11 +1,7 @@
 package org.virginiaso.file_upload.util;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
+import java.util.MissingResourceException;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -25,31 +21,18 @@ public final class ProjectInfo {
 	private ProjectInfo() {}	// prevents instantiation
 
 	static {
-		String tmpProjectName = DEFAULT_PROJ_NAME;
-		String tmpProjectVersion = DEFAULT_PROJ_VERSION;
-		try (
-			InputStream is = getRsrcAsStream(RSRC_NAME);
-			Reader rdr = new InputStreamReader(is, StandardCharsets.UTF_8);
-		) {
-			Properties prop = new Properties();
+		var tmpProjectName = DEFAULT_PROJ_NAME;
+		var tmpProjectVersion = DEFAULT_PROJ_VERSION;
+		try (var rdr = FileUtil.getResourceAsReader(RSRC_NAME)) {
+			var prop = new Properties();
 			prop.load(rdr);
 			tmpProjectName = prop.getProperty(PROJ_NAME_PROP, DEFAULT_PROJ_NAME);
 			tmpProjectVersion = prop.getProperty(PROJ_VERSION_PROP, DEFAULT_PROJ_VERSION);
-		} catch (IOException ex) {
+		} catch (MissingResourceException | IOException ex) {
 			LOG.error("Unable to load project info:", ex);
 		}
 		PROJ_NAME = tmpProjectName;
 		PROJ_VERSION = tmpProjectVersion;
-	}
-
-	private static InputStream getRsrcAsStream(String rsrc) throws FileNotFoundException {
-		ClassLoader cl = ProjectInfo.class.getClassLoader();
-		InputStream is = cl.getResourceAsStream(rsrc);
-		if (is == null) {
-			throw new FileNotFoundException(
-				String.format("Unable to find resource '%1$s'", rsrc));
-		}
-		return is;
 	}
 
 	public static String getProjName() {

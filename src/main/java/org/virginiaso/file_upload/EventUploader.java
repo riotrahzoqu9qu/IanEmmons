@@ -3,20 +3,16 @@ package org.virginiaso.file_upload;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,10 +52,9 @@ final class EventUploader {
 	private static List<Submission> loadSubmissionsTable(String submissionTableFileName,
 		StorageService storageService) {
 		try (
-			InputStream is = storageService.getSubmissionTableAsInputStream(
-				submissionTableFileName);
-			Reader rdr = new InputStreamReader(is, StandardCharsets.UTF_8);
-			CSVParser parser = CSV_FORMAT_IN.parse(rdr);
+			var is = storageService.getSubmissionTableAsInputStream(submissionTableFileName);
+			var rdr = new InputStreamReader(is, FileUtil.CHARSET);
+			var parser = CSV_FORMAT_IN.parse(rdr);
 		) {
 			List<Submission> submissions = StreamUtil.from(parser)
 				.map(Submission::new)
@@ -85,16 +80,13 @@ final class EventUploader {
 
 	public Submission receiveFileUpload(Submission submission, MultipartFile[] files)
 			throws IOException {
-
-		char label = 'a';
+		var label = 'a';
 		for (MultipartFile file : files) {
 			if (file != null) {
-				String fileName = saveUploadedFile(file, submission.getId(),
+				var fileName = saveUploadedFile(file, submission.getId(),
 					Character.toString(label), submission.getEvent(),
 					submission.getDivision(), submission.getTeamNumber());
-				if (fileName != null) {
-					submission.addFileName(fileName);
-				}
+				fileName.ifPresent(submission::addFileName);
 			}
 			++label;
 		}
@@ -104,27 +96,26 @@ final class EventUploader {
 		return submission;
 	}
 
-	private String saveUploadedFile(MultipartFile file, int id, String label, Event event,
-		Division division, int teamNumber) throws IOException {
-
+	private Optional<String> saveUploadedFile(MultipartFile file, int id, String label, Event event,
+			Division division, int teamNumber) throws IOException {
 		if (file.isEmpty()) {
-			return null;
+			return Optional.empty();
 		}
 
-		String originalFilePath = file.getOriginalFilename();
+		var originalFilePath = file.getOriginalFilename();
 		if (originalFilePath == null || originalFilePath.isBlank()) {
 			originalFilePath = file.getName();
 		}
-		String originalFileName = new File(originalFilePath).getName();
+		var originalFileName = new File(originalFilePath).getName();
 		Pair<String, String> originalStemExt = FileUtil.getStemExtPair(originalFileName);
 
-		String newFileName = String.format("%1$s%2$d-%3$s-%4$03d%5$s.%6$s",
+		var newFileName = String.format("%1$s%2$d-%3$s-%4$03d%5$s.%6$s",
 			division, teamNumber, originalStemExt.getLeft(), id, label,
 			originalStemExt.getRight());
 
 		storageService.transferUploadedFile(file, eventDirName, newFileName);
 
-		return newFileName;
+		return Optional.of(newFileName);
 	}
 
 	private synchronized void addSubmission(Submission newSubmission) throws IOException {
@@ -132,17 +123,16 @@ final class EventUploader {
 		submissions.add(newSubmission);
 
 		// Save the list to a temporary file:
-		File tempSubmissionTableFile = storageService.getTempSubmissionTableFile(
+		var tempSubmissionTableFile = storageService.getTempSubmissionTableFile(
 			submissionTableFileName);
-		try (CSVPrinter printer = CSV_FORMAT_OUT.print(
-			tempSubmissionTableFile, StandardCharsets.UTF_8)) {
-			for (Submission submission : submissions) {
+		try (var printer = CSV_FORMAT_OUT.print(tempSubmissionTableFile, FileUtil.CHARSET)) {
+			for (var submission : submissions) {
 				submission.print(printer);
 			}
 		}
 
 		// Replace the existing file with the new one:
-		storageService.transferTempSubmissionTableFile(
-			tempSubmissionTableFile, submissionTableFileName);
+		storageService.transferTempSubmissionTableFile(tempSubmissionTableFile,
+			submissionTableFileName);
 	}
 }

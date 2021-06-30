@@ -63,9 +63,9 @@ public enum Event {
 			LOG.error("{} has a null division specification", eventLbl);
 			System.exit(-1);
 		}
-		EnumSet<Division> result = EnumSet.noneOf(Division.class);
+		var result = EnumSet.noneOf(Division.class);
 		try {
-			for (int i = 0; i < divLetters.length(); ++i) {
+			for (var i = 0; i < divLetters.length(); ++i) {
 				String divLetter = divLetters.substring(i, i + 1);
 				result.add(Division.valueOf(divLetter));
 			}
@@ -144,9 +144,9 @@ public enum Event {
 				.map(Enum::toString)
 				.collect(Collectors.joining(" or "));
 		} else {
-			int i = 0;
-			StringBuilder buffer = new StringBuilder();
-			for (Division division : divisions) {
+			var i = 0;
+			var buffer = new StringBuilder();
+			for (var division : divisions) {
 				buffer.append(division.toString());
 				if (i < divisions.size() - 2) {
 					buffer.append(", ");

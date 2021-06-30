@@ -35,14 +35,14 @@ public class FileSystemStorageServiceImpl implements StorageService {
 	@Override
 	public File getTempSubmissionTableFile(String submissionTableFileName)
 			throws IOException {
-		File submissionTableFile = getSubmissionTableFile(submissionTableFileName);
-		File submissionTableDir = submissionTableFile.getParentFile();
+		var submissionTableFile = getSubmissionTableFile(submissionTableFileName);
+		var submissionTableDir = submissionTableFile.getParentFile();
 		if (!submissionTableDir.isDirectory()) {
 			submissionTableDir.mkdirs();
 		}
 		Pair<String, String> stemExt = FileUtil.getStemExtPair(
 			submissionTableFile.getName());
-		File tempFile = File.createTempFile(stemExt.getLeft(), "." + stemExt.getRight(),
+		var tempFile = File.createTempFile(stemExt.getLeft(), "." + stemExt.getRight(),
 			submissionTableDir);
 		LOG.debug("Temporary submission table file: '{}'", tempFile.getPath());
 		return tempFile;
@@ -53,8 +53,8 @@ public class FileSystemStorageServiceImpl implements StorageService {
 	public void transferTempSubmissionTableFile(File tempSubmissionTableFile,
 		String submissionTableFileName) throws IOException {
 
-		File submissionTableFile = getSubmissionTableFile(submissionTableFileName);
-		File oldSubmissionTableFile = FileUtil.appendToFileStem(
+		var submissionTableFile = getSubmissionTableFile(submissionTableFileName);
+		var oldSubmissionTableFile = FileUtil.appendToFileStem(
 			submissionTableFile, "-old");
 		if (submissionTableFile.exists()) {
 			FileUtil.move(submissionTableFile, oldSubmissionTableFile);
@@ -71,11 +71,11 @@ public class FileSystemStorageServiceImpl implements StorageService {
 	public void transferUploadedFile(MultipartFile file, String eventDirName,
 		String newFileName) throws IOException {
 
-		File eventDir = new File(submissionRootDir, eventDirName);
+		var eventDir = new File(submissionRootDir, eventDirName);
 		if (!eventDir.isDirectory()) {
 			eventDir.mkdirs();
 		}
-		File newPath = new File(eventDir, newFileName);
+		var newPath = new File(eventDir, newFileName);
 		file.transferTo(newPath);
 	}
 

@@ -12,10 +12,10 @@ public final class AwsDetector {
 	private AwsDetector() {}	// prevent instantiation
 
 	public static String getAwsPublicHostname() {
-		long start = System.currentTimeMillis();
+		var start = System.currentTimeMillis();
 		String result = null;
 		try {
-			String os = System.getProperty("os.name");
+			var os = System.getProperty("os.name");
 			if (os != null && os.toLowerCase().contains("linux")) {
 				result = StringUtil.safeTrim(
 					new RestTemplate().getForObject(AWS_METADATA_URL, String.class));
@@ -27,7 +27,7 @@ public final class AwsDetector {
 		if (result == null) {
 			LOG.info("Running outside AWS");
 		}
-		long duration = System.currentTimeMillis() - start;
+		var duration = System.currentTimeMillis() - start;
 		LOG.info("AWS detection finished in {} milliseconds", duration);
 		return result;
 	}

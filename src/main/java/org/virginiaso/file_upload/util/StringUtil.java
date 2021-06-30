@@ -1,7 +1,6 @@
 package org.virginiaso.file_upload.util;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.List;
@@ -10,25 +9,21 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public final class StringUtil {
-	public static final MathContext DURATION_ROUNDING = MathContext.UNLIMITED;
-	private static final Logger LOG = LoggerFactory.getLogger(StringUtil.class);
+	private static final List<String> FALSE_STRINGS = List.of(
+		"false", "f", "no", "n", "0");
 
 	private StringUtil() {}	// prevent instantiation
 
-	public static <E extends Enum<E>> E convertEnumerator(
-			Class<E> enumClass, String str) {
+	public static <E extends Enum<E>> E convertEnumerator(Class<E> enumClass, String str) {
 		Objects.requireNonNull(enumClass, "enumClass");
 		try {
 			return E.valueOf(enumClass, safeTrim(str));
 		} catch (NullPointerException | IllegalArgumentException ex) {
 			try {
-				Method valuesMethod = enumClass.getMethod("values");
-				Object[] enumValues = (Object[]) valuesMethod.invoke(null);
-				String enumerators = Stream.of(enumValues)
+				var valuesMethod = enumClass.getMethod("values");
+				var enumValues = (Object[]) valuesMethod.invoke(null);
+				var enumerators = Stream.of(enumValues)
 					.map(Object::toString)
 					.collect(Collectors.joining(", "));
 				throw new ValidationException(
@@ -36,8 +31,7 @@ public final class StringUtil {
 					enumClass.getSimpleName(), str, enumerators);
 			} catch (NoSuchMethodException | SecurityException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException nestedEx) {
-				LOG.warn("Nested exception:", nestedEx);
-				throw new ValidationException("Unrecognized %1$s value '%2$s'",
+				throw new ValidationException(nestedEx, "Unrecognized %1$s value '%2$s'",
 					enumClass.getSimpleName(), str);
 			}
 		}
@@ -53,24 +47,19 @@ public final class StringUtil {
 
 	public static BigDecimal convertDecimal(String str) {
 		try {
-			return new BigDecimal(safeTrim(str), DURATION_ROUNDING);
+			return new BigDecimal(safeTrim(str), MathContext.UNLIMITED);
 		} catch (NullPointerException | NumberFormatException ex) {
 			throw new ValidationException("Ill-formed decimal number: '%1$s'", str);
 		}
 	}
 
 	public static String safeTrim(String str) {
-		return isBlank(str)
-			? null
-			: str.trim();
+		return isBlank(str) ? null : str.trim();
 	}
 
 	public static boolean isBlank(String str) {
 		return str == null || str.isBlank();
 	}
-
-	private static final List<String> FALSE_STRINGS = List.of(
-		"false", "f", "no", "n", "0");
 
 	public static boolean interpretOptReqParam(Optional<String> paramValue) {
 		if (paramValue.isEmpty()) {
@@ -81,7 +70,7 @@ public final class StringUtil {
 			return true;
 		} else {
 			// Parameter is present with a specified value:
-			String value = paramValue.get().trim();
+			var value = paramValue.get().trim();
 			return !FALSE_STRINGS.stream().anyMatch(
 				falseStr -> value.equalsIgnoreCase(falseStr));
 		}

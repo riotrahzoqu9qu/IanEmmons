@@ -1,23 +1,18 @@
 package org.virginiaso.file_upload;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.virginiaso.file_upload.util.FileUtil;
 import org.virginiaso.file_upload.util.StringUtil;
 import org.virginiaso.file_upload.yaml_dto.ConfigurationDto;
 import org.virginiaso.file_upload.yaml_dto.EventDto;
@@ -46,11 +41,8 @@ final class Configuration {
 
 	public static List<Tournament> parse(String tournamentConfigRsrc)
 			throws IOException {
-		try (
-			InputStream is = getConfigAsInputStream(tournamentConfigRsrc);
-			Reader rdr = new InputStreamReader(is, StandardCharsets.UTF_8);
-		) {
-			Yaml yaml = new Yaml(new Constructor(ConfigurationDto.class));
+		try (var rdr = FileUtil.getResourceAsReader(tournamentConfigRsrc)) {
+			var yaml = new Yaml(new Constructor(ConfigurationDto.class));
 			ConfigurationDto configurationDto = yaml.load(rdr);
 			return configurationDto.tournaments.stream()
 				.map(Configuration::convertTournament)
@@ -58,18 +50,8 @@ final class Configuration {
 		}
 	}
 
-	private static InputStream getConfigAsInputStream(String rsrcName) {
-		ClassLoader cl = Thread.currentThread().getContextClassLoader();
-		InputStream result = cl.getResourceAsStream(rsrcName);
-		if (result == null) {
-			String msg = String.format("Resource not found: '%1$s'", rsrcName);
-			throw new MissingResourceException(msg, null, rsrcName);
-		}
-		return result;
-	}
-
 	private static Tournament convertTournament(TournamentDto tournamentDto) {
-		LocalDate tournamentDate = LocalDate.parse(tournamentDto.date.trim());
+		var tournamentDate = LocalDate.parse(tournamentDto.date.trim());
 		EnumMap<Division, Set<Integer>> teams = convertTeams(tournamentDto.teams);
 		EnumMap<Event, EnumMap<Division, TimeInterval>> events = convertEvents(
 			tournamentDto.events, tournamentDate);
@@ -102,13 +84,13 @@ final class Configuration {
 		if (SINGLE_INT_PATTERN.matcher(entryDescriptor).matches()) {
 			return IntStream.of(Integer.parseInt(entryDescriptor));
 		} else {
-			Matcher m = RANGE_PATTERN.matcher(entryDescriptor);
+			var m = RANGE_PATTERN.matcher(entryDescriptor);
 			if (!m.matches()) {
 				throw new IllegalArgumentException(String.format(
 					"Team list entry '%1$s' is malformed", entryDescriptor));
 			}
-			int low = Integer.parseInt(m.group(1));
-			int high = Integer.parseInt(m.group(2));
+			var low = Integer.parseInt(m.group(1));
+			var high = Integer.parseInt(m.group(2));
 			return IntStream.rangeClosed(low, high);
 		}
 	}
@@ -133,7 +115,7 @@ final class Configuration {
 					"Event '%1$s' cannot have an A, B, or C time interval if it has a BC one",
 					eventDto.name));
 			}
-			TimeInterval ti = convertInterval(eventDto.BC, tournamentDate);
+			var ti = convertInterval(eventDto.BC, tournamentDate);
 			result.put(Division.B, ti);
 			result.put(Division.C, ti);
 		} else if (eventDto.A != null) {
@@ -159,10 +141,8 @@ final class Configuration {
 
 	private static TimeInterval convertInterval(TimeIntervalDto intervalDto,
 		LocalDate tournamentDate) {
-		if (StringUtil.isBlank(intervalDto.from) || StringUtil.isBlank(intervalDto.to)) {
-			return new TimeInterval(tournamentDate);
-		} else {
-			return new TimeInterval(intervalDto.from, intervalDto.to);
-		}
+		return (StringUtil.isBlank(intervalDto.from) || StringUtil.isBlank(intervalDto.to))
+			? new TimeInterval(tournamentDate)
+			: new TimeInterval(intervalDto.from, intervalDto.to);
 	}
 }

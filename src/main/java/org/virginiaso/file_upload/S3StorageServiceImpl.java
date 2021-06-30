@@ -23,12 +23,10 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
-import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 @Service("s3StorageService")
 public class S3StorageServiceImpl implements StorageService {
@@ -55,10 +53,10 @@ public class S3StorageServiceImpl implements StorageService {
 		if (s3Client.headBucket(hbRequest).sdkHttpResponse().isSuccessful()) {
 			LOG.info("Bucket '{}' exists", submissionRoot.getBucket());
 		} else {
-			CreateBucketRequest cbRequest = CreateBucketRequest.builder()
+			var cbRequest = CreateBucketRequest.builder()
 				.bucket(submissionRoot.getBucket())
 				.build();
-			CreateBucketResponse cbResponse = s3Client.createBucket(cbRequest);
+			var cbResponse = s3Client.createBucket(cbRequest);
 			if (!cbResponse.sdkHttpResponse().isSuccessful()) {
 				throw new IllegalStateException(String.format(
 					"Unable to create S3 bucket, status code %1$d",
@@ -77,7 +75,7 @@ public class S3StorageServiceImpl implements StorageService {
 	public InputStream getSubmissionTableAsInputStream(String submissionTableFileName)
 			throws FileNotFoundException {
 		try {
-			GetObjectRequest request = GetObjectRequest.builder()
+			var request = GetObjectRequest.builder()
 				.bucket(submissionRoot.getBucket())
 				.key(getSubmissionTableKey(submissionTableFileName))
 				.build();
@@ -90,10 +88,10 @@ public class S3StorageServiceImpl implements StorageService {
 	@Override
 	public File getTempSubmissionTableFile(String submissionTableFileName)
 			throws IOException {
-		File submissionTableFile = new File(submissionTableFileName);
+		var submissionTableFile = new File(submissionTableFileName);
 		Pair<String, String> stemExt = FileUtil.getStemExtPair(
 			submissionTableFile.getName());
-		File tempFile = File.createTempFile(stemExt.getLeft(), "." + stemExt.getRight());
+		var tempFile = File.createTempFile(stemExt.getLeft(), "." + stemExt.getRight());
 		LOG.debug("Temporary submission table file: '{}'", tempFile.getPath());
 		return tempFile;
 	}
@@ -102,11 +100,11 @@ public class S3StorageServiceImpl implements StorageService {
 	public void transferTempSubmissionTableFile(File tempSubmissionTableFile,
 		String submissionTableFileName) throws IOException {
 		try {
-			PutObjectRequest poRequest = PutObjectRequest.builder()
+			var poRequest = PutObjectRequest.builder()
 				.bucket(submissionRoot.getBucket())
 				.key(getSubmissionTableKey(submissionTableFileName))
 				.build();
-			PutObjectResponse response = s3Client.putObject(
+			var response = s3Client.putObject(
 				poRequest, tempSubmissionTableFile.toPath());
 			if (!response.sdkHttpResponse().isSuccessful()) {
 				throw new IOException(String.format(
@@ -123,15 +121,15 @@ public class S3StorageServiceImpl implements StorageService {
 	public void transferUploadedFile(MultipartFile file, String eventDirName,
 		String newFileName) throws IOException {
 
-		String newFileKey = String.format("%1$s/%2$s/%3$s",
+		var newFileKey = String.format("%1$s/%2$s/%3$s",
 			submissionRoot.getKey(), eventDirName, newFileName);
-		PutObjectRequest poRequest = PutObjectRequest.builder()
+		var poRequest = PutObjectRequest.builder()
 			.bucket(submissionRoot.getBucket())
 			.key(newFileKey)
 			.build();
-		try (InputStream is = file.getInputStream()) {
-			RequestBody requestBody = RequestBody.fromInputStream(is, file.getSize());
-			PutObjectResponse response = s3Client.putObject(poRequest, requestBody);
+		try (var is = file.getInputStream()) {
+			var requestBody = RequestBody.fromInputStream(is, file.getSize());
+			var response = s3Client.putObject(poRequest, requestBody);
 			if (!response.sdkHttpResponse().isSuccessful()) {
 				throw new IOException(String.format(
 					"Unable to transfer uploaded file to S3, status code %1$d",

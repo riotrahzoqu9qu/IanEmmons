@@ -3,6 +3,7 @@ HELP.md
 .gradle/
 build/
 logs/
+saved/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.function.Supplier;
@@ -47,12 +46,11 @@ public final class HostNameUtil {
 
 	static String getHostBySystemCommand() {
 		try {
-			Process process = new ProcessBuilder("hostname")
+			var process = new ProcessBuilder("hostname")
 				.redirectErrorStream(true)
 				.start();
 			try (InputStream is = process.getInputStream()) {
-				byte[] buffer = is.readAllBytes();
-				return new String(buffer, StandardCharsets.UTF_8);
+				return new String(is.readAllBytes(), FileUtil.CHARSET);
 			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -61,13 +59,13 @@ public final class HostNameUtil {
 	}
 
 	static String getHostByEtcHostname() {
-		File file = new File("/etc/hostname");
+		var file = new File("/etc/hostname");
 		if (!file.exists() || !file.isFile()) {
 			return null;
 		}
 		try {
-			byte[] content = Files.readAllBytes(file.toPath());
-			return new String(content, StandardCharsets.UTF_8);
+			var content = Files.readAllBytes(file.toPath());
+			return new String(content, FileUtil.CHARSET);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 			return null;

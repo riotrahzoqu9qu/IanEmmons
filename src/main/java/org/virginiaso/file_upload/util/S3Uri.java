@@ -1,7 +1,6 @@
 package org.virginiaso.file_upload.util;
 
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
@@ -20,7 +19,7 @@ public final class S3Uri implements Comparable<S3Uri> {
 	}
 
 	public S3Uri(String uri) {
-		Matcher m = S3_REGEX.matcher(Objects.requireNonNull(uri, "uri"));
+		var m = S3_REGEX.matcher(Objects.requireNonNull(uri, "uri"));
 		if (!m.matches()) {
 			throw new IllegalArgumentException(String.format(
 				"Illegal S3 URI: '%1$s'", uri));
@@ -54,10 +53,9 @@ public final class S3Uri implements Comparable<S3Uri> {
 		if (this == rhs) {
 			return true;
 		}
-		if (!(rhs instanceof S3Uri)) {
-			return false;
-		}
-		return compareTo((S3Uri) rhs) == 0;
+		return (rhs instanceof S3Uri rhsS3Uri)
+			? compareTo(rhsS3Uri) == 0
+			: false;
 	}
 
 	@Override

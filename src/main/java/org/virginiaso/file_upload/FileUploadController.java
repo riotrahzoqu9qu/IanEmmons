@@ -49,7 +49,7 @@ public class FileUploadController {
 		@RequestParam("notesUploadsOnly") Optional<String> notesUploadStr,
 		Model model) {
 
-		final boolean notesUploadsOnly = StringUtil.interpretOptReqParam(notesUploadStr);
+		var notesUploadsOnly = StringUtil.interpretOptReqParam(notesUploadStr);
 
 		model.addAttribute("host", HostNameUtil.getHostName());
 		model.addAttribute("cores", Runtime.getRuntime().availableProcessors());
@@ -71,7 +71,7 @@ public class FileUploadController {
 		@PathVariable String eventUri,
 		Model model) {
 
-		Event event = Event.forUri(eventUri);
+		var event = Event.forUri(eventUri);
 		model.addAttribute("event", event);
 		model.addAttribute("userSub", new UserSubmission());
 		model.addAttribute("errorMessage", null);
@@ -99,10 +99,10 @@ public class FileUploadController {
 		// If this throws, it's because eventUri is unrecognized.  In this
 		// case, we let the exception handler deal with it because we have
 		// no template name to return from this method.
-		Event event = Event.forUri(eventUri);
+		var event = Event.forUri(eventUri);
 
 		try {
-			Submission submission = fileUploadService.receiveFileUpload(event, userSub,
+			var submission = fileUploadService.receiveFileUpload(event, userSub,
 				fileA, fileB, fileC, fileD, fileE, fileF, fileG, fileH, fileI, fileJ);
 
 			model.addAttribute("event", event);
